@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface BookingWidgetProps {
   propertyId: string;
@@ -35,6 +36,7 @@ export default function BookingWidget({
   minNights,
   maxNights,
 }: BookingWidgetProps) {
+  const router = useRouter();
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
@@ -50,10 +52,7 @@ export default function BookingWidget({
     const fetchPricing = async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({
-          checkIn,
-          checkOut,
-        });
+        const params = new URLSearchParams({ checkIn, checkOut });
         const res = await fetch(
           `/api/properties/${propertyId}/pricing?${params.toString()}`
         );
@@ -73,9 +72,18 @@ export default function BookingWidget({
 
   const today = new Date().toISOString().split("T")[0];
 
+  function handleRequestToBook() {
+    if (!checkIn || !checkOut) return;
+    const params = new URLSearchParams({
+      checkIn,
+      checkOut,
+      guests: String(guests),
+    });
+    router.push(`/request/${propertyId}?${params.toString()}`);
+  }
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-      {/* Price header */}
       <div className="mb-4">
         <span className="text-2xl font-bold text-[#1B2A4A]">
           ${baseRate.toLocaleString()}
@@ -83,7 +91,6 @@ export default function BookingWidget({
         <span className="text-sm text-gray-500"> /night</span>
       </div>
 
-      {/* Date inputs */}
       <div className="mb-4 grid grid-cols-2 gap-2">
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-500">
@@ -111,7 +118,6 @@ export default function BookingWidget({
         </div>
       </div>
 
-      {/* Guest count */}
       <div className="mb-4">
         <label className="mb-1 block text-xs font-medium text-gray-500">
           GUESTS
@@ -129,7 +135,6 @@ export default function BookingWidget({
         </select>
       </div>
 
-      {/* Price breakdown */}
       {loading && (
         <div className="mb-4 space-y-2">
           <div className="h-4 animate-pulse rounded bg-gray-100" />
@@ -149,7 +154,6 @@ export default function BookingWidget({
               ${fees.nightlyTotal.toLocaleString()}
             </span>
           </div>
-
           {fees.cleaningFee > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">Cleaning fee</span>
@@ -158,14 +162,12 @@ export default function BookingWidget({
               </span>
             </div>
           )}
-
           <div className="flex justify-between">
             <span className="text-gray-600">OAH guest fee (2%)</span>
             <span className="text-gray-800">
               ${fees.oahFee.toLocaleString()}
             </span>
           </div>
-
           {fees.numNights < 30 && fees.totAmount > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">
@@ -176,14 +178,12 @@ export default function BookingWidget({
               </span>
             </div>
           )}
-
           <div className="flex justify-between">
             <span className="text-gray-600">Safely protection</span>
             <span className="text-gray-800">
               ${fees.safelyFee.toLocaleString()}
             </span>
           </div>
-
           {fees.ccFee > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">CC processing (3%)</span>
@@ -192,7 +192,6 @@ export default function BookingWidget({
               </span>
             </div>
           )}
-
           <div className="flex justify-between border-t border-gray-100 pt-2 font-semibold">
             <span className="text-[#1B2A4A]">Total</span>
             <span className="text-[#1B2A4A]">
@@ -202,8 +201,11 @@ export default function BookingWidget({
         </div>
       )}
 
-      {/* Book button */}
-      <button className="w-full rounded-lg bg-[#4C6C4E] py-3 text-sm font-semibold text-white transition hover:bg-[#3d5a3f]">
+      <button
+        onClick={handleRequestToBook}
+        disabled={!checkIn || !checkOut}
+        className="w-full rounded-lg bg-[#4C6C4E] py-3 text-sm font-semibold text-white transition hover:bg-[#3d5a3f] disabled:cursor-not-allowed disabled:opacity-50"
+      >
         Request to Book
       </button>
 
@@ -211,7 +213,6 @@ export default function BookingWidget({
         Your card won&apos;t be charged until we approve your request
       </p>
 
-      {/* Min/max nights info */}
       {(minNights > 1 || maxNights) && (
         <p className="mt-2 text-center text-xs text-gray-400">
           {minNights > 1 && `${minNights} night minimum`}
