@@ -20,16 +20,41 @@ function setCache<T>(key: string, data: T): void {
   cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
 }
 
-function getHeaders(): Record<string, string> {
-  return {
-    Authorization: `Bearer ${process.env.HOSTAWAY_API_KEY || ""}`,
-    "Content-Type": "application/json",
-    "Cache-Control": "no-cache",
-  };
-}
+// ---------- OAuth2 token management ----------
+
+let tokenCache: { token: string; expiry: number } | null = null;
 
 function isConfigured(): boolean {
   return !!(process.env.HOSTAWAY_API_KEY && process.env.HOSTAWAY_ACCOUNT_ID);
+}
+
+async function getAccessToken(): Promise<string> {
+  // Return cached token if still valid (with 60s buffer)
+  if (tokenCache && tokenCache.expiry > Date.now() + 60_000) {
+    return tokenCache.token;
+  }
+
+  const res = await fetch(`${HOSTAWAY_BASE}/accessTokens`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: process.env.HOSTAWAY_ACCOUNT_ID || "",
+      client_secret: process.env.HOSTAWAY_API_KEY || "",
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Hostaway auth failed ${res.status}: ${text}`);
+  }
+
+  const data = await res.json();
+  const token = data.access_token as string;
+  const expiresIn = (data.expires_in as number) || 3600;
+
+  tokenCache = { token, expiry: Date.now() + expiresIn * 1000 };
+  return token;
 }
 
 async function hostawayFetch<T>(path: string, options?: RequestInit): Promise<T> {
@@ -37,9 +62,17 @@ async function hostawayFetch<T>(path: string, options?: RequestInit): Promise<T>
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
   try {
+    const token = await getAccessToken();
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      ...(options?.headers as Record<string, string> || {}),
+    };
+
     const res = await fetch(`${HOSTAWAY_BASE}${path}`, {
       ...options,
-      headers: { ...getHeaders(), ...(options?.headers || {}) },
+      headers,
       signal: controller.signal,
     });
 
