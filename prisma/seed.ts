@@ -61,10 +61,10 @@ const olympicVenues = [
   },
   {
     name: "Santa Monica Beach",
-    sport: "Beach Volleyball",
+    sport: "Beach Volleyball / Triathlon Start",
     lat: 34.0094,
     lng: -118.497,
-    description: "Beach volleyball on the iconic Santa Monica coastline",
+    description: "Beach volleyball and triathlon start on the iconic Santa Monica coastline",
   },
   {
     name: "Sepulveda Basin",
@@ -86,6 +86,27 @@ const olympicVenues = [
     lat: 33.8644,
     lng: -118.261,
     description: "Tennis and track cycling in Carson",
+  },
+  {
+    name: "Trestles Beach",
+    sport: "Surfing",
+    lat: 33.3817,
+    lng: -117.5883,
+    description: "Olympic surfing competition in San Clemente",
+  },
+  {
+    name: "Honda Center",
+    sport: "Indoor Volleyball",
+    lat: 33.8078,
+    lng: -117.8765,
+    description: "Indoor volleyball competition in Anaheim",
+  },
+  {
+    name: "Venice Beach",
+    sport: "Triathlon / Marathon Start",
+    lat: 33.985,
+    lng: -118.4695,
+    description: "Triathlon and marathon start venue",
   },
 ];
 

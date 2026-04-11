@@ -5,8 +5,18 @@ export async function POST(request: NextRequest) {
   const expected = process.env.OLYMPICS_PASSWORD ?? "la2028";
 
   if (password === expected) {
-    return NextResponse.json({ ok: true });
+    const res = NextResponse.json({ success: true });
+    res.cookies.set("olympics_access", "true", {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      httpOnly: false,
+      sameSite: "lax",
+    });
+    return res;
   }
 
-  return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+  return NextResponse.json(
+    { success: false, error: "Invalid password" },
+    { status: 401 }
+  );
 }

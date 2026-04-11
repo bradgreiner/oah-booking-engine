@@ -16,6 +16,7 @@ interface PropertyCardProps {
   isOlympic?: boolean;
   imageUrl?: string;
   createdAt?: string;
+  linkPrefix?: string;
 }
 
 export default function PropertyCard({
@@ -34,6 +35,7 @@ export default function PropertyCard({
   isOlympic,
   imageUrl,
   createdAt,
+  linkPrefix = "",
 }: PropertyCardProps) {
   const isNew =
     createdAt &&
@@ -45,7 +47,7 @@ export default function PropertyCard({
       : null;
 
   return (
-    <Link href={`/${id}`} className="group block">
+    <Link href={`${linkPrefix}/${id}`} className="group block">
       <div className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md">
         {/* Image */}
         <div className="relative aspect-[4/3] bg-gray-100">

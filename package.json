@@ -14,6 +14,7 @@
     "@stripe/stripe-js": "^9.1.0",
     "@tailwindcss/postcss": "^4.2.2",
     "autoprefixer": "^10.4.27",
+    "mapbox-gl": "^3.21.0",
     "next": "14.2.29",
     "next-auth": "^4.24.13",
     "postcss": "^8.5.9",
@@ -28,6 +29,7 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "devDependencies": {
+    "@types/mapbox-gl": "^3.4.1",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
