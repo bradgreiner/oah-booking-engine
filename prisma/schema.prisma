@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model Property {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  headline    String?
+  description String?
+  address     String?
+  city        String?
+  state       String?
+  zip         String?
+  lat         Float?
+  lng         Float?
+  bedrooms    Int      @default(0)
+  bathrooms   Float    @default(0)
+  maxGuests   Int      @default(1)
+  sqft        Int?
+  baseRate    Float    @default(0)
+  cleaningFee Float    @default(0)
+  petFee      Float    @default(0)
+  totRate     Float    @default(0.12)
+  isOlympic   Boolean  @default(false)
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  images        PropertyImage[]
+  pricingRules  PricingRule[]
+  availability  Availability[]
+  bookings      BookingRequest[]
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  propertyId String
+  url        String
+  alt        String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+model PricingRule {
+  id         String   @id @default(cuid())
+  propertyId String
+  name       String
+  startDate  DateTime
+  endDate    DateTime
+  nightlyRate Float
+  minNights  Int      @default(1)
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+model Availability {
+  id         String   @id @default(cuid())
+  propertyId String
+  date       DateTime
+  isBlocked  Boolean  @default(false)
+  note       String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, date])
+  @@index([propertyId])
+}
+
+model BookingRequest {
+  id            String   @id @default(cuid())
+  propertyId    String
+  guestId       String
+  checkIn       DateTime
+  checkOut      DateTime
+  numGuests     Int
+  numPets       Int      @default(0)
+  nightlyTotal  Float
+  cleaningFee   Float
+  petFee        Float
+  safelyFee     Float
+  totAmount     Float
+  oahFee        Float
+  grandTotal    Float
+  status        String   @default("pending")
+  stripePaymentId String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id])
+  guest    Guest    @relation(fields: [guestId], references: [id])
+
+  @@index([propertyId])
+  @@index([guestId])
+}
+
+model Guest {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  phone     String?
+  createdAt DateTime @default(now())
+
+  bookings BookingRequest[]
+}
+
+model OlympicVenue {
+  id          String  @id @default(cuid())
+  name        String
+  sport       String
+  lat         Float
+  lng         Float
+  description String?
+}
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
