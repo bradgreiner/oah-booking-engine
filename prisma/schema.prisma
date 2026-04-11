@@ -9,29 +9,43 @@ datasource db {
 }
 
 model Property {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  headline    String?
-  description String?
-  address     String?
-  city        String?
-  state       String?
-  zip         String?
-  lat         Float?
-  lng         Float?
-  bedrooms    Int      @default(0)
-  bathrooms   Float    @default(0)
-  maxGuests   Int      @default(1)
-  sqft        Int?
-  baseRate    Float    @default(0)
-  cleaningFee Float    @default(0)
-  petFee      Float    @default(0)
-  totRate     Float    @default(0.12)
-  isOlympic   Boolean  @default(false)
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String    @id @default(cuid())
+  name            String
+  slug            String    @unique
+  headline        String?
+  description     String?
+  neighborhood    String?
+  address         String?
+  city            String?
+  state           String?
+  zip             String?
+  lat             Float?
+  lng             Float?
+  bedrooms        Int       @default(0)
+  bathrooms       Float     @default(0)
+  maxGuests       Int       @default(1)
+  sqft            Int?
+  propertyType    String    @default("str")
+  baseRate        Float     @default(0)
+  weeklyDiscount  Float     @default(0)
+  monthlyDiscount Float     @default(0)
+  cleaningFee     Float     @default(0)
+  petFee          Float     @default(0)
+  minNights       Int       @default(1)
+  maxNights       Int?
+  totRate         Float     @default(0.12)
+  isOlympic       Boolean   @default(false)
+  olympicOnly     Boolean   @default(false)
+  availableStart  DateTime?
+  availableEnd    DateTime?
+  ownerName       String?
+  ownerEmail      String?
+  ownerPhone      String?
+  amenities       String?
+  status          String    @default("draft")
+  isPublished     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   images        PropertyImage[]
   pricingRules  PricingRule[]
