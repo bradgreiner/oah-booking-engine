@@ -2,6 +2,8 @@ import { prisma } from "./prisma";
 import { calculateFees } from "./fees";
 import { createPaymentIntent, capturePaymentIntent, cancelPaymentIntent } from "./stripe-server";
 import { sendGuestConfirmation, sendAdminNotification, sendApprovalEmail, sendDeclineEmail } from "./emails";
+import { getProperty } from "./property-adapter";
+import { createReservation as createHostawayReservation } from "./hostaway";
 
 interface CreateBookingInput {
   propertyId: string;
@@ -50,10 +52,7 @@ export async function createBookingPaymentIntent(
   checkOut: string,
   hasPets: boolean
 ) {
-  const property = await prisma.property.findUnique({
-    where: { id: propertyId },
-  });
-
+  const property = await getProperty(propertyId);
   if (!property) throw new Error("Property not found");
 
   const numNights = getNightCount(checkIn, checkOut);
@@ -65,7 +64,9 @@ export async function createBookingPaymentIntent(
     propertyId,
     checkIn,
     checkOut,
-    propertyName: property.name,
+    propertyName: property.headline || property.name,
+    source: property.source,
+    hostawayListingId: property.hostawayListingId?.toString() || "",
   });
 
   return {
@@ -77,15 +78,19 @@ export async function createBookingPaymentIntent(
 }
 
 export async function submitBookingRequest(input: CreateBookingInput) {
-  const property = await prisma.property.findUnique({
-    where: { id: input.propertyId },
-  });
-
+  const property = await getProperty(input.propertyId);
   if (!property) throw new Error("Property not found");
 
   const numNights = getNightCount(input.checkIn, input.checkOut);
   const hasPets = input.numPets > 0;
   const fees = calculateBookingFees(property, numNights, hasPets);
+
+  // For Hostaway properties, we need a local Property record to FK against.
+  // Use or create a placeholder record for Hostaway listings.
+  let localPropertyId = input.propertyId;
+  if (property.source === "hostaway" && property.hostawayListingId) {
+    localPropertyId = await ensureLocalPropertyForHostaway(property);
+  }
 
   // Upsert guest
   const guest = await prisma.guest.upsert({
@@ -106,7 +111,7 @@ export async function submitBookingRequest(input: CreateBookingInput) {
   // Create booking request
   const booking = await prisma.bookingRequest.create({
     data: {
-      propertyId: input.propertyId,
+      propertyId: localPropertyId,
       guestId: guest.id,
       checkIn: new Date(input.checkIn),
       checkOut: new Date(input.checkOut),
@@ -125,6 +130,8 @@ export async function submitBookingRequest(input: CreateBookingInput) {
       tripDescription: input.tripDescription,
       petInfo: input.petInfo || null,
       houseRulesAck: input.houseRulesAck,
+      source: property.source,
+      hostawayListingId: property.hostawayListingId,
     },
   });
 
@@ -170,10 +177,32 @@ export async function approveBooking(bookingId: string) {
     await capturePaymentIntent(booking.stripePaymentId);
   }
 
+  // For Hostaway properties, create reservation in Hostaway
+  let hostawayReservationId: number | null = null;
+  if (booking.source === "hostaway" && booking.hostawayListingId) {
+    const result = await createHostawayReservation({
+      listingId: booking.hostawayListingId,
+      guestName: `${booking.guest.firstName} ${booking.guest.lastName}`,
+      guestEmail: booking.guest.email,
+      guestPhone: booking.guest.phone || "",
+      arrivalDate: booking.checkIn.toISOString().split("T")[0],
+      departureDate: booking.checkOut.toISOString().split("T")[0],
+      totalPrice: booking.grandTotal,
+      cleaningFee: booking.cleaningFee,
+      numberOfGuests: booking.numGuests,
+    });
+    if (result) {
+      hostawayReservationId = result.id;
+    }
+  }
+
   // Update status
   const updated = await prisma.bookingRequest.update({
     where: { id: bookingId },
-    data: { status: "approved" },
+    data: {
+      status: "approved",
+      ...(hostawayReservationId ? { hostawayReservationId } : {}),
+    },
   });
 
   // Send approval email
@@ -216,4 +245,34 @@ export async function declineBooking(bookingId: string) {
   ).catch(console.error);
 
   return updated;
+}
+
+// ---------- Helpers ----------
+
+// Creates/finds a local Property placeholder so BookingRequest FK works
+async function ensureLocalPropertyForHostaway(
+  property: { hostawayListingId: number | null; name: string; headline: string | null; city: string | null; baseRate: number; cleaningFee: number; bedrooms: number; bathrooms: number; maxGuests: number }
+): Promise<string> {
+  const slug = `hw-${property.hostawayListingId}`;
+
+  const existing = await prisma.property.findUnique({ where: { slug } });
+  if (existing) return existing.id;
+
+  const created = await prisma.property.create({
+    data: {
+      name: property.name,
+      slug,
+      headline: property.headline,
+      city: property.city,
+      baseRate: property.baseRate,
+      cleaningFee: property.cleaningFee,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      maxGuests: property.maxGuests,
+      propertyType: "str",
+      status: "active",
+      isPublished: false, // Not shown in local queries — adapter handles display
+    },
+  });
+  return created.id;
 }

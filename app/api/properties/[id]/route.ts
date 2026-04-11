@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getProperty } from "@/lib/property-adapter";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const property = await prisma.property.findUnique({
-      where: { id: params.id },
-      include: {
-        images: { orderBy: { sortOrder: "asc" } },
-        pricingRules: { orderBy: { startDate: "asc" } },
-      },
-    });
+    const property = await getProperty(params.id);
 
     if (!property) {
       return NextResponse.json(

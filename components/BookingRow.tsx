@@ -20,6 +20,7 @@ interface Booking {
   tripDescription: string | null;
   petInfo: string | null;
   paymentMethod: string;
+  source: string;
   createdAt: string;
   guest: { firstName: string; lastName: string; email: string; phone: string | null };
   property: { name: string; headline: string | null };
@@ -72,7 +73,12 @@ export default function BookingRow({ booking, onApprove, onDecline, actionLoadin
           {booking.guest.firstName} {booking.guest.lastName}
         </td>
         <td className="px-4 py-3 text-sm text-gray-500">
-          {booking.property.headline || booking.property.name}
+          <span>{booking.property.headline || booking.property.name}</span>
+          {booking.source === "hostaway" && (
+            <span className="ml-1.5 inline-flex rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 ring-1 ring-blue-500/20">
+              HW
+            </span>
+          )}
         </td>
         <td className="px-4 py-3 text-sm text-gray-500">
           {formatDate(booking.checkIn)} – {formatDate(booking.checkOut)}
@@ -117,6 +123,7 @@ export default function BookingRow({ booking, onApprove, onDecline, actionLoadin
                 <p className="text-gray-500">Phone: {booking.guest.phone || "N/A"}</p>
                 <p className="text-gray-500">Guests: {booking.numGuests} · Pets: {booking.numPets}</p>
                 <p className="text-gray-500">Payment: {booking.paymentMethod === "card" ? "Credit Card" : "ACH"}</p>
+                <p className="text-gray-500">Source: {booking.source === "hostaway" ? "Hostaway" : "Local"}</p>
               </div>
               <div>
                 <p className="font-medium text-gray-700">Price Breakdown</p>

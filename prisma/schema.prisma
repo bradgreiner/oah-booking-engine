@@ -95,30 +95,33 @@ model Availability {
 }
 
 model BookingRequest {
-  id              String   @id @default(cuid())
-  propertyId      String
-  guestId         String
-  checkIn         DateTime
-  checkOut        DateTime
-  numGuests       Int
-  numPets         Int      @default(0)
-  nightlyTotal    Float
-  cleaningFee     Float
-  petFee          Float
-  safelyFee       Float
-  totAmount       Float
-  oahFee          Float
-  ccFee           Float    @default(0)
-  grandTotal      Float
-  status          String   @default("pending")
-  stripePaymentId String?
-  paymentMethod   String   @default("card")
-  tripDescription String?
-  petInfo         String?
-  houseRulesAck   Boolean  @default(false)
-  notes           String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  propertyId            String
+  guestId               String
+  checkIn               DateTime
+  checkOut              DateTime
+  numGuests             Int
+  numPets               Int      @default(0)
+  nightlyTotal          Float
+  cleaningFee           Float
+  petFee                Float
+  safelyFee             Float
+  totAmount             Float
+  oahFee                Float
+  ccFee                 Float    @default(0)
+  grandTotal            Float
+  status                String   @default("pending")
+  stripePaymentId       String?
+  paymentMethod         String   @default("card")
+  tripDescription       String?
+  petInfo               String?
+  houseRulesAck         Boolean  @default(false)
+  notes                 String?
+  source                String   @default("local")
+  hostawayListingId     Int?
+  hostawayReservationId Int?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   property Property @relation(fields: [propertyId], references: [id])
   guest    Guest    @relation(fields: [guestId], references: [id])

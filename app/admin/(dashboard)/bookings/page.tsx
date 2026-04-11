@@ -21,6 +21,7 @@ interface Booking {
   tripDescription: string | null;
   petInfo: string | null;
   paymentMethod: string;
+  source: string;
   createdAt: string;
   guest: { firstName: string; lastName: string; email: string; phone: string | null };
   property: { name: string; headline: string | null };
