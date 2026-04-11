@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,8 +8,14 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status");
     const isOlympic = searchParams.get("isOlympic");
     const search = searchParams.get("search");
+    const city = searchParams.get("city");
+    const propertyType = searchParams.get("propertyType");
+    const sort = searchParams.get("sort");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const amenity = searchParams.get("amenity");
 
-    const where: Record<string, unknown> = {};
+    const where: Prisma.PropertyWhereInput = {};
 
     if (status && status !== "all") {
       where.status = status;
@@ -16,6 +23,30 @@ export async function GET(request: NextRequest) {
 
     if (isOlympic === "true") {
       where.isOlympic = true;
+    }
+
+    if (city) {
+      where.city = { equals: city, mode: "insensitive" };
+    }
+
+    if (propertyType) {
+      if (propertyType === "monthly") {
+        where.propertyType = { in: ["monthly", "both"] };
+      } else if (propertyType === "str") {
+        where.propertyType = { in: ["str", "both"] };
+      } else {
+        where.propertyType = propertyType;
+      }
+    }
+
+    if (minPrice || maxPrice) {
+      where.baseRate = {};
+      if (minPrice) where.baseRate.gte = parseFloat(minPrice);
+      if (maxPrice) where.baseRate.lte = parseFloat(maxPrice);
+    }
+
+    if (amenity) {
+      where.amenities = { contains: amenity, mode: "insensitive" };
     }
 
     if (search) {
@@ -27,10 +58,19 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    let orderBy: Prisma.PropertyOrderByWithRelationInput = {
+      createdAt: "desc",
+    };
+    if (sort === "price_asc") {
+      orderBy = { baseRate: "asc" };
+    } else if (sort === "price_desc") {
+      orderBy = { baseRate: "desc" };
+    }
+
     const properties = await prisma.property.findMany({
       where,
       include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
-      orderBy: { createdAt: "desc" },
+      orderBy,
     });
 
     return NextResponse.json(properties);

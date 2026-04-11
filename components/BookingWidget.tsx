@@ -1,0 +1,224 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
+interface BookingWidgetProps {
+  propertyId: string;
+  baseRate: number;
+  cleaningFee: number;
+  petFee: number;
+  totRate: number;
+  maxGuests: number;
+  minNights: number;
+  maxNights: number | null;
+}
+
+interface FeeBreakdown {
+  nightlyTotal: number;
+  cleaningFee: number;
+  petFee: number;
+  safelyFee: number;
+  totAmount: number;
+  oahFee: number;
+  ccFee: number;
+  grandTotal: number;
+  numNights: number;
+}
+
+export default function BookingWidget({
+  propertyId,
+  baseRate,
+  cleaningFee,
+  petFee,
+  totRate,
+  maxGuests,
+  minNights,
+  maxNights,
+}: BookingWidgetProps) {
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guests, setGuests] = useState(1);
+  const [fees, setFees] = useState<FeeBreakdown | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!checkIn || !checkOut) {
+      setFees(null);
+      return;
+    }
+
+    const fetchPricing = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          checkIn,
+          checkOut,
+        });
+        const res = await fetch(
+          `/api/properties/${propertyId}/pricing?${params.toString()}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setFees(data);
+        }
+      } catch {
+        // Silently handle errors
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPricing();
+  }, [checkIn, checkOut, propertyId]);
+
+  const today = new Date().toISOString().split("T")[0];
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+      {/* Price header */}
+      <div className="mb-4">
+        <span className="text-2xl font-bold text-[#1B2A4A]">
+          ${baseRate.toLocaleString()}
+        </span>
+        <span className="text-sm text-gray-500"> /night</span>
+      </div>
+
+      {/* Date inputs */}
+      <div className="mb-4 grid grid-cols-2 gap-2">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">
+            CHECK-IN
+          </label>
+          <input
+            type="date"
+            value={checkIn}
+            min={today}
+            onChange={(e) => setCheckIn(e.target.value)}
+            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">
+            CHECK-OUT
+          </label>
+          <input
+            type="date"
+            value={checkOut}
+            min={checkIn || today}
+            onChange={(e) => setCheckOut(e.target.value)}
+            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+          />
+        </div>
+      </div>
+
+      {/* Guest count */}
+      <div className="mb-4">
+        <label className="mb-1 block text-xs font-medium text-gray-500">
+          GUESTS
+        </label>
+        <select
+          value={guests}
+          onChange={(e) => setGuests(Number(e.target.value))}
+          className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+        >
+          {Array.from({ length: maxGuests }, (_, i) => i + 1).map((n) => (
+            <option key={n} value={n}>
+              {n} {n === 1 ? "guest" : "guests"}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Price breakdown */}
+      {loading && (
+        <div className="mb-4 space-y-2">
+          <div className="h-4 animate-pulse rounded bg-gray-100" />
+          <div className="h-4 animate-pulse rounded bg-gray-100" />
+          <div className="h-4 animate-pulse rounded bg-gray-100" />
+        </div>
+      )}
+
+      {fees && !loading && (
+        <div className="mb-4 space-y-2 border-t border-gray-100 pt-4 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">
+              ${baseRate.toLocaleString()} x {fees.numNights}{" "}
+              {fees.numNights === 1 ? "night" : "nights"}
+            </span>
+            <span className="text-gray-800">
+              ${fees.nightlyTotal.toLocaleString()}
+            </span>
+          </div>
+
+          {fees.cleaningFee > 0 && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">Cleaning fee</span>
+              <span className="text-gray-800">
+                ${fees.cleaningFee.toLocaleString()}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-between">
+            <span className="text-gray-600">OAH guest fee (2%)</span>
+            <span className="text-gray-800">
+              ${fees.oahFee.toLocaleString()}
+            </span>
+          </div>
+
+          {fees.numNights < 30 && fees.totAmount > 0 && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">
+                TOT ({(totRate * 100).toFixed(0)}%)
+              </span>
+              <span className="text-gray-800">
+                ${fees.totAmount.toLocaleString()}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-between">
+            <span className="text-gray-600">Safely protection</span>
+            <span className="text-gray-800">
+              ${fees.safelyFee.toLocaleString()}
+            </span>
+          </div>
+
+          {fees.ccFee > 0 && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">CC processing (3%)</span>
+              <span className="text-gray-800">
+                ${fees.ccFee.toLocaleString()}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-between border-t border-gray-100 pt-2 font-semibold">
+            <span className="text-[#1B2A4A]">Total</span>
+            <span className="text-[#1B2A4A]">
+              ${fees.grandTotal.toLocaleString()}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Book button */}
+      <button className="w-full rounded-lg bg-[#4C6C4E] py-3 text-sm font-semibold text-white transition hover:bg-[#3d5a3f]">
+        Request to Book
+      </button>
+
+      <p className="mt-3 text-center text-xs text-gray-400">
+        Your card won&apos;t be charged until we approve your request
+      </p>
+
+      {/* Min/max nights info */}
+      {(minNights > 1 || maxNights) && (
+        <p className="mt-2 text-center text-xs text-gray-400">
+          {minNights > 1 && `${minNights} night minimum`}
+          {minNights > 1 && maxNights && " · "}
+          {maxNights && `${maxNights} night maximum`}
+        </p>
+      )}
+    </div>
+  );
+}
