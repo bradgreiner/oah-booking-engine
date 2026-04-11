@@ -21,10 +21,14 @@
     "stripe": "^22.0.1",
     "tailwindcss": "^4.2.2"
   },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }
 }
