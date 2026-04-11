@@ -22,16 +22,16 @@ export default function NewPropertyPage() {
 
   return (
     <div>
-      <h1 className="font-[Georgia,serif] text-2xl font-bold text-gray-900">
-        Add New Property
-      </h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Fill in the details below to add a new rental property
-      </p>
-
-      <div className="mt-8">
-        <PropertyForm onSubmit={handleSubmit} />
+      <div className="mb-8">
+        <h1 className="font-[Georgia,serif] text-2xl font-bold text-gray-900">
+          Add New Property
+        </h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Fill in the details below to add a new rental property
+        </p>
       </div>
+
+      <PropertyForm onSubmit={handleSubmit} />
     </div>
   );
 }

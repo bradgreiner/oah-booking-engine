@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Georgia", serif;
-  --font-body: "Inter", sans-serif;
+  --font-georgia: "Georgia", serif;
+  --font-inter: "Inter", system-ui, -apple-system, sans-serif;
 }

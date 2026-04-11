@@ -89,15 +89,18 @@ export default function EditPropertyPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-gray-500">Loading property...</p>
+        <p className="text-sm text-gray-400">Loading property...</p>
       </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-gray-500">Property not found.</p>
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="text-sm font-medium text-gray-900">Property not found</p>
+        <p className="mt-1 text-sm text-gray-400">
+          This property may have been deleted.
+        </p>
       </div>
     );
   }
@@ -155,7 +158,7 @@ export default function EditPropertyPage() {
         </div>
         <button
           onClick={() => setShowDeleteModal(true)}
-          className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+          className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-colors hover:bg-red-50"
         >
           Delete Property
         </button>
@@ -167,27 +170,26 @@ export default function EditPropertyPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-md rounded-lg border border-gray-100 bg-white p-6 shadow-xl">
+            <h3 className="font-[Georgia,serif] text-lg font-semibold text-gray-900">
               Delete Property
             </h3>
             <p className="mt-2 text-sm text-gray-600">
               Are you sure you want to delete &quot;{property.name}&quot;? This
-              will set the property status to removed. This action cannot be
-              easily undone.
+              will set the property status to removed.
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete"}
               </button>
