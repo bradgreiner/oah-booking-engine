@@ -106,6 +106,16 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
   const images = extractImages(listing);
   const l = listing as Record<string, unknown>;
 
+  // Log raw pricing fields for first listing during development
+  if (listing.id) {
+    console.log('[pricing debug]', {
+      id: listing.id,
+      bookingEngineMarkup: (l as any).bookingEngineMarkup,
+      price: (l as any).price,
+      baseRate: listing.baseRate,
+    });
+  }
+
   // Use ?? (null-coalescing) not || — 0 is valid for bedrooms/bathrooms
   const bedrooms = firstPositive(
     l.bedroomsNumber, listing.bedrooms, l.bedroomsCount, l.numberOfBedrooms
@@ -121,6 +131,15 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
   // Square footage
   const sqft = firstPositive(listing.squareFeet, l.propertySize, l.squareFootage) || null;
 
+  // Base rate: prefer bookingEngineMarkup (guest-facing rate), then price, then baseRate/basePrice
+  const baseRate = firstPositive(
+    (l as any).bookingEngineMarkup,
+    (l as any).price,
+    listing.baseRate,
+    (l as any).basePrice,
+    (l as any).weeklyRate ? Math.round(((l as any).weeklyRate as number) / 7) : 0,
+  ) || 0;
+
   return {
     id: `hw_${listing.id}`,
     slug: `hw-${listing.id}`,
@@ -135,7 +154,7 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     maxGuests: listing.personCapacity ?? 1,
     sqft,
     propertyType: derivePropertyType(listing),
-    baseRate: listing.price ?? 0,
+    baseRate,
     weeklyDiscount: listing.weeklyDiscount ?? 0,
     monthlyDiscount: listing.monthlyDiscount ?? 0,
     cleaningFee: listing.cleaningFee ?? 0,

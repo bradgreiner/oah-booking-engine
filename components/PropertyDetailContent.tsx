@@ -106,7 +106,7 @@ export default function PropertyDetailContent({ property }: Props) {
             </div>
 
             {/* Hosted-by line */}
-            <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-[#4C6C4E]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
@@ -129,7 +129,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* Amenities */}
             <div className="mb-8">
-              <h2 className="font-serif text-xl font-semibold text-[#1a1a1a]">
+              <h2 className="font-serif text-2xl font-normal text-gray-900">
                 Your stay includes
               </h2>
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -148,7 +148,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* House rules */}
             <div className="mb-8">
-              <h2 className="font-serif text-xl font-semibold text-[#1a1a1a]">
+              <h2 className="font-serif text-2xl font-normal text-gray-900">
                 House rules
               </h2>
               <ul className="mt-4 space-y-2 text-sm text-gray-600">
@@ -164,7 +164,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* Cancellation policy */}
             <div className="mb-8">
-              <h2 className="font-serif text-xl font-semibold text-[#1a1a1a]">
+              <h2 className="font-serif text-2xl font-normal text-gray-900">
                 Cancellation policy
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-gray-600">
@@ -177,7 +177,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* Location */}
             <div className="mb-8">
-              <h2 className="font-serif text-xl font-semibold text-[#1a1a1a]">
+              <h2 className="font-serif text-2xl font-normal text-gray-900">
                 Location
               </h2>
               <p className="mt-2 text-sm text-gray-600">
@@ -203,24 +203,24 @@ export default function PropertyDetailContent({ property }: Props) {
 
             <hr className="my-8 border-gray-100" />
 
-            {/* Things we love nearby — will eventually be pulled from listing_content table */}
+            {/* TODO: pull from listing_content table per property */}
             <div>
-              <h2 className="font-serif text-xl font-semibold text-[#1a1a1a]">
+              <h2 className="font-serif text-2xl font-normal text-gray-900">
                 Things we love nearby
               </h2>
-              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {[
-                  { emoji: "\uD83C\uDF55", name: "Gjusta Bakery", desc: "Venice Beach staple, 0.3 mi" },
+                  { emoji: "\uD83C\uDF55", name: "Gjusta", desc: "Venice Beach staple, 0.3 mi" },
                   { emoji: "\u2615", name: "Groundwork Coffee", desc: "Local roaster, 0.5 mi" },
                   { emoji: "\uD83C\uDFD6\uFE0F", name: "Venice Beach", desc: "Walk to the sand, 0.4 mi" },
-                  { emoji: "\uD83D\uDED2", name: "Erewhon Market", desc: "Organic groceries, 0.8 mi" },
+                  { emoji: "\uD83D\uDED2", name: "Erewhon Venice", desc: "Organic groceries, 0.8 mi" },
                   { emoji: "\uD83C\uDF2E", name: "Gjelina", desc: "James Beard nominated, 0.2 mi" },
-                  { emoji: "\uD83C\uDFCB\uFE0F", name: "Equinox Westwood", desc: "Full gym, 1.2 mi" },
+                  { emoji: "\uD83C\uDFCB\uFE0F", name: "Equinox West Hollywood", desc: "Full gym, 1.2 mi" },
                 ].map((place) => (
-                  <div key={place.name} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
-                    <span className="text-lg">{place.emoji}</span>
+                  <div key={place.name} className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50">
+                    <span className="text-xl">{place.emoji}</span>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{place.name}</p>
+                      <p className="text-sm font-medium text-gray-900">{place.name}</p>
                       <p className="text-xs text-gray-500">{place.desc}</p>
                     </div>
                   </div>
@@ -231,7 +231,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
           {/* Right: booking widget (desktop) */}
           <div className="hidden w-full lg:block lg:w-[380px] lg:shrink-0">
-            <div className="sticky top-6">
+            <div className="sticky top-6 rounded-2xl bg-[#FAFAF8]">
               <BookingWidget
                 propertyId={property.id}
                 baseRate={property.baseRate}

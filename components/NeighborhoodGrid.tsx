@@ -3,7 +3,7 @@ import Image from "next/image";
 
 // key = lowercase lookup in cityCounts, searchCity = value for the search URL
 const NEIGHBORHOODS: { name: string; key: string; searchCity: string; image: string }[] = [
-  { name: "Venice Beach", key: "venice beach", searchCity: "Los Angeles", image: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=800&q=80" },
+  { name: "Venice Beach", key: "venice beach", searchCity: "Los Angeles", image: "/images/homes/Washington_36.jpg" },
   { name: "West Hollywood", key: "west hollywood", searchCity: "West Hollywood", image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800&q=80" },
   { name: "Santa Monica", key: "santa monica", searchCity: "Santa Monica", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" },
   { name: "Palm Springs", key: "palm springs", searchCity: "Palm Springs", image: "https://images.unsplash.com/photo-1565768633709-76dbbab1c03d?w=800&q=80" },

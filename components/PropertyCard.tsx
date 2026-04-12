@@ -43,10 +43,12 @@ export default function PropertyCard({
     Date.now() - new Date(createdAt).getTime() < 30 * 24 * 60 * 60 * 1000;
 
   const isMonthly = propertyType === "monthly" || (minNights ?? 0) >= 30;
-  const hasMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
+  const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
   const hasWeeklyDiscount = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1;
 
-  const monthlyRate = Math.round(baseRate * 30 * (hasMonthlyDiscount ? monthlyDiscount! : 1));
+  const monthlyPrice = hasValidMonthlyDiscount
+    ? Math.round(baseRate * 30 * monthlyDiscount!)
+    : null;
   const weeklyNightlyRate = Math.round(baseRate * (hasWeeklyDiscount ? weeklyDiscount! : 1));
 
   return (
@@ -111,10 +113,14 @@ export default function PropertyCard({
 
           <div className="mt-2 px-3 pb-3">
             {isMonthly ? (
-              <p className="text-lg font-bold text-gray-900">
-                ${monthlyRate.toLocaleString()}
-                <span className="text-sm font-normal text-gray-500">/mo</span>
-              </p>
+              monthlyPrice !== null ? (
+                <p className="text-lg font-bold text-gray-900">
+                  ${monthlyPrice.toLocaleString()}
+                  <span className="text-sm font-normal text-gray-500">/mo</span>
+                </p>
+              ) : (
+                <p className="text-sm italic text-gray-500">Contact for pricing</p>
+              )
             ) : hasWeeklyDiscount ? (
               <p className="text-lg font-bold text-gray-900">
                 ${weeklyNightlyRate.toLocaleString()}

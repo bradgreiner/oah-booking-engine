@@ -5,22 +5,19 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const listings = await fetchListings();
   return NextResponse.json(
-    listings.slice(0, 5).map((l: any) => ({
+    listings.slice(0, 10).map((l: any) => ({
       id: l.id,
-      name: l.name,
+      name: l.name?.slice(0, 40),
       city: l.city,
       baseRate: l.baseRate,
       bookingEngineMarkup: l.bookingEngineMarkup,
+      price: l.price,
       weeklyDiscount: l.weeklyDiscount,
       monthlyDiscount: l.monthlyDiscount,
-      cleaningFee: l.cleaningFee,
       minNights: l.minNights,
-      priceFields: Object.keys(l).filter(k =>
-        k.toLowerCase().includes('price') ||
-        k.toLowerCase().includes('rate') ||
-        k.toLowerCase().includes('discount') ||
-        k.toLowerCase().includes('fee')
-      ),
+      computedMonthly: l.bookingEngineMarkup && l.monthlyDiscount && l.monthlyDiscount < 1
+        ? Math.round(l.bookingEngineMarkup * 30 * l.monthlyDiscount)
+        : null,
     }))
   );
 }

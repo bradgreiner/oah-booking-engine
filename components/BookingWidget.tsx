@@ -83,13 +83,13 @@ export default function BookingWidget({
   const [activeTab, setActiveTab] = useState<Tab>(getDefaultTab);
 
   // Compute display rate based on active tab
+  const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
   const weeklyMultiplier = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1 ? weeklyDiscount : 1;
-  const monthlyMultiplier = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1 ? monthlyDiscount : 1;
 
-  let displayRate: number;
+  let displayRate: number | null;
   let displayUnit: string;
   if (activeTab === "monthly" || activeTab === "quarterly") {
-    displayRate = Math.round(baseRate * 30 * monthlyMultiplier);
+    displayRate = hasValidMonthlyDiscount ? Math.round(baseRate * 30 * monthlyDiscount!) : null;
     displayUnit = "/mo";
   } else if (activeTab === "weekly") {
     displayRate = Math.round(baseRate * weeklyMultiplier);
@@ -132,13 +132,19 @@ export default function BookingWidget({
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-[#FAFAF8] p-6 shadow-lg">
+    <div className="rounded-2xl border border-gray-200 bg-[#FAFAF8] p-6 shadow-md">
       {/* Rate display */}
       <div className="mb-1">
-        <span className="text-3xl font-bold text-gray-900">
-          ${displayRate.toLocaleString()}
-        </span>
-        <span className="text-base font-normal text-gray-500">{displayUnit}</span>
+        {displayRate !== null ? (
+          <>
+            <span className="text-3xl font-bold text-gray-900">
+              ${displayRate.toLocaleString()}
+            </span>
+            <span className="text-base font-normal text-gray-500">{displayUnit}</span>
+          </>
+        ) : (
+          <span className="text-lg italic text-gray-500">Contact for monthly pricing</span>
+        )}
       </div>
 
       {/* Stay-length tabs */}
@@ -289,18 +295,16 @@ export default function BookingWidget({
 
       <button
         onClick={handleRequestToBook}
-        disabled={!checkIn || !checkOut}
-        className="w-full rounded-full bg-[#4C6C4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50"
+        disabled={!checkIn || !checkOut || displayRate === null}
+        className="w-full rounded-full bg-[#4C6C4E] py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50"
       >
         Request to Book
       </button>
 
-      <p className="mt-3 text-center text-xs text-gray-400">
-        Your card won&apos;t be charged until we approve your request
-      </p>
-      <p className="mt-1 text-center text-xs text-gray-400">
-        We typically review within 24 hours
-      </p>
+      <div className="mt-2 space-y-1 text-center text-xs text-gray-400">
+        <p>Your card won&apos;t be charged until we approve your request</p>
+        <p>We typically review within 24 hours</p>
+      </div>
 
       {(minNights > 1 || maxNights) && (
         <p className="mt-2 text-center text-xs text-gray-400">

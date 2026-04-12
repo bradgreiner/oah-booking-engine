@@ -88,10 +88,15 @@ export default function SearchMap({ properties }: SearchMapProps) {
       bounds.extend([p.longitude, p.latitude]);
 
       const isMonthly = p.minNights >= 30;
+      const hasValidMonthlyDiscount = p.monthlyDiscount != null && p.monthlyDiscount > 0 && p.monthlyDiscount < 1;
       let displayPrice: string;
       if (isMonthly) {
-        const mo = Math.round(p.baseRate * 30 * (p.monthlyDiscount || 1) / 1000);
-        displayPrice = `$${mo}k/mo`;
+        if (hasValidMonthlyDiscount) {
+          const mo = Math.round(p.baseRate * 30 * p.monthlyDiscount! / 1000);
+          displayPrice = `$${mo}k/mo`;
+        } else {
+          displayPrice = "Contact";
+        }
       } else {
         displayPrice = `$${p.baseRate}`;
       }

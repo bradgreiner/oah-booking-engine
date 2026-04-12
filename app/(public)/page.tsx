@@ -22,7 +22,7 @@ export default async function HomePage() {
         {/* Hero */}
         <section className="relative min-h-[560px] md:min-h-[680px]">
           <Image
-            src="https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=1600&q=80"
+            src="/images/homes/Washington_38.jpg"
             alt="Luxury furnished home with pool in Southern California"
             fill
             className="object-cover"
