@@ -25,7 +25,7 @@ export async function fetchDynamicRates(
   if (cached && cached.expiry > Date.now()) return cached.rates;
 
   try {
-    // Use correct PriceLabs field names: listing_id + pms
+    // PriceLabs expects: id (string), pms, start_date, end_date
     const res = await fetch(`${PRICELABS_BASE}/listing_prices`, {
       method: "POST",
       headers: {
@@ -35,7 +35,7 @@ export async function fetchDynamicRates(
       body: JSON.stringify({
         listings: [
           {
-            listing_id: hostawayListingId.toString(),
+            id: String(hostawayListingId),
             pms: "hostaway",
             start_date: checkIn,
             end_date: checkOut,
