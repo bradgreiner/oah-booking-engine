@@ -352,10 +352,21 @@ export async function getPropertyPricing(
     const dynamicRate = await getAverageNightlyRate(property.hostawayListingId, checkIn, checkOut);
     if (dynamicRate && dynamicRate > 0) { nightlyRate = dynamicRate; rateSource = 'pricelabs'; }
   }
+
+  // Apply stay-length discount multipliers (monthly takes priority over weekly, never both)
+  let discountedRate = nightlyRate;
+  const md = property.monthlyDiscount;
+  const wd = property.weeklyDiscount;
+  if (numNights >= 30 && md && md > 0 && md < 1) {
+    discountedRate = nightlyRate * md;
+  } else if (numNights >= 7 && wd && wd > 0 && wd < 1) {
+    discountedRate = nightlyRate * wd;
+  }
+
   const { getTotRate } = await import('./constants');
   const totRate = getTotRate(property.city, numNights);
-  const fees = calculateBookingFees({ baseRate: nightlyRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
-  return { ...fees, nightlyRate, numNights, checkIn, checkOut, source: property.source, rateSource };
+  const fees = calculateBookingFees({ baseRate: discountedRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
+  return { ...fees, nightlyRate: discountedRate, numNights, checkIn, checkOut, source: property.source, rateSource };
 }
 
 // Homepage featured: only local active + Hostaway merged

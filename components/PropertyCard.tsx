@@ -44,12 +44,11 @@ export default function PropertyCard({
 
   const isMonthly = propertyType === "monthly" || (minNights ?? 0) >= 30;
   const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
-  const hasWeeklyDiscount = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1;
 
-  const monthlyPrice = hasValidMonthlyDiscount
+  // Monthly card: baseRate * 30 * monthlyDiscount (accommodation only, no fees baked in)
+  const monthlyPrice = isMonthly && hasValidMonthlyDiscount
     ? Math.round(baseRate * 30 * monthlyDiscount!)
     : null;
-  const weeklyNightlyRate = Math.round(baseRate * (hasWeeklyDiscount ? weeklyDiscount! : 1));
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
@@ -119,13 +118,8 @@ export default function PropertyCard({
                   <span className="text-sm font-normal text-gray-500">/mo</span>
                 </p>
               ) : (
-                <p className="text-sm italic text-gray-500">Contact for pricing</p>
+                <p className="text-sm italic text-gray-400">Contact for pricing</p>
               )
-            ) : hasWeeklyDiscount ? (
-              <p className="text-lg font-bold text-gray-900">
-                ${weeklyNightlyRate.toLocaleString()}
-                <span className="text-sm font-normal text-gray-500">/night</span>
-              </p>
             ) : (
               <p className="text-lg font-bold text-gray-900">
                 ${baseRate.toLocaleString()}
