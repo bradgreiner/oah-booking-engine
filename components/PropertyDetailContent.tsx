@@ -2,7 +2,7 @@ import Image from "next/image";
 import BookingWidget from "@/components/BookingWidget";
 import PropertyDescription from "@/components/PropertyDescription";
 import PhotoPlaceholder from "@/components/PhotoPlaceholder";
-import NeighborhoodMap from "@/components/NeighborhoodMap";
+import PropertyMap from "@/components/PropertyMap";
 import type { UnifiedProperty } from "@/lib/property-adapter";
 
 interface Props {
@@ -194,19 +194,20 @@ export default function PropertyDetailContent({ property }: Props) {
               <p className="mt-2 text-sm text-gray-600">
                 {property.city ? `${property.city}, California` : "Southern California"}
               </p>
-              <p className="mt-1 text-sm text-gray-400">
-                Exact address provided after booking confirmation.
-              </p>
-              {property.latitude && property.longitude ? (
-                <NeighborhoodMap
-                  latitude={property.latitude}
-                  longitude={property.longitude}
-                  city={property.city}
-                />
-              ) : (
-                <div className="mt-4 flex h-48 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-sm text-gray-400">
-                  Map unavailable for this property
-                </div>
+              <PropertyMap
+                latitude={property.latitude}
+                longitude={property.longitude}
+                city={property.city}
+              />
+              {!property.latitude && !property.longitude && (
+                <>
+                  <p className="mt-1 text-sm text-gray-400">
+                    Exact address provided after booking confirmation.
+                  </p>
+                  <div className="mt-4 flex h-48 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-sm text-gray-400">
+                    Map coming soon
+                  </div>
+                </>
               )}
             </div>
           </div>

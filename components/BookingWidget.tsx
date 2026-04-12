@@ -182,36 +182,45 @@ export default function BookingWidget({
               ${fees.oahFee.toLocaleString()}
             </span>
           </div>
-          {fees.numNights < 30 && fees.totAmount > 0 && (
+          {fees.safelyFee > 0 && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">Safely protection</span>
+              <span className="text-gray-800">
+                ${fees.safelyFee.toLocaleString()}
+              </span>
+            </div>
+          )}
+          {fees.numNights >= 30 ? (
+            <div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Occupancy tax</span>
+                <span className="text-[#4C6C4E]">$0 &#10003;</span>
+              </div>
+              <p className="mt-0.5 text-xs text-gray-400">
+                Monthly rentals are exempt from transient occupancy tax
+              </p>
+            </div>
+          ) : fees.totAmount > 0 ? (
             <div className="flex justify-between">
               <span className="text-gray-600">
-                TOT ({(totRate * 100).toFixed(0)}%)
+                Occupancy tax ({(totRate * 100).toFixed(0)}%)
               </span>
               <span className="text-gray-800">
                 ${fees.totAmount.toLocaleString()}
               </span>
             </div>
-          )}
-          <div className="flex justify-between">
-            <span className="text-gray-600">Safely protection</span>
-            <span className="text-gray-800">
-              ${fees.safelyFee.toLocaleString()}
-            </span>
-          </div>
-          {fees.ccFee > 0 && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">CC processing (3%)</span>
-              <span className="text-gray-800">
-                ${fees.ccFee.toLocaleString()}
-              </span>
-            </div>
-          )}
+          ) : null}
           <div className="flex justify-between border-t border-gray-100 pt-2 font-semibold">
-            <span className="text-[#1a1a1a]">Total</span>
-            <span className="text-[#1a1a1a]">
+            <span className="text-[#4C6C4E]">Total</span>
+            <span className="text-[#4C6C4E]">
               ${fees.grandTotal.toLocaleString()}
             </span>
           </div>
+          {fees.ccFee > 0 && (
+            <p className="text-xs text-[#4C6C4E]">
+              Save ${fees.ccFee.toLocaleString()} with bank transfer — no processing fee
+            </p>
+          )}
         </div>
       )}
 
