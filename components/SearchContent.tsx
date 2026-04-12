@@ -147,8 +147,8 @@ export default function SearchContent() {
             className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
               activeFilters.has(f.key)
                 ? f.key === "olympic"
-                  ? "border-[#C5A55A] bg-[#C5A55A]/10 text-[#C5A55A]"
-                  : "border-[#4C6C4E] bg-[#4C6C4E]/10 text-[#4C6C4E]"
+                  ? "border-[#C5A55A] bg-[#C5A55A] text-white"
+                  : "border-[#4C6C4E] bg-[#4C6C4E] text-white"
                 : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
             }`}
           >
@@ -170,16 +170,15 @@ export default function SearchContent() {
       </div>
 
       {/* Content grid */}
-      <div className="mt-6 flex gap-6">
-        <div className="flex-1">
-          {loading ? (
-            <SearchSkeleton />
-          ) : properties.length > 0 ? (
-            <>
-              <p className="mb-4 text-sm text-gray-500">
-                {properties.length} {properties.length === 1 ? "home" : "homes"} available
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
+      <div className="mt-6">
+        {loading ? (
+          <SearchSkeleton />
+        ) : properties.length > 0 ? (
+          <>
+            <p className="mb-4 text-sm text-gray-500">
+              {properties.length} {properties.length === 1 ? "home" : "homes"} available
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
                 {properties.map((property) => (
                   <PropertyCard
                     key={property.id}
@@ -202,28 +201,25 @@ export default function SearchContent() {
                     createdAt={property.createdAt}
                   />
                 ))}
-              </div>
-            </>
-          ) : (
-            <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-12 text-center">
-              <p className="text-gray-500">
-                No properties match your search. Try adjusting your filters.
-              </p>
             </div>
-          )}
-        </div>
-
-        {/* Map placeholder */}
-        <div className="hidden w-[400px] shrink-0 lg:block">
-          <div className="sticky top-6 flex h-[calc(100vh-200px)] items-center justify-center rounded-xl border border-gray-200 bg-gray-100">
-            <div className="text-center text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="mx-auto h-12 w-12">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
-              </svg>
-              <p className="mt-2 text-sm">Map coming soon</p>
-            </div>
+          </>
+        ) : (
+          <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-12 text-center">
+            <p className="text-gray-500">
+              No homes match your filters. Try adjusting your search.
+            </p>
+            <button
+              onClick={() => {
+                setCity("");
+                setActiveFilters(new Set());
+                setSort("newest");
+              }}
+              className="mt-4 rounded-full border border-[#4C6C4E] px-6 py-2 text-sm font-medium text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
+            >
+              Clear filters
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

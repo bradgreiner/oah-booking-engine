@@ -42,7 +42,7 @@ export default function PropertyCard({
 }: PropertyCardProps) {
   const isNew =
     createdAt &&
-    Date.now() - new Date(createdAt).getTime() < 14 * 24 * 60 * 60 * 1000;
+    Date.now() - new Date(createdAt).getTime() < 30 * 24 * 60 * 60 * 1000;
 
   const isMonthly = propertyType === "monthly" || (minNights ?? 0) >= 30;
   const hasMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingSummary from "@/components/BookingSummary";
@@ -41,6 +42,7 @@ interface GuestFormData {
   hasPets: boolean;
   petInfo: string;
   houseRulesAck: boolean;
+  stayingMyself: boolean;
 }
 
 const INITIAL_FORM: GuestFormData = {
@@ -53,6 +55,7 @@ const INITIAL_FORM: GuestFormData = {
   hasPets: false,
   petInfo: "",
   houseRulesAck: false,
+  stayingMyself: true,
 };
 
 export default function RequestFormContent() {
@@ -75,12 +78,11 @@ export default function RequestFormContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "ach">("card");
   const stripeSubmitRef = useRef<(() => void) | null>(null);
 
-  // Load property + pricing + payment intent
   useEffect(() => {
     if (!propertyId || !checkIn || !checkOut) return;
-
     async function load() {
       const [propRes, feeRes, piRes] = await Promise.all([
         fetch(`/api/properties/${propertyId}`),
@@ -91,7 +93,6 @@ export default function RequestFormContent() {
           body: JSON.stringify({ propertyId, checkIn, checkOut }),
         }),
       ]);
-
       if (propRes.ok) setProperty(await propRes.json());
       if (feeRes.ok) setFees(await feeRes.json());
       if (piRes.ok) {
@@ -105,13 +106,13 @@ export default function RequestFormContent() {
 
   const numNights = fees?.numNights || 0;
   const isLongStay = numNights >= 90;
+  const ccSavings = fees?.ccFee ?? 0;
 
   function validate(): boolean {
     const errs: Record<string, string> = {};
     if (!formData.firstName.trim()) errs.firstName = "Required";
     if (!formData.lastName.trim()) errs.lastName = "Required";
     if (!formData.email.trim() || !formData.email.includes("@")) errs.email = "Valid email required";
-    if (!formData.phone.trim()) errs.phone = "Required";
     if (formData.tripDescription.trim().length < 20)
       errs.tripDescription = "Please write at least 20 characters";
     if (!formData.houseRulesAck) errs.houseRulesAck = "You must acknowledge the house rules";
@@ -122,16 +123,11 @@ export default function RequestFormContent() {
   async function handleSubmit() {
     if (!validate()) return;
     setPaymentError("");
-
-    if (isLongStay) {
-      // ACH: submit directly without Stripe card
+    if (isLongStay || paymentMethod === "ach") {
       setSubmitting(true);
       await submitRequest("");
     } else {
-      // Trigger Stripe card confirmation
-      if (stripeSubmitRef.current) {
-        stripeSubmitRef.current();
-      }
+      if (stripeSubmitRef.current) stripeSubmitRef.current();
     }
   }
 
@@ -141,22 +137,17 @@ export default function RequestFormContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          propertyId,
-          checkIn,
-          checkOut,
+          propertyId, checkIn, checkOut,
           numGuests: formData.numGuests,
           numPets: formData.hasPets ? 1 : 0,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
+          firstName: formData.firstName, lastName: formData.lastName,
+          email: formData.email, phone: formData.phone,
           tripDescription: formData.tripDescription,
           petInfo: formData.hasPets ? formData.petInfo : undefined,
           houseRulesAck: formData.houseRulesAck,
           stripePaymentIntentId: paymentIntentId,
         }),
       });
-
       if (res.ok) {
         const booking = await res.json();
         router.push(`/confirmation/${booking.id}`);
@@ -188,6 +179,12 @@ export default function RequestFormContent() {
       <Navbar />
       <main className="min-h-screen bg-gray-50 py-8">
         <div className="mx-auto max-w-5xl px-4">
+          {/* Back link */}
+          <Link href={`/${propertyId}`} className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#4C6C4E]">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+            Back to listing
+          </Link>
+
           {/* Progress bar */}
           <div className="flex items-center gap-2 text-sm">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4C6C4E] text-xs font-semibold text-white">1</span>
@@ -199,12 +196,102 @@ export default function RequestFormContent() {
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-400">3</span>
             <span className="text-gray-400">Confirm</span>
           </div>
+
+          {/* Trust banner */}
+          <div className="mt-4 rounded-lg border border-[#4C6C4E]/10 bg-[#4C6C4E]/5 px-4 py-3 text-xs text-gray-600">
+            Professionally managed by Open Air Homes &middot; Dedicated support &middot; Seamless check-in &middot; Full maintenance coverage
+          </div>
+
           <h1 className="mt-4 font-serif text-2xl font-bold text-[#1a1a1a]">
             Request to Book
           </h1>
 
-          <div className="mt-8 flex flex-col gap-8 lg:flex-row">
-            {/* Left: Summary */}
+          <div className="mt-6 flex flex-col gap-8 lg:flex-row">
+            {/* Left: Form */}
+            <div className="flex-1">
+              {/* Who's staying */}
+              <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h2 className="text-sm font-semibold text-gray-700">Who&apos;s staying?</h2>
+                <div className="mt-3 flex gap-3">
+                  <button type="button" onClick={() => setFormData({ ...formData, stayingMyself: true })}
+                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${formData.stayingMyself ? "border-[#4C6C4E] bg-[#4C6C4E]/10 text-[#4C6C4E]" : "border-gray-200 text-gray-600 hover:border-gray-300"}`}>
+                    I&apos;ll be staying
+                  </button>
+                  <button type="button" onClick={() => setFormData({ ...formData, stayingMyself: false })}
+                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${!formData.stayingMyself ? "border-[#4C6C4E] bg-[#4C6C4E]/10 text-[#4C6C4E]" : "border-gray-200 text-gray-600 hover:border-gray-300"}`}>
+                    Booking for someone else
+                  </button>
+                </div>
+              </div>
+
+              {/* Guest info */}
+              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-[#1a1a1a]">Guest Information</h2>
+                <div className="mt-4">
+                  <GuestInfoForm data={formData} onChange={setFormData} maxGuests={property?.maxGuests || 10} errors={errors} />
+                </div>
+              </div>
+
+              {/* Payment section */}
+              <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-[#1a1a1a]">Select payment method</h2>
+
+                {isLongStay ? (
+                  <div className="mt-4 rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
+                    <p className="font-medium">ACH Bank Transfer Required</p>
+                    <p className="mt-1 text-blue-600">For stays of 90+ nights, we require ACH bank transfer. We&apos;ll send setup instructions after approval.</p>
+                  </div>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {/* ACH option */}
+                    <label className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition ${paymentMethod === "ach" ? "border-[#4C6C4E] bg-[#4C6C4E]/5" : "border-gray-200 hover:border-gray-300"}`}>
+                      <input type="radio" name="payment" checked={paymentMethod === "ach"} onChange={() => setPaymentMethod("ach")} className="mt-0.5 h-4 w-4 text-[#4C6C4E] focus:ring-[#4C6C4E]" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-800">Instant bank transfer</p>
+                        <p className="text-xs text-gray-500">No processing fee {ccSavings > 0 && <>&mdash; Save ${ccSavings.toLocaleString()} vs card</>}</p>
+                        {fees && <p className="mt-1 text-sm font-semibold text-[#4C6C4E]">${(fees.grandTotal - fees.ccFee).toLocaleString()}</p>}
+                      </div>
+                    </label>
+
+                    {/* Card option */}
+                    <label className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition ${paymentMethod === "card" ? "border-[#4C6C4E] bg-[#4C6C4E]/5" : "border-gray-200 hover:border-gray-300"}`}>
+                      <input type="radio" name="payment" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} className="mt-0.5 h-4 w-4 text-[#4C6C4E] focus:ring-[#4C6C4E]" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-800">Credit or debit card</p>
+                        <p className="text-xs text-gray-500">Including 3% card processing fee &middot; Visa MC Disc Amex</p>
+                        {fees && <p className="mt-1 text-sm font-semibold text-gray-800">${fees.grandTotal.toLocaleString()}</p>}
+                      </div>
+                    </label>
+
+                    {paymentMethod === "card" && clientSecret && (
+                      <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-4">
+                        <StripePayment
+                          clientSecret={clientSecret}
+                          onSuccess={(piId) => submitRequest(piId)}
+                          onError={(msg) => { setPaymentError(msg); setSubmitting(false); }}
+                          submitting={submitting}
+                          setSubmitting={setSubmitting}
+                          submitRef={stripeSubmitRef}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {paymentError && <p className="mt-3 text-sm text-red-600">{paymentError}</p>}
+              </div>
+
+              {/* Submit */}
+              <button onClick={handleSubmit} disabled={submitting}
+                className="mt-6 w-full rounded-full bg-[#4C6C4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50">
+                {submitting ? "Submitting..." : "Request to Book"}
+              </button>
+              <p className="mt-3 text-center text-xs text-gray-400">
+                Secure checkout powered by Stripe &middot; You won&apos;t be charged until we approve your request &middot; We typically review within 24 hours &middot; By submitting, you agree to our Rental Terms &amp; Conditions
+              </p>
+            </div>
+
+            {/* Right: Sidebar */}
             <div className="w-full lg:w-[340px] lg:shrink-0">
               <div className="sticky top-6">
                 <BookingSummary
@@ -220,72 +307,6 @@ export default function RequestFormContent() {
                   loading={feesLoading}
                 />
               </div>
-            </div>
-
-            {/* Right: Form */}
-            <div className="flex-1">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold text-[#1a1a1a]">
-                  Guest Information
-                </h2>
-                <div className="mt-4">
-                  <GuestInfoForm
-                    data={formData}
-                    onChange={setFormData}
-                    maxGuests={property?.maxGuests || 10}
-                    errors={errors}
-                  />
-                </div>
-              </div>
-
-              {/* Payment section */}
-              <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold text-[#1a1a1a]">
-                  Payment
-                </h2>
-
-                {isLongStay ? (
-                  <div className="mt-4 rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
-                    <p className="font-medium">ACH Bank Transfer Required</p>
-                    <p className="mt-1 text-blue-600">
-                      For stays of 90+ nights, we require ACH bank transfer.
-                      We&apos;ll send you bank setup instructions after your request is approved.
-                    </p>
-                  </div>
-                ) : clientSecret ? (
-                  <div className="mt-4">
-                    <StripePayment
-                      clientSecret={clientSecret}
-                      onSuccess={(piId) => submitRequest(piId)}
-                      onError={(msg) => {
-                        setPaymentError(msg);
-                        setSubmitting(false);
-                      }}
-                      submitting={submitting}
-                      setSubmitting={setSubmitting}
-                      submitRef={stripeSubmitRef}
-                    />
-                    <p className="mt-2 text-xs text-gray-400">
-                      Save with bank transfer? Contact us for stays 90+ nights.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="mt-4 h-12 animate-pulse rounded-lg bg-gray-100" />
-                )}
-
-                {paymentError && (
-                  <p className="mt-3 text-sm text-red-600">{paymentError}</p>
-                )}
-              </div>
-
-              {/* Submit */}
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="mt-6 w-full rounded-full bg-[#4C6C4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {submitting ? "Submitting..." : "Request to Book"}
-              </button>
             </div>
           </div>
         </div>

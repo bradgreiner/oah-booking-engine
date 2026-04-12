@@ -10,6 +10,7 @@ interface GuestFormData {
   hasPets: boolean;
   petInfo: string;
   houseRulesAck: boolean;
+  stayingMyself: boolean;
 }
 
 interface GuestInfoFormProps {
@@ -76,7 +77,7 @@ export default function GuestInfoForm({
       {/* Phone */}
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700">
-          Phone *
+          Phone <span className="font-normal text-gray-400">(optional — for faster approval)</span>
         </label>
         <input
           type="tel"

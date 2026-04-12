@@ -178,10 +178,10 @@ export default function DatePicker({
 
   const month2 = addMonths(baseMonth, 1);
   const checkInDisplay = checkIn
-    ? new Date(checkIn + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    ? new Date(checkIn + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
     : "Add date";
   const checkOutDisplay = checkOut
-    ? new Date(checkOut + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    ? new Date(checkOut + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
     : "Add date";
 
   return (
@@ -195,7 +195,8 @@ export default function DatePicker({
           <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
             Check-in
           </p>
-          <p className={`text-sm ${checkIn ? "text-gray-800" : "text-gray-400"}`}>
+          <p className={`flex items-center gap-1.5 text-sm ${checkIn ? "text-gray-800" : "text-gray-400"}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-3.5 w-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
             {checkInDisplay}
           </p>
         </div>
@@ -203,7 +204,8 @@ export default function DatePicker({
           <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
             Check-out
           </p>
-          <p className={`text-sm ${checkOut ? "text-gray-800" : "text-gray-400"}`}>
+          <p className={`flex items-center gap-1.5 text-sm ${checkOut ? "text-gray-800" : "text-gray-400"}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-3.5 w-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
             {checkOutDisplay}
           </p>
         </div>

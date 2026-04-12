@@ -44,7 +44,9 @@ export default async function PropertyDetailPage({ params }: Props) {
         {/* Sticky mobile bottom bar */}
         <MobileBookingBar
           propertyId={property.id}
+          propertyName={property.name}
           baseRate={property.baseRate}
+          minNights={property.minNights}
         />
       </main>
       <Footer />

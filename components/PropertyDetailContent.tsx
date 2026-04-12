@@ -202,14 +202,29 @@ export default function PropertyDetailContent({ property }: Props) {
 
             <hr className="my-8 border-gray-100" />
 
-            {/* Things we love nearby */}
+            {/* Things we love nearby — will eventually be pulled from listing_content table */}
             <div>
               <h2 className="font-serif text-xl font-semibold text-[#1a1a1a]">
                 Things we love nearby
               </h2>
-              <p className="mt-4 text-sm text-gray-400">
-                Our team&apos;s picks coming soon
-              </p>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {[
+                  { emoji: "\uD83C\uDF55", name: "Gjusta Bakery", desc: "Venice Beach staple, 0.3 mi" },
+                  { emoji: "\u2615", name: "Groundwork Coffee", desc: "Local roaster, 0.5 mi" },
+                  { emoji: "\uD83C\uDFD6\uFE0F", name: "Venice Beach", desc: "Walk to the sand, 0.4 mi" },
+                  { emoji: "\uD83D\uDED2", name: "Erewhon Market", desc: "Organic groceries, 0.8 mi" },
+                  { emoji: "\uD83C\uDF2E", name: "Gjelina", desc: "James Beard nominated, 0.2 mi" },
+                  { emoji: "\uD83C\uDFCB\uFE0F", name: "Equinox Westwood", desc: "Full gym, 1.2 mi" },
+                ].map((place) => (
+                  <div key={place.name} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                    <span className="text-lg">{place.emoji}</span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">{place.name}</p>
+                      <p className="text-xs text-gray-500">{place.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

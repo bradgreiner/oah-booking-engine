@@ -20,17 +20,31 @@ const CITIES = [
   "Marina del Rey",
 ];
 
+function getNextMonths(count: number): { value: string; label: string }[] {
+  const months: { value: string; label: string }[] = [];
+  const now = new Date();
+  for (let i = 0; i < count; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    months.push({ value, label });
+  }
+  return months;
+}
+
+const MONTHS = getNextMonths(18);
+
 export default function HeroSearch() {
   const router = useRouter();
   const [city, setCity] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const [moveIn, setMoveIn] = useState("");
+  const [moveOut, setMoveOut] = useState("");
 
   function handleSearch() {
     const params = new URLSearchParams();
     if (city) params.set("city", city);
-    if (checkIn) params.set("checkIn", checkIn);
-    if (checkOut) params.set("checkOut", checkOut);
+    if (moveIn) params.set("moveIn", moveIn);
+    if (moveOut) params.set("moveOut", moveOut);
     router.push(`/search?${params.toString()}`);
   }
 
@@ -49,9 +63,7 @@ export default function HeroSearch() {
             >
               <option value="">All locations</option>
               {CITIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
@@ -61,24 +73,32 @@ export default function HeroSearch() {
               <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
                 Move in
               </label>
-              <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
+              <select
+                value={moveIn}
+                onChange={(e) => setMoveIn(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
-              />
+              >
+                <option value="">Any month</option>
+                {MONTHS.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
             </div>
 
             <div className="flex-1">
               <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
                 Move out
               </label>
-              <input
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
+              <select
+                value={moveOut}
+                onChange={(e) => setMoveOut(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
-              />
+              >
+                <option value="">Any month</option>
+                {MONTHS.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
             </div>
           </div>
 
