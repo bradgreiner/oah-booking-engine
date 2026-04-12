@@ -1,4 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
+
+const TRUST_BADGES = [
+  { src: "/images/trust/airbnbsuperhosttrust.webp", alt: "Airbnb Superhost" },
+  { src: "/images/trust/vrbopremierhosttrust.png", alt: "VRBO Premier Host" },
+  { src: "/images/trust/30005starreviewstrust.webp", alt: "3,000+ Five-Star Reviews" },
+  { src: "/images/trust/250Massetsundermanagementtrust.webp", alt: "$250M Assets Under Management" },
+];
 
 interface FooterProps {
   showBadges?: boolean;
@@ -9,15 +17,20 @@ export default function Footer({ showBadges = true }: FooterProps) {
     <footer className="border-t border-gray-200 bg-white">
       {/* Trust badges row — public pages only */}
       {showBadges && (
-        <div className="border-b border-gray-100 py-6">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 text-xs text-gray-400">
-            <span>Airbnb Superhost &middot; 4.9 Stars &middot; 14 Years</span>
-            <span className="hidden sm:inline text-gray-300">|</span>
-            <span>VRBO Premier Host</span>
-            <span className="hidden sm:inline text-gray-300">|</span>
-            <span>3,000+ Five-Star Reviews</span>
-            <span className="hidden sm:inline text-gray-300">|</span>
-            <span>$250M Assets Under Management</span>
+        <div className="border-b border-gray-100">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 py-8">
+            {TRUST_BADGES.map((badge) => (
+              <div key={badge.alt} className="flex items-center justify-center">
+                <Image
+                  src={badge.src}
+                  alt={badge.alt}
+                  width={0}
+                  height={40}
+                  sizes="120px"
+                  className="h-10 w-auto"
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}
