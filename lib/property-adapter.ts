@@ -7,6 +7,7 @@ import {
   type HostawayListing,
 } from "./hostaway";
 import { calculateBookingFees, getNightCount } from "./booking";
+import { fetchPriceLabsBatch } from "./pricelabs";
 
 // ---------- Unified property shape ----------
 
@@ -280,6 +281,32 @@ function applySort(properties: UnifiedProperty[], sort?: string): UnifiedPropert
   );
 }
 
+// ---------- PriceLabs overlay ----------
+
+// Overlay PriceLabs dynamic rates onto Hostaway properties.
+// Uses a 30-day window from today for batch pricing on browse/search pages.
+async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<UnifiedProperty[]> {
+  const hostawayProps = properties.filter((p) => p.hostawayListingId);
+  if (hostawayProps.length === 0) return properties;
+
+  const hostawayIds = hostawayProps.map((p) => p.hostawayListingId!);
+  const today = new Date();
+  const startDate = today.toISOString().split("T")[0];
+  const endDate = new Date(today.getTime() + 30 * 86400000).toISOString().split("T")[0];
+
+  const plRates = await fetchPriceLabsBatch(hostawayIds, startDate, endDate);
+  if (plRates.size === 0) return properties;
+
+  return properties.map((p) => {
+    if (!p.hostawayListingId) return p;
+    const dynamicRate = plRates.get(p.hostawayListingId);
+    if (dynamicRate && dynamicRate > 0) {
+      return { ...p, baseRate: dynamicRate };
+    }
+    return p;
+  });
+}
+
 // ---------- Public API ----------
 
 export async function getProperties(
@@ -302,6 +329,9 @@ export async function getProperties(
   if (filters.isOlympic === "true") {
     merged = merged.filter((p) => p.isOlympic);
   }
+
+  // Overlay PriceLabs dynamic rates (replaces Hostaway baseRate with PriceLabs avg)
+  merged = await overlayPriceLabsRates(merged);
 
   return applySort(merged, filters.sort);
 }
@@ -387,7 +417,8 @@ export async function getFeaturedProperties(limit: number = 6): Promise<UnifiedP
     .map(mapHostawayToUnified);
 
   // Interleave: local first, then fill with Hostaway
-  const merged = [...localUnified, ...hostawayUnified];
+  let merged = [...localUnified, ...hostawayUnified];
+  merged = await overlayPriceLabsRates(merged);
   return merged.slice(0, limit);
 }
 
