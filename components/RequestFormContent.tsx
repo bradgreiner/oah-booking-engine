@@ -180,21 +180,27 @@ export default function RequestFormContent() {
       <main className="min-h-screen bg-gray-50 py-8">
         <div className="mx-auto max-w-5xl px-4">
           {/* Back link */}
-          <Link href={`/${propertyId}`} className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#4C6C4E]">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+          <Link href={`/${propertyId}`} className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
             Back to listing
           </Link>
 
           {/* Progress bar */}
           <div className="flex items-center gap-2 text-sm">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4C6C4E] text-xs font-semibold text-white">1</span>
-            <span className="font-medium text-[#4C6C4E]">Your details</span>
-            <span className="text-gray-300">&rarr;</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-400">2</span>
-            <span className="text-gray-400">Review</span>
-            <span className="text-gray-300">&rarr;</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-400">3</span>
-            <span className="text-gray-400">Confirm</span>
+            <div className="flex flex-col items-center gap-1">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#4C6C4E] text-xs font-semibold text-white">1</span>
+              <span className="text-xs font-medium text-[#4C6C4E]">Details</span>
+            </div>
+            <div className="mb-4 h-px w-8 bg-gray-300" />
+            <div className="flex flex-col items-center gap-1">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-400">2</span>
+              <span className="text-xs text-gray-400">Review</span>
+            </div>
+            <div className="mb-4 h-px w-8 bg-gray-300" />
+            <div className="flex flex-col items-center gap-1">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-400">3</span>
+              <span className="text-xs text-gray-400">Confirm</span>
+            </div>
           </div>
 
           {/* Trust banner */}
@@ -234,7 +240,7 @@ export default function RequestFormContent() {
 
               {/* Payment section */}
               <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold text-[#1a1a1a]">Select payment method</h2>
+                <h2 className="mb-3 text-base font-semibold text-[#1a1a1a]">Select payment method</h2>
 
                 {isLongStay ? (
                   <div className="mt-4 rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
@@ -244,7 +250,7 @@ export default function RequestFormContent() {
                 ) : (
                   <div className="mt-4 space-y-3">
                     {/* ACH option */}
-                    <label className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition ${paymentMethod === "ach" ? "border-[#4C6C4E] bg-[#4C6C4E]/5" : "border-gray-200 hover:border-gray-300"}`}>
+                    <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${paymentMethod === "ach" ? "border-[#4C6C4E] bg-[#4C6C4E]/5" : "border-gray-200 hover:border-gray-300"}`}>
                       <input type="radio" name="payment" checked={paymentMethod === "ach"} onChange={() => setPaymentMethod("ach")} className="mt-0.5 h-4 w-4 text-[#4C6C4E] focus:ring-[#4C6C4E]" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-800">Instant bank transfer</p>
@@ -254,7 +260,7 @@ export default function RequestFormContent() {
                     </label>
 
                     {/* Card option */}
-                    <label className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition ${paymentMethod === "card" ? "border-[#4C6C4E] bg-[#4C6C4E]/5" : "border-gray-200 hover:border-gray-300"}`}>
+                    <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${paymentMethod === "card" ? "border-[#4C6C4E] bg-[#4C6C4E]/5" : "border-gray-200 hover:border-gray-300"}`}>
                       <input type="radio" name="payment" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} className="mt-0.5 h-4 w-4 text-[#4C6C4E] focus:ring-[#4C6C4E]" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-800">Credit or debit card</p>
@@ -283,7 +289,7 @@ export default function RequestFormContent() {
 
               {/* Submit */}
               <button onClick={handleSubmit} disabled={submitting}
-                className="mt-6 w-full rounded-full bg-[#4C6C4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50">
+                className="mt-6 w-full rounded-full bg-[#4C6C4E] py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50">
                 {submitting ? "Submitting..." : "Request to Book"}
               </button>
               <p className="mt-3 text-center text-xs text-gray-400">

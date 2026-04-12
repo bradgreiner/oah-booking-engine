@@ -60,13 +60,13 @@ export default async function ConfirmationPage({ params }: Props) {
             </svg>
           </div>
 
-          <h1 className="mt-6 font-[Georgia,serif] text-3xl font-bold text-[#1a1a1a]">
+          <h1 className="mt-6 font-serif text-3xl text-gray-900">
             Request received!
           </h1>
 
           {/* Booking summary card */}
           <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 text-left shadow-sm">
-            <h2 className="font-[Georgia,serif] text-lg font-semibold text-[#1a1a1a]">
+            <h2 className="font-serif text-lg text-gray-900">
               {booking.property.headline || booking.property.name}
             </h2>
             <p className="mt-2 text-sm text-gray-500">
@@ -94,10 +94,10 @@ export default async function ConfirmationPage({ params }: Props) {
           </div>
 
           <Link
-            href="/"
-            className="mt-8 inline-block rounded-lg border border-[#4C6C4E] px-6 py-2.5 text-sm font-semibold text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
+            href="/search"
+            className="mt-8 inline-block rounded-full border border-[#4C6C4E] px-6 py-2.5 text-sm font-semibold text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
           >
-            Back to Home
+            Back to browse
           </Link>
         </div>
       </main>

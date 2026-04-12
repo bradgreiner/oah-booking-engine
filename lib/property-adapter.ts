@@ -374,12 +374,25 @@ export async function getFeaturedProperties(limit: number = 6): Promise<UnifiedP
 }
 
 // City counts for neighborhood grid
+// Special logic: LA listings with "Venice" in the name count under "venice beach",
+// remaining LA listings count under "los angeles"
 export async function getCityCounts(): Promise<Record<string, number>> {
   const all = await getProperties();
   const counts: Record<string, number> = {};
   for (const p of all) {
     const city = (p.city || "").toLowerCase();
-    if (city) counts[city] = (counts[city] || 0) + 1;
+    if (!city) continue;
+
+    if (city === "los angeles") {
+      const nameLC = (p.name || "").toLowerCase();
+      if (nameLC.includes("venice")) {
+        counts["venice beach"] = (counts["venice beach"] || 0) + 1;
+      } else {
+        counts["los angeles"] = (counts["los angeles"] || 0) + 1;
+      }
+    } else {
+      counts[city] = (counts[city] || 0) + 1;
+    }
   }
   return counts;
 }
