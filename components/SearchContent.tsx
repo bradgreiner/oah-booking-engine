@@ -177,7 +177,7 @@ export default function SearchContent() {
               <p className="mb-4 text-sm text-gray-500">
                 {properties.length} {properties.length === 1 ? "home" : "homes"} available
               </p>
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
                 {properties.map((property) => (
                   <PropertyCard
                     key={property.id}

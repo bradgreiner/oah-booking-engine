@@ -27,7 +27,7 @@ export default function OlympicHeader() {
           <Link href="/olympics/browse" className="text-gray-600 hover:text-[#C5A55A]">
             Browse Homes
           </Link>
-          <Link href="/search" className="text-gray-600 hover:text-[#1B2A4A]">
+          <Link href="/search" className="text-gray-600 hover:text-[#4C6C4E]">
             All Properties
           </Link>
         </div>

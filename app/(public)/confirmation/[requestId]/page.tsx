@@ -60,13 +60,13 @@ export default async function ConfirmationPage({ params }: Props) {
             </svg>
           </div>
 
-          <h1 className="mt-6 font-[Georgia,serif] text-3xl font-bold text-[#1B2A4A]">
+          <h1 className="mt-6 font-[Georgia,serif] text-3xl font-bold text-[#1a1a1a]">
             Request received!
           </h1>
 
           {/* Booking summary card */}
           <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 text-left shadow-sm">
-            <h2 className="font-[Georgia,serif] text-lg font-semibold text-[#1B2A4A]">
+            <h2 className="font-[Georgia,serif] text-lg font-semibold text-[#1a1a1a]">
               {booking.property.headline || booking.property.name}
             </h2>
             <p className="mt-2 text-sm text-gray-500">
@@ -76,7 +76,7 @@ export default async function ConfirmationPage({ params }: Props) {
               {numNights} nights &middot; {booking.numGuests} guests
             </p>
             <div className="mt-3 border-t border-gray-100 pt-3">
-              <p className="text-lg font-semibold text-[#1B2A4A]">
+              <p className="text-lg font-semibold text-[#1a1a1a]">
                 ${booking.grandTotal.toLocaleString()} held
               </p>
               <p className="mt-1 text-xs text-gray-400">
@@ -87,7 +87,7 @@ export default async function ConfirmationPage({ params }: Props) {
 
           {/* Timeline */}
           <div className="mt-8 text-left">
-            <h3 className="text-sm font-semibold text-[#1B2A4A]">
+            <h3 className="text-sm font-semibold text-[#1a1a1a]">
               What happens next
             </h3>
             <ConfirmationTimeline numNights={numNights} />

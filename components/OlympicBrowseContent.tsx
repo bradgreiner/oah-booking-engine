@@ -94,7 +94,7 @@ export default function OlympicBrowseContent() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="font-[Georgia,serif] text-2xl font-bold text-[#1B2A4A]">
+          <h1 className="font-[Georgia,serif] text-2xl font-bold text-[#1a1a1a]">
             Olympic Home Collection
           </h1>
           <span className="rounded-full border border-[#C5A55A]/30 bg-[#C5A55A]/10 px-3 py-1 text-xs font-semibold text-[#C5A55A]">

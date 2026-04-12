@@ -60,7 +60,7 @@ export default function OlympicVenueMap({
         const popup = new mapboxgl.Popup({ offset: 12, closeButton: false })
           .setHTML(
             `<div style="font-family:Georgia,serif;padding:4px 0;">
-              <strong style="color:#1B2A4A;">${venue.name}</strong>
+              <strong style="color:#1a1a1a;">${venue.name}</strong>
               <br/><span style="color:#666;font-size:12px;">${venue.sport}</span>
               ${onVenueClick ? `<br/><a href="#" class="venue-nearby-link" data-id="${venue.id}" style="color:#4C6C4E;font-size:12px;font-weight:600;">See nearby homes &rarr;</a>` : ""}
             </div>`

@@ -18,7 +18,7 @@ export default function PropertyDescription({ description }: Props) {
 
   return (
     <div className="mb-8">
-      <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">
+      <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1a1a1a]">
         About this home
       </h2>
       <div className="mt-4 whitespace-pre-line leading-relaxed text-gray-600">

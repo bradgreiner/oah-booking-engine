@@ -33,7 +33,7 @@ export default function PasswordGate({ onSuccess }: PasswordGateProps) {
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <h2 className="text-2xl font-bold text-[#1B2A4A]">
+        <h2 className="text-2xl font-bold text-[#1a1a1a]">
           LA 2028 Olympic Rentals
         </h2>
         <p className="text-sm text-gray-600">
@@ -50,7 +50,7 @@ export default function PasswordGate({ onSuccess }: PasswordGateProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-[#1B2A4A] px-4 py-2 text-sm font-medium text-white hover:bg-[#2a3d66] disabled:opacity-50"
+          className="w-full rounded bg-[#4C6C4E] px-4 py-2 text-sm font-medium text-white hover:bg-[#3d5a40] disabled:opacity-50"
         >
           {loading ? "Verifying..." : "Enter"}
         </button>

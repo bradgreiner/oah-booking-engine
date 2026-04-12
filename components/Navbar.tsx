@@ -20,19 +20,19 @@ export default function Navbar() {
         <div className="hidden items-center gap-6 text-sm md:flex">
           <Link
             href="/search"
-            className="text-gray-600 hover:text-[#1B2A4A]"
+            className="text-gray-600 hover:text-[#4C6C4E]"
           >
             Browse Homes
           </Link>
           <Link
             href="/olympics"
-            className="text-gray-600 hover:text-[#1B2A4A]"
+            className="text-gray-600 hover:text-[#4C6C4E]"
           >
             LA 2028
           </Link>
           <Link
             href="#"
-            className="text-gray-600 hover:text-[#1B2A4A]"
+            className="text-gray-600 hover:text-[#4C6C4E]"
           >
             List Your Home
           </Link>
@@ -83,21 +83,21 @@ export default function Navbar() {
         <div className="border-t border-gray-100 px-4 pb-4 md:hidden">
           <Link
             href="/search"
-            className="block py-3 text-sm text-gray-600 hover:text-[#1B2A4A]"
+            className="block py-3 text-sm text-gray-600 hover:text-[#4C6C4E]"
             onClick={() => setMenuOpen(false)}
           >
             Browse Homes
           </Link>
           <Link
             href="/olympics"
-            className="block py-3 text-sm text-gray-600 hover:text-[#1B2A4A]"
+            className="block py-3 text-sm text-gray-600 hover:text-[#4C6C4E]"
             onClick={() => setMenuOpen(false)}
           >
             LA 2028
           </Link>
           <Link
             href="#"
-            className="block py-3 text-sm text-gray-600 hover:text-[#1B2A4A]"
+            className="block py-3 text-sm text-gray-600 hover:text-[#4C6C4E]"
             onClick={() => setMenuOpen(false)}
           >
             List Your Home

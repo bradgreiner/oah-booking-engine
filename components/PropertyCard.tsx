@@ -47,7 +47,7 @@ export default function PropertyCard({
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md hover:scale-[1.01]">
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         {/* Image */}
         <div className="relative aspect-[3/2] bg-gradient-to-br from-gray-100 to-gray-200">
           {imageUrl ? (
@@ -125,12 +125,12 @@ export default function PropertyCard({
 
           <div className="mt-2">
             {(propertyType === "monthly" || propertyType === "both") && monthlyRate ? (
-              <p className="text-lg font-semibold text-[#1B2A4A]">
+              <p className="text-lg font-semibold text-[#1a1a1a]">
                 ${monthlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/mo</span>
               </p>
             ) : (
-              <p className="text-lg font-semibold text-[#1B2A4A]">
+              <p className="text-lg font-semibold text-[#1a1a1a]">
                 ${baseRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>

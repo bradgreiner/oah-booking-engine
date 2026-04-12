@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingWidget from "@/components/BookingWidget";
+import MobileBookingBar from "@/components/MobileBookingBar";
 import PropertyDetailContent from "@/components/PropertyDetailContent";
 import { getProperty } from "@/lib/property-adapter";
 
@@ -21,10 +22,10 @@ export default async function PropertyDetailPage({ params }: Props) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-white pb-20 lg:pb-0">
         <PropertyDetailContent property={property} />
 
-        {/* Booking widget (mobile: after content) */}
+        {/* Full booking widget on mobile (hidden on desktop since it's in the sidebar) */}
         <div className="mx-auto max-w-7xl px-4 pb-8 lg:hidden">
           <BookingWidget
             propertyId={property.id}
@@ -39,6 +40,12 @@ export default async function PropertyDetailPage({ params }: Props) {
             monthlyDiscount={property.monthlyDiscount}
           />
         </div>
+
+        {/* Sticky mobile bottom bar */}
+        <MobileBookingBar
+          propertyId={property.id}
+          baseRate={property.baseRate}
+        />
       </main>
       <Footer />
     </>

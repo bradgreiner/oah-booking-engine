@@ -66,45 +66,60 @@ function derivePropertyType(listing: HostawayListing): string {
   return "str";
 }
 
-function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
-  const amenities = mapHostawayAmenities(listing);
+function firstPositive(...vals: unknown[]): number {
+  for (const v of vals) {
+    if (typeof v === "number" && v > 0) return v;
+  }
+  return 0;
+}
 
-  // Images: try listingImages, images, photos, imageList
-  const rawImages: { url: string; caption?: string; sortOrder?: number }[] =
+function extractImages(listing: HostawayListing): { url: string; alt: string | null; sortOrder?: number }[] {
+  // Try every known field name for images
+  const raw: unknown[] =
     (listing as any).listingImages ??
     listing.images ??
     (listing as any).photos ??
     (listing as any).imageList ??
     [];
-  const images = rawImages
-    .filter((img) => img.url)
-    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-    .map((img) => ({ url: img.url, alt: img.caption || null, sortOrder: img.sortOrder }));
 
-  // Bedrooms/bathrooms: try primary fields, then fallbacks
-  const bedrooms =
-    listing.bedrooms ||
-    (listing as any).bedroomsCount ||
-    (listing as any).numberOfBedrooms ||
-    0;
-  const bathrooms =
-    listing.bathrooms ||
-    (listing as any).bathroomsCount ||
-    (listing as any).numberOfBathrooms ||
-    0;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    // Check for a single thumbnail URL
+    const thumb = (listing as any).thumbnailUrl ?? (listing as any).imageUrl;
+    if (typeof thumb === "string" && thumb.startsWith("http")) {
+      return [{ url: thumb, alt: null, sortOrder: 0 }];
+    }
+    return [];
+  }
 
-  // Lat/Lng
-  const latitude =
-    listing.latitude || (listing as any).lat || null;
-  const longitude =
-    listing.longitude || (listing as any).lng || null;
+  return raw
+    .filter((img: any) => img && typeof img.url === "string" && img.url.startsWith("http"))
+    .sort((a: any, b: any) => ((a.sortOrder ?? a.order ?? 0) - (b.sortOrder ?? b.order ?? 0)))
+    .map((img: any) => ({
+      url: img.url,
+      alt: img.caption ?? img.title ?? null,
+      sortOrder: img.sortOrder ?? img.order,
+    }));
+}
+
+function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
+  const amenities = mapHostawayAmenities(listing);
+  const images = extractImages(listing);
+  const l = listing as Record<string, unknown>;
+
+  // Use ?? (null-coalescing) not || — 0 is valid for bedrooms/bathrooms
+  const bedrooms = firstPositive(
+    listing.bedrooms, l.bedroomsCount, l.numberOfBedrooms, l.bedrooms_count
+  );
+  const bathrooms = firstPositive(
+    listing.bathrooms, l.bathroomsCount, l.numberOfBathrooms, l.bathrooms_count
+  );
+
+  // Lat/Lng — use ?? to preserve 0 (unlikely but correct)
+  const latitude = (listing.latitude ?? (l.lat as number)) || null;
+  const longitude = (listing.longitude ?? (l.lng as number)) || null;
 
   // Square footage
-  const sqft =
-    listing.squareFeet ||
-    (listing as any).propertySize ||
-    (listing as any).squareFootage ||
-    null;
+  const sqft = firstPositive(listing.squareFeet, l.propertySize, l.squareFootage) || null;
 
   return {
     id: `hw_${listing.id}`,
@@ -117,16 +132,16 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     state: listing.state || null,
     bedrooms,
     bathrooms,
-    maxGuests: listing.personCapacity || 1,
+    maxGuests: listing.personCapacity ?? 1,
     sqft,
     propertyType: derivePropertyType(listing),
-    baseRate: listing.price || 0,
-    weeklyDiscount: listing.weeklyDiscount || 0,
-    monthlyDiscount: listing.monthlyDiscount || 0,
-    cleaningFee: listing.cleaningFee || 0,
+    baseRate: listing.price ?? 0,
+    weeklyDiscount: listing.weeklyDiscount ?? 0,
+    monthlyDiscount: listing.monthlyDiscount ?? 0,
+    cleaningFee: listing.cleaningFee ?? 0,
     petFee: 0,
-    minNights: listing.minNights || 1,
-    maxNights: listing.maxNights || null,
+    minNights: listing.minNights ?? 1,
+    maxNights: listing.maxNights ?? null,
     totRate: 0.12,
     isOlympic: false,
     amenities: amenities.length > 0 ? JSON.stringify(amenities) : null,

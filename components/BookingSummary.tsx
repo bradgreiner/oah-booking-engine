@@ -61,7 +61,7 @@ export default function BookingSummary({
           )}
         </div>
         <div>
-          <h2 className="font-[Georgia,serif] text-lg font-semibold text-[#1B2A4A]">
+          <h2 className="font-[Georgia,serif] text-lg font-semibold text-[#1a1a1a]">
             {propertyName}
           </h2>
           <p className="mt-1 text-sm text-gray-500">
@@ -112,8 +112,8 @@ export default function BookingSummary({
             </div>
           )}
           <div className="flex justify-between border-t border-gray-100 pt-2 font-semibold">
-            <span className="text-[#1B2A4A]">Total</span>
-            <span className="text-[#1B2A4A]">${fees.grandTotal.toLocaleString()}</span>
+            <span className="text-[#1a1a1a]">Total</span>
+            <span className="text-[#1a1a1a]">${fees.grandTotal.toLocaleString()}</span>
           </div>
         </div>
       ) : null}

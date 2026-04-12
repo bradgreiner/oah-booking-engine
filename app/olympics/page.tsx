@@ -52,7 +52,7 @@ export default function OlympicsGatePage() {
             </svg>
           </div>
 
-          <h1 className="mt-6 font-[Georgia,serif] text-3xl font-bold text-[#1B2A4A]">
+          <h1 className="mt-6 font-[Georgia,serif] text-3xl font-bold text-[#1a1a1a]">
             LA 2028 Olympics
           </h1>
           <p className="mt-1 font-[Georgia,serif] text-lg text-[#C5A55A]">

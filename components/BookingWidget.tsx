@@ -92,7 +92,7 @@ export default function BookingWidget({
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
       <div className="mb-4">
-        <span className="text-2xl font-bold text-[#1B2A4A]">
+        <span className="text-2xl font-bold text-[#1a1a1a]">
           ${baseRate.toLocaleString()}
         </span>
         <span className="text-sm text-gray-500"> /night</span>
@@ -219,8 +219,8 @@ export default function BookingWidget({
             </div>
           )}
           <div className="flex justify-between border-t border-gray-100 pt-2 font-semibold">
-            <span className="text-[#1B2A4A]">Total</span>
-            <span className="text-[#1B2A4A]">
+            <span className="text-[#1a1a1a]">Total</span>
+            <span className="text-[#1a1a1a]">
               ${fees.grandTotal.toLocaleString()}
             </span>
           </div>
@@ -230,7 +230,7 @@ export default function BookingWidget({
       <button
         onClick={handleRequestToBook}
         disabled={!checkIn || !checkOut}
-        className="w-full rounded-lg bg-[#4C6C4E] py-3 text-sm font-semibold text-white transition hover:bg-[#3d5a3f] disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-full bg-[#4C6C4E] py-3 text-sm font-medium text-white transition hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50"
       >
         Request to Book
       </button>

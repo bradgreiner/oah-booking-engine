@@ -36,55 +36,59 @@ export default function HeroSearch() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="flex flex-col gap-3 rounded-xl bg-white/90 p-4 shadow-lg backdrop-blur-md md:flex-row md:items-end md:gap-2">
-        <div className="flex-1">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Where
-          </label>
-          <select
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+      <div className="rounded-xl bg-white/90 p-3 shadow-lg backdrop-blur-md md:p-4">
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:gap-2">
+          <div className="flex-1">
+            <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
+              Where
+            </label>
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
+            >
+              <option value="">All locations</option>
+              {CITIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
+                Move in
+              </label>
+              <input
+                type="date"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
+                Move out
+              </label>
+              <input
+                type="date"
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={handleSearch}
+            className="w-full rounded-full bg-[#4C6C4E] px-8 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d5a40] md:w-auto md:py-3 md:whitespace-nowrap"
           >
-            <option value="">All locations</option>
-            {CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            Search homes
+          </button>
         </div>
-
-        <div className="flex-1">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Move in
-          </label>
-          <input
-            type="date"
-            value={checkIn}
-            onChange={(e) => setCheckIn(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
-          />
-        </div>
-
-        <div className="flex-1">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Move out
-          </label>
-          <input
-            type="date"
-            value={checkOut}
-            onChange={(e) => setCheckOut(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
-          />
-        </div>
-
-        <button
-          onClick={handleSearch}
-          className="rounded-lg bg-[#4C6C4E] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3d5a3f] md:whitespace-nowrap"
-        >
-          Search homes
-        </button>
       </div>
     </div>
   );
