@@ -304,8 +304,15 @@ export async function getProperty(id: string): Promise<UnifiedProperty | null> {
   if (id.startsWith("hw_")) {
     const hostawayId = parseInt(id.slice(3), 10);
     if (isNaN(hostawayId)) return null;
-    const listing = await fetchListing(hostawayId);
+    const [listing, allListings] = await Promise.all([
+      fetchListing(hostawayId),
+      fetchListings(),
+    ]);
     if (!listing) return null;
+    const bulkMatch = allListings.find((l) => l.id === hostawayId);
+    if (bulkMatch && (listing as any).listingImages == null && (bulkMatch as any).listingImages) {
+      (listing as any).listingImages = (bulkMatch as any).listingImages;
+    }
     return mapHostawayToUnified(listing);
   }
 
