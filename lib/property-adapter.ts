@@ -223,9 +223,12 @@ export async function getProperties(
 
   const localUnified = localProperties.map(mapLocalToUnified);
   const hostawayUnified = hostawayListings.map(mapHostawayToUnified);
+  const hostawayFiltered = applyFilters(hostawayUnified, filters);
+
+  console.log(`PropertyAdapter: ${localUnified.length} local, ${hostawayUnified.length} hostaway raw, ${hostawayFiltered.length} hostaway after filters`);
 
   // Merge, filter Hostaway side, sort
-  let merged = [...localUnified, ...applyFilters(hostawayUnified, filters)];
+  let merged = [...localUnified, ...hostawayFiltered];
 
   // Olympic filter already applied to local via Prisma, but re-filter for consistency
   if (filters.isOlympic === "true") {

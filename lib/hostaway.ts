@@ -149,11 +149,12 @@ export async function fetchListings(): Promise<HostawayListing[]> {
 
   try {
     const listings = await hostawayFetch<HostawayListing[]>(
-      `/listings?limit=100&isActive=1`
+      `/listings?limit=200&isActive=1`
     );
     const active = Array.isArray(listings)
-      ? listings.filter((l) => l.isActive === 1)
+      ? listings.filter((l) => !!l.isActive)
       : [];
+    console.log(`Hostaway: fetched ${Array.isArray(listings) ? listings.length : 0} listings, ${active.length} active`);
     setCache(cacheKey, active);
     return active;
   } catch (error) {
