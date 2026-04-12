@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import DatePicker from "@/components/DatePicker";
 
 interface BookingWidgetProps {
   propertyId: string;
@@ -74,8 +75,6 @@ export default function BookingWidget({
     fetchPricing();
   }, [checkIn, checkOut, propertyId]);
 
-  const today = new Date().toISOString().split("T")[0];
-
   function handleRequestToBook() {
     if (!checkIn || !checkOut) return;
     const params = new URLSearchParams({
@@ -86,8 +85,15 @@ export default function BookingWidget({
     router.push(`/request/${propertyId}?${params.toString()}`);
   }
 
-  const hasWeekly = (weeklyDiscount ?? 0) > 0;
-  const hasMonthly = (monthlyDiscount ?? 0) > 0;
+  // Hostaway sends multipliers (0.8 = 20% off). Convert to display %.
+  function discountPct(multiplier: number | undefined): number {
+    if (!multiplier || multiplier <= 0 || multiplier >= 1) return 0;
+    return Math.round((1 - multiplier) * 100);
+  }
+  const weeklyPct = discountPct(weeklyDiscount);
+  const monthlyPct = discountPct(monthlyDiscount);
+  const hasWeekly = weeklyPct > 0;
+  const hasMonthly = monthlyPct > 0;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
@@ -106,43 +112,25 @@ export default function BookingWidget({
           </span>
           {hasWeekly && (
             <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
-              7+ nights &mdash; Save {weeklyDiscount}%
+              7+ nights &mdash; Save {weeklyPct}%
             </span>
           )}
           {hasMonthly && (
             <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
-              30+ nights &mdash; Save {monthlyDiscount}%
+              30+ nights &mdash; Save {monthlyPct}%
             </span>
           )}
         </div>
       )}
 
-      <div className="mb-4 grid grid-cols-2 gap-2">
-        <div>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Check-in
-          </label>
-          <input
-            type="date"
-            value={checkIn}
-            min={today}
-            onChange={(e) => setCheckIn(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Check-out
-          </label>
-          <input
-            type="date"
-            value={checkOut}
-            min={checkIn || today}
-            onChange={(e) => setCheckOut(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
-          />
-        </div>
-      </div>
+      <DatePicker
+        propertyId={propertyId}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        onCheckInChange={setCheckIn}
+        onCheckOutChange={setCheckOut}
+        minNights={minNights}
+      />
 
       <div className="mb-4">
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
