@@ -13,21 +13,23 @@ export async function GET() {
   });
   const { access_token } = await res.json();
 
-  const listingsRes = await fetch("https://api.hostaway.com/v1/listings?limit=1&isActive=1", {
+  const listingRes = await fetch("https://api.hostaway.com/v1/listings/317655", {
     headers: { Authorization: `Bearer ${access_token}` },
   });
-  const data = await listingsRes.json();
-  const listing = data.result?.[0] ?? data[0];
+  const data = await listingRes.json();
+  const listing = data.result ?? data;
+
+  const bedroomKeys = Object.keys(listing).filter(k => k.toLowerCase().includes("bedroom") || k.toLowerCase().includes("bath") || k.toLowerCase().includes("room"));
 
   return NextResponse.json({
-    id: listing?.id,
-    bedrooms: listing?.bedrooms,
-    bedroomsType: typeof listing?.bedrooms,
-    bathrooms: listing?.bathrooms,
-    bathroomsType: typeof listing?.bathrooms,
-    imageKeys: listing ? Object.keys(listing).filter(k => k.toLowerCase().includes("image") || k.toLowerCase().includes("photo")) : [],
-    firstImageSample: listing?.images?.[0] ?? listing?.listingImages?.[0] ?? null,
-    imageCount: listing?.images?.length ?? listing?.listingImages?.length ?? 0,
-    imageUrl: listing?.images?.[0]?.url ?? listing?.listingImages?.[0]?.url ?? null,
+    id: listing.id,
+    bedrooms: listing.bedrooms,
+    bedroomsType: typeof listing.bedrooms,
+    bathrooms: listing.bathrooms,
+    bathroomsType: typeof listing.bathrooms,
+    bedroomKeys,
+    imageCount: listing.listingImages?.length ?? listing.images?.length ?? 0,
+    firstImageUrl: listing.listingImages?.[0]?.url ?? listing.images?.[0]?.url ?? null,
+    sampleFields: Object.keys(listing).slice(0, 30),
   });
 }
