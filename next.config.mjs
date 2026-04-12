@@ -12,6 +12,8 @@ const nextConfig = {
       { protocol: "https", hostname: "**.googleusercontent.com" },
       { protocol: "https", hostname: "**.cdninstagram.com" },
       { protocol: "https", hostname: "**.imgix.net" },
+      { protocol: "https", hostname: "**.muscache.com" },
+      { protocol: "https", hostname: "a0.muscache.com" },
     ],
   },
 };

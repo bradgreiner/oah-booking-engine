@@ -84,7 +84,7 @@ function extractImages(listing: HostawayListing): { url: string; alt: string | n
 
   if (!Array.isArray(raw) || raw.length === 0) {
     // Check for a single thumbnail URL
-    const thumb = (listing as any).thumbnailUrl ?? (listing as any).imageUrl;
+    const thumb = (listing as any).thumbnailUrl ?? (listing as any).imageUrl ?? (listing as any).thumbnail;
     if (typeof thumb === "string" && thumb.startsWith("http")) {
       return [{ url: thumb, alt: null, sortOrder: 0 }];
     }
@@ -108,10 +108,10 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
 
   // Use ?? (null-coalescing) not || — 0 is valid for bedrooms/bathrooms
   const bedrooms = firstPositive(
-    listing.bedrooms, l.bedroomsCount, l.numberOfBedrooms, l.bedrooms_count
+    l.bedroomsNumber, listing.bedrooms, l.bedroomsCount, l.numberOfBedrooms
   );
   const bathrooms = firstPositive(
-    listing.bathrooms, l.bathroomsCount, l.numberOfBathrooms, l.bathrooms_count
+    l.bathroomsNumber, listing.bathrooms, l.bathroomsCount, l.numberOfBathrooms
   );
 
   // Lat/Lng — use ?? to preserve 0 (unlikely but correct)
