@@ -17,25 +17,23 @@ export default function Footer({ showBadges = true }: FooterProps) {
     <footer className="border-t border-gray-200 bg-white">
       {/* Trust badges row — public pages only */}
       {showBadges && (
-        <div className="border-b border-gray-100">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 py-8">
-            {TRUST_BADGES.map((badge) => (
-              <div key={badge.alt} className="flex items-center justify-center">
-                <Image
-                  src={badge.src}
-                  alt={badge.alt}
-                  width={0}
-                  height={40}
-                  sizes="120px"
-                  className="h-10 w-auto"
-                />
-              </div>
-            ))}
-          </div>
+        <div className="flex flex-wrap items-center justify-center gap-8 border-b border-gray-100 px-4 py-6 mb-6">
+          {TRUST_BADGES.map((badge) => (
+            <div key={badge.alt} className="flex items-center justify-center">
+              <Image
+                src={badge.src}
+                alt={badge.alt}
+                width={120}
+                height={40}
+                unoptimized
+                className="h-10 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+              />
+            </div>
+          ))}
         </div>
       )}
 
-      <div className="mx-auto max-w-7xl px-4 py-10">
+      <div className="mx-auto max-w-7xl px-4 pb-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="font-serif text-lg font-bold text-[#4C6C4E]">
