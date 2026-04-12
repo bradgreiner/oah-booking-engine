@@ -152,13 +152,7 @@ export async function fetchListings(): Promise<HostawayListing[]> {
       `/listings?limit=200&isActive=1`
     );
     const listingsArr = Array.isArray(listings) ? listings : [];
-    if (listingsArr.length > 0) {
-      console.log('Hostaway first listing isActive value:', JSON.stringify(listingsArr[0]?.isActive), 'type:', typeof listingsArr[0]?.isActive);
-      console.log('Hostaway listing keys:', Object.keys(listingsArr[0] || {}));
-    }
-    // Temporarily return all listings — isActive field name TBD
-    const active = listingsArr;
-    console.log(`Hostaway: fetched ${listingsArr.length} listings, returning ${active.length}`);
+    const active = listingsArr.filter((l: any) => l.isActive !== false && l.isActive !== 0);
     setCache(cacheKey, active);
     return active;
   } catch (error) {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface PropertyCardProps {
   id: string;
@@ -21,9 +22,7 @@ interface PropertyCardProps {
 
 export default function PropertyCard({
   id,
-  slug,
   name,
-  headline,
   neighborhood,
   city,
   bedrooms,
@@ -48,14 +47,16 @@ export default function PropertyCard({
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md">
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md hover:scale-[1.01]">
         {/* Image */}
-        <div className="relative aspect-[4/3] bg-gray-100">
+        <div className="relative aspect-[3/2] bg-gradient-to-br from-gray-100 to-gray-200">
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
               alt={name}
-              className="h-full w-full object-cover transition group-hover:scale-105"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-gray-300">
@@ -65,70 +66,65 @@ export default function PropertyCard({
                 viewBox="0 0 24 24"
                 strokeWidth={1}
                 stroke="currentColor"
-                className="h-12 w-12"
+                className="h-10 w-10"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21z"
+                  d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"
                 />
               </svg>
             </div>
           )}
 
-          {/* New badge */}
-          {isNew && (
-            <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm">
-              New
-            </span>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="p-4">
-          {/* Badges */}
-          <div className="mb-2 flex flex-wrap gap-1.5">
+          {/* Badges overlay on image */}
+          <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
             {(propertyType === "monthly" || propertyType === "both") && (
-              <span className="rounded-full bg-[#4C6C4E]/10 px-3 py-1 text-xs font-medium text-[#4C6C4E]">
+              <span className="rounded-full bg-[#4C6C4E] px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
                 MONTHLY
               </span>
             )}
             {(propertyType === "str" || propertyType === "both") && (
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+              <span className="rounded-full bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
                 SHORT-TERM
               </span>
             )}
             {isOlympic && (
-              <span className="rounded-full bg-[#C5A55A]/10 px-3 py-1 text-xs font-medium text-[#C5A55A]">
+              <span className="rounded-full bg-[#C5A55A] px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
                 OLYMPIC
               </span>
             )}
+            {isNew && (
+              <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-medium text-gray-700 shadow-sm">
+                NEW
+              </span>
+            )}
           </div>
+        </div>
 
-          {/* Title */}
-          <h3 className="text-base font-semibold text-[#1B2A4A]">
-            {headline || name}
-          </h3>
+        {/* Content */}
+        <div className="p-4">
+          <h3 className="truncate font-medium text-gray-900">{name}</h3>
 
-          {/* Location */}
-          {(neighborhood || city) && (
+          {city && (
             <p className="mt-0.5 text-sm text-gray-500">
               {[neighborhood, city].filter(Boolean).join(", ")}
             </p>
           )}
 
-          {/* Stats */}
-          <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
-            <span>{bedrooms} {bedrooms === 1 ? "Bed" : "Beds"}</span>
-            <span className="text-gray-300">&middot;</span>
-            <span>{bathrooms} {bathrooms === 1 ? "Bath" : "Baths"}</span>
-            <span className="text-gray-300">&middot;</span>
-            <span>{maxGuests} {maxGuests === 1 ? "Guest" : "Guests"}</span>
-          </div>
+          <p className="mt-1 text-sm text-gray-500">
+            {bedrooms} {bedrooms === 1 ? "Bed" : "Beds"} &middot;{" "}
+            {bathrooms} {bathrooms === 1 ? "Bath" : "Baths"} &middot;{" "}
+            {maxGuests} {maxGuests === 1 ? "Guest" : "Guests"}
+          </p>
 
-          {/* Price */}
-          <div className="mt-3">
-            {propertyType === "monthly" && monthlyRate ? (
+          <div className="mt-2">
+            {(propertyType === "monthly" || propertyType === "both") && monthlyRate ? (
               <p className="text-lg font-semibold text-[#1B2A4A]">
                 ${monthlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/mo</span>
@@ -136,9 +132,7 @@ export default function PropertyCard({
             ) : (
               <p className="text-lg font-semibold text-[#1B2A4A]">
                 ${baseRate.toLocaleString()}
-                <span className="text-sm font-normal text-gray-500">
-                  /night
-                </span>
+                <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             )}
           </div>

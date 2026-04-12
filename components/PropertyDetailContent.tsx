@@ -1,30 +1,11 @@
+import Image from "next/image";
 import BookingWidget from "@/components/BookingWidget";
+import PropertyDescription from "@/components/PropertyDescription";
+import PhotoPlaceholder from "@/components/PhotoPlaceholder";
 import type { UnifiedProperty } from "@/lib/property-adapter";
 
 interface Props {
   property: UnifiedProperty;
-}
-
-const AMENITY_ICONS: Record<string, string> = {
-  Pool: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z",
-  "Hot Tub": "M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z",
-  Parking: "M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12",
-  "Pet Friendly": "M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H3.75",
-  WiFi: "M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z",
-  AC: "M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636",
-  Kitchen: "M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z",
-};
-
-const PLACEHOLDER_ICON = "m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21z";
-
-function PhotoPlaceholder({ size }: { size: "lg" | "sm" }) {
-  return (
-    <div className="flex h-full w-full items-center justify-center text-gray-300">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className={size === "lg" ? "h-16 w-16" : "h-8 w-8"}>
-        <path strokeLinecap="round" strokeLinejoin="round" d={PLACEHOLDER_ICON} />
-      </svg>
-    </div>
-  );
 }
 
 export default function PropertyDetailContent({ property }: Props) {
@@ -32,22 +13,52 @@ export default function PropertyDetailContent({ property }: Props) {
     ? JSON.parse(property.amenities)
     : [];
 
+  const defaultAmenities = [
+    "High-speed Wi-Fi",
+    "Fully furnished",
+    "Dedicated support team",
+    "Professional cleaning",
+    "All utilities included",
+  ];
+
+  const displayAmenities = amenities.length > 0
+    ? amenities
+    : defaultAmenities;
+
   return (
     <>
       {/* Photo grid */}
       <div className="mx-auto max-w-7xl px-4 pt-6">
-        <div className="grid h-[300px] grid-cols-1 gap-2 overflow-hidden rounded-xl md:h-[400px] md:grid-cols-4 md:grid-rows-2">
-          <div className="col-span-1 row-span-2 bg-gray-100 md:col-span-2">
+        <div className="grid h-[300px] grid-cols-1 gap-2 overflow-hidden rounded-xl md:h-[420px] md:grid-cols-4 md:grid-rows-2">
+          <div className="relative col-span-1 row-span-2 bg-gray-100 md:col-span-2">
             {property.images[0] ? (
-              <img src={property.images[0].url} alt={property.name} className="h-full w-full object-cover" />
+              <Image
+                src={property.images[0].url}
+                alt={property.name}
+                fill
+                sizes="(max-width: 768px) 100vw, 60vw"
+                className="object-cover"
+                priority
+              />
             ) : (
               <PhotoPlaceholder size="lg" />
             )}
+            {property.images.length > 5 && (
+              <button className="absolute bottom-4 left-4 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm">
+                View all photos ({property.images.length})
+              </button>
+            )}
           </div>
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="hidden bg-gray-100 md:block">
+            <div key={i} className="relative hidden bg-gray-100 md:block">
               {property.images[i] ? (
-                <img src={property.images[i].url} alt={`${property.name} ${i + 1}`} className="h-full w-full object-cover" />
+                <Image
+                  src={property.images[i].url}
+                  alt={`${property.name} ${i + 1}`}
+                  fill
+                  sizes="20vw"
+                  className="object-cover"
+                />
               ) : (
                 <PhotoPlaceholder size="sm" />
               )}
@@ -56,33 +67,52 @@ export default function PropertyDetailContent({ property }: Props) {
         </div>
       </div>
 
+      {/* Trust badges */}
+      <div className="mx-auto max-w-7xl px-4 pt-6">
+        <div className="flex flex-wrap gap-6 rounded-lg border border-gray-100 bg-gray-50 px-6 py-4 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-[#4C6C4E]">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            <span>Managed by Open Air Homes</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-[#4C6C4E]">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+            <span>Licensed CA Brokerage</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-[#C5A55A]">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+            </svg>
+            <span>4.89 stars on Airbnb &middot; 14 years hosting</span>
+          </div>
+        </div>
+      </div>
+
       {/* Content + sidebar */}
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col gap-8 lg:flex-row">
           {/* Left: details */}
           <div className="flex-1">
-            {/* Badges */}
-            <div className="mb-3 flex flex-wrap gap-2">
-              {(property.propertyType === "monthly" || property.propertyType === "both") && (
-                <span className="rounded-full bg-[#4C6C4E]/10 px-3 py-1 text-xs font-medium text-[#4C6C4E]">MONTHLY</span>
+            {/* Breadcrumb */}
+            <nav className="mb-4 text-sm text-gray-400">
+              <a href="/search" className="hover:text-gray-600">Homes</a>
+              {property.city && (
+                <>
+                  <span className="mx-1">/</span>
+                  <a href={`/search?city=${encodeURIComponent(property.city)}`} className="hover:text-gray-600">{property.city}</a>
+                </>
               )}
-              {(property.propertyType === "str" || property.propertyType === "both") && (
-                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">SHORT-TERM</span>
-              )}
-              {property.isOlympic && (
-                <span className="rounded-full bg-[#C5A55A]/10 px-3 py-1 text-xs font-medium text-[#C5A55A]">OLYMPIC</span>
-              )}
-            </div>
+              <span className="mx-1">/</span>
+              <span className="text-gray-600">{property.name}</span>
+            </nav>
 
             <h1 className="font-[Georgia,serif] text-3xl font-bold text-[#1B2A4A]">
               {property.headline || property.name}
             </h1>
-
-            {(property.neighborhood || property.city) && (
-              <p className="mt-1 text-gray-500">
-                {[property.neighborhood, property.city].filter(Boolean).join(", ")}
-              </p>
-            )}
 
             <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-600">
               <span>{property.bedrooms} {property.bedrooms === 1 ? "Bed" : "Beds"}</span>
@@ -100,35 +130,79 @@ export default function PropertyDetailContent({ property }: Props) {
 
             <hr className="my-8 border-gray-100" />
 
-            {amenities.length > 0 && (
-              <div className="mb-8">
-                <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">Amenities</h2>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {amenities.map((amenity) => (
-                    <span key={amenity} className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-600">
-                      {AMENITY_ICONS[amenity] && (
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d={AMENITY_ICONS[amenity]} />
-                        </svg>
-                      )}
-                      {amenity}
-                    </span>
-                  ))}
-                </div>
-              </div>
+            {/* About this home */}
+            {property.description && (
+              <PropertyDescription description={property.description} />
             )}
 
-            {property.description && (
-              <div>
-                <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">About this home</h2>
-                <div className="mt-4 whitespace-pre-line text-gray-600 leading-relaxed">
-                  {property.description}
-                </div>
+            <hr className="my-8 border-gray-100" />
+
+            {/* Amenities: Your stay includes */}
+            <div className="mb-8">
+              <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">
+                Your stay includes
+              </h2>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {displayAmenities.map((amenity) => (
+                  <div key={amenity} className="flex items-center gap-2 text-sm text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4 text-[#4C6C4E]">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    {amenity}
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            <hr className="my-8 border-gray-100" />
+
+            {/* House rules */}
+            <div className="mb-8">
+              <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">
+                House rules
+              </h2>
+              <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                <li>No smoking</li>
+                <li>No parties or events</li>
+                <li>No pets unless pre-approved</li>
+                <li>Quiet hours: 10:00 PM - 8:00 AM</li>
+                <li>Maximum {property.maxGuests} guests</li>
+              </ul>
+            </div>
+
+            <hr className="my-8 border-gray-100" />
+
+            {/* Cancellation policy */}
+            <div className="mb-8">
+              <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">
+                Cancellation policy
+              </h2>
+              <p className="mt-4 text-sm leading-relaxed text-gray-600">
+                50% refund up to 1 week before check-in. No refund within 7
+                days of check-in.
+              </p>
+            </div>
+
+            <hr className="my-8 border-gray-100" />
+
+            {/* Location */}
+            <div>
+              <h2 className="font-[Georgia,serif] text-xl font-semibold text-[#1B2A4A]">
+                Location
+              </h2>
+              <p className="mt-2 text-sm text-gray-600">
+                {property.city ? `${property.city}, California` : "Southern California"}
+              </p>
+              <p className="mt-1 text-sm text-gray-400">
+                Exact address provided after booking confirmation.
+              </p>
+              <div className="mt-4 flex h-48 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-sm text-gray-400">
+                Map coming soon
+              </div>
+            </div>
           </div>
 
-          {/* Right: booking widget (desktop only, mobile rendered below) */}
+          {/* Right: booking widget (desktop) */}
           <div className="hidden w-full lg:block lg:w-[380px] lg:shrink-0">
             <div className="sticky top-6">
               <BookingWidget
@@ -140,6 +214,8 @@ export default function PropertyDetailContent({ property }: Props) {
                 maxGuests={property.maxGuests}
                 minNights={property.minNights}
                 maxNights={property.maxNights}
+                weeklyDiscount={property.weeklyDiscount}
+                monthlyDiscount={property.monthlyDiscount}
               />
             </div>
           </div>
@@ -148,3 +224,4 @@ export default function PropertyDetailContent({ property }: Props) {
     </>
   );
 }
+

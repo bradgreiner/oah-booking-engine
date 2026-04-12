@@ -40,6 +40,8 @@ export interface UnifiedProperty {
   images: { url: string; alt?: string | null; sortOrder?: number }[];
   source: "local" | "hostaway";
   hostawayListingId: number | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface PropertyFilters {
@@ -56,11 +58,53 @@ export interface PropertyFilters {
 
 // ---------- Hostaway → UnifiedProperty mapping ----------
 
+function derivePropertyType(listing: HostawayListing): string {
+  const min = listing.minNights || 1;
+  const hasMonthlyDiscount = (listing.monthlyDiscount ?? 0) > 0;
+  if (min >= 28) return "monthly";
+  if (min < 7 && hasMonthlyDiscount) return "both";
+  return "str";
+}
+
 function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
   const amenities = mapHostawayAmenities(listing);
-  const images = (listing.images || [])
+
+  // Images: try listingImages, images, photos, imageList
+  const rawImages: { url: string; caption?: string; sortOrder?: number }[] =
+    (listing as any).listingImages ??
+    listing.images ??
+    (listing as any).photos ??
+    (listing as any).imageList ??
+    [];
+  const images = rawImages
+    .filter((img) => img.url)
     .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
     .map((img) => ({ url: img.url, alt: img.caption || null, sortOrder: img.sortOrder }));
+
+  // Bedrooms/bathrooms: try primary fields, then fallbacks
+  const bedrooms =
+    listing.bedrooms ||
+    (listing as any).bedroomsCount ||
+    (listing as any).numberOfBedrooms ||
+    0;
+  const bathrooms =
+    listing.bathrooms ||
+    (listing as any).bathroomsCount ||
+    (listing as any).numberOfBathrooms ||
+    0;
+
+  // Lat/Lng
+  const latitude =
+    listing.latitude || (listing as any).lat || null;
+  const longitude =
+    listing.longitude || (listing as any).lng || null;
+
+  // Square footage
+  const sqft =
+    listing.squareFeet ||
+    (listing as any).propertySize ||
+    (listing as any).squareFootage ||
+    null;
 
   return {
     id: `hw_${listing.id}`,
@@ -71,11 +115,11 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     neighborhood: null,
     city: listing.city || null,
     state: listing.state || null,
-    bedrooms: listing.bedrooms || 0,
-    bathrooms: listing.bathrooms || 0,
+    bedrooms,
+    bathrooms,
     maxGuests: listing.personCapacity || 1,
-    sqft: listing.squareFeet || null,
-    propertyType: "str",
+    sqft,
+    propertyType: derivePropertyType(listing),
     baseRate: listing.price || 0,
     weeklyDiscount: listing.weeklyDiscount || 0,
     monthlyDiscount: listing.monthlyDiscount || 0,
@@ -92,6 +136,8 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     images,
     source: "hostaway",
     hostawayListingId: listing.id,
+    latitude,
+    longitude,
   };
 }
 
@@ -134,6 +180,8 @@ function mapLocalToUnified(
     })),
     source: "local",
     hostawayListingId: null,
+    latitude: null,
+    longitude: null,
   };
 }
 
@@ -225,8 +273,6 @@ export async function getProperties(
   const hostawayUnified = hostawayListings.map(mapHostawayToUnified);
   const hostawayFiltered = applyFilters(hostawayUnified, filters);
 
-  console.log(`PropertyAdapter: ${localUnified.length} local, ${hostawayUnified.length} hostaway raw, ${hostawayFiltered.length} hostaway after filters`);
-
   // Merge, filter Hostaway side, sort
   let merged = [...localUnified, ...hostawayFiltered];
 
@@ -314,6 +360,17 @@ export async function getFeaturedProperties(limit: number = 6): Promise<UnifiedP
   // Interleave: local first, then fill with Hostaway
   const merged = [...localUnified, ...hostawayUnified];
   return merged.slice(0, limit);
+}
+
+// City counts for neighborhood grid
+export async function getCityCounts(): Promise<Record<string, number>> {
+  const all = await getProperties();
+  const counts: Record<string, number> = {};
+  for (const p of all) {
+    const city = (p.city || "").toLowerCase();
+    if (city) counts[city] = (counts[city] || 0) + 1;
+  }
+  return counts;
 }
 
 // ---------- Internal: local Prisma fetch with filters ----------

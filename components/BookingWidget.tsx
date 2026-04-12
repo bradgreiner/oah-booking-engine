@@ -12,6 +12,8 @@ interface BookingWidgetProps {
   maxGuests: number;
   minNights: number;
   maxNights: number | null;
+  weeklyDiscount?: number;
+  monthlyDiscount?: number;
 }
 
 interface FeeBreakdown {
@@ -35,6 +37,8 @@ export default function BookingWidget({
   maxGuests,
   minNights,
   maxNights,
+  weeklyDiscount,
+  monthlyDiscount,
 }: BookingWidgetProps) {
   const router = useRouter();
   const [checkIn, setCheckIn] = useState("");
@@ -82,6 +86,9 @@ export default function BookingWidget({
     router.push(`/request/${propertyId}?${params.toString()}`);
   }
 
+  const hasWeekly = (weeklyDiscount ?? 0) > 0;
+  const hasMonthly = (monthlyDiscount ?? 0) > 0;
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
       <div className="mb-4">
@@ -91,10 +98,29 @@ export default function BookingWidget({
         <span className="text-sm text-gray-500"> /night</span>
       </div>
 
+      {/* Stay-length tabs */}
+      {(hasWeekly || hasMonthly) && (
+        <div className="mb-4 flex gap-1 rounded-lg bg-gray-100 p-1 text-xs">
+          <span className="flex-1 rounded-md bg-white px-2 py-1.5 text-center font-medium text-gray-800 shadow-sm">
+            Nightly
+          </span>
+          {hasWeekly && (
+            <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
+              7+ nights &mdash; Save {weeklyDiscount}%
+            </span>
+          )}
+          {hasMonthly && (
+            <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
+              30+ nights &mdash; Save {monthlyDiscount}%
+            </span>
+          )}
+        </div>
+      )}
+
       <div className="mb-4 grid grid-cols-2 gap-2">
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">
-            CHECK-IN
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Check-in
           </label>
           <input
             type="date"
@@ -105,8 +131,8 @@ export default function BookingWidget({
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">
-            CHECK-OUT
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Check-out
           </label>
           <input
             type="date"
@@ -119,8 +145,8 @@ export default function BookingWidget({
       </div>
 
       <div className="mb-4">
-        <label className="mb-1 block text-xs font-medium text-gray-500">
-          GUESTS
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+          Guests
         </label>
         <select
           value={guests}
@@ -211,6 +237,9 @@ export default function BookingWidget({
 
       <p className="mt-3 text-center text-xs text-gray-400">
         Your card won&apos;t be charged until we approve your request
+      </p>
+      <p className="mt-1 text-center text-xs text-gray-400">
+        We typically review within 24 hours
       </p>
 
       {(minNights > 1 || maxNights) && (

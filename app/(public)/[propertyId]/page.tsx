@@ -24,7 +24,7 @@ export default async function PropertyDetailPage({ params }: Props) {
       <main className="min-h-screen bg-white">
         <PropertyDetailContent property={property} />
 
-        {/* Booking widget (mobile: after content, desktop: sticky sidebar handled by CSS) */}
+        {/* Booking widget (mobile: after content) */}
         <div className="mx-auto max-w-7xl px-4 pb-8 lg:hidden">
           <BookingWidget
             propertyId={property.id}
@@ -35,6 +35,8 @@ export default async function PropertyDetailPage({ params }: Props) {
             maxGuests={property.maxGuests}
             minNights={property.minNights}
             maxNights={property.maxNights}
+            weeklyDiscount={property.weeklyDiscount}
+            monthlyDiscount={property.monthlyDiscount}
           />
         </div>
       </main>
