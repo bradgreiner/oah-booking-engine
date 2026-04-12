@@ -50,17 +50,17 @@ export default function PropertyCard({
   const weeklyNightlyRate = Math.round(baseRate * (hasWeeklyDiscount ? weeklyDiscount! : 1));
 
   return (
-    <Link href={`${linkPrefix}/${id}`} className="group block cursor-pointer">
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <Link href={`${linkPrefix}/${id}`} className="group block">
+      <div className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl">
         {/* Image */}
-        <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200">
+        <div className="relative w-full overflow-hidden bg-gray-100" style={{ aspectRatio: "4/3" }}>
           {imageUrl ? (
             <Image
               src={imageUrl}
               alt={name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover transition group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-gray-300">
@@ -86,7 +86,7 @@ export default function PropertyCard({
             </div>
           )}
 
-          {/* Single subtle badge: only NEW */}
+          {/* Single badge: only NEW */}
           {isNew && (
             <div className="absolute left-3 top-3">
               <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-medium text-gray-700 shadow-sm">
@@ -97,34 +97,31 @@ export default function PropertyCard({
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <h3 className="line-clamp-2 text-base font-medium leading-snug text-gray-900">
+        <div>
+          <h3 className="mt-3 line-clamp-2 px-3 text-[15px] font-medium leading-snug text-gray-900">
             {name}
           </h3>
 
-          {city && (
-            <p className="mt-0.5 text-sm text-gray-400">{city}</p>
-          )}
-
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 px-3 text-sm text-gray-500">
+            {city && <>{city} &middot; </>}
             {bedrooms} {bedrooms === 1 ? "Bed" : "Beds"} &middot;{" "}
             {bathrooms} {bathrooms === 1 ? "Bath" : "Baths"} &middot;{" "}
             {maxGuests} {maxGuests === 1 ? "Guest" : "Guests"}
           </p>
 
-          <div className="mt-2">
+          <div className="mt-2 px-3 pb-3">
             {isMonthly ? (
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-lg font-bold text-gray-900">
                 ${monthlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/mo</span>
               </p>
             ) : hasWeeklyDiscount ? (
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-lg font-bold text-gray-900">
                 ${weeklyNightlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             ) : (
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-lg font-bold text-gray-900">
                 ${baseRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>

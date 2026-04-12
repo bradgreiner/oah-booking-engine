@@ -20,58 +20,57 @@ export default async function HomePage() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative min-h-[500px] overflow-hidden md:min-h-[600px]">
+        <section className="relative min-h-[560px] md:min-h-[680px]">
           <Image
             src="https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=1600&q=80"
-            alt="Beautiful furnished home in Southern California"
+            alt="Luxury furnished home with pool in Southern California"
             fill
             className="object-cover"
             priority
+            quality={90}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
-          <div className="relative z-10 flex min-h-[500px] flex-col items-center justify-center px-4 md:min-h-[600px]">
-            <div className="mx-auto max-w-4xl text-center">
-              <h1 className="font-serif text-5xl font-normal leading-tight text-white md:text-6xl">
-                Stay longer, live like a local.
-              </h1>
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 md:text-xl">
-                Furnished homes for short stays and monthly rentals across
-                Southern California.
-              </p>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
+            <h1 className="max-w-3xl text-center font-serif text-5xl font-normal leading-tight text-white md:text-6xl">
+              Stay longer, live like a local.
+            </h1>
+            <p className="mt-4 max-w-xl text-center text-lg text-white/80 md:text-xl">
+              Furnished homes for short stays and monthly rentals across
+              Southern California.
+            </p>
 
-              <div className="mt-8">
-                <HeroSearch />
-              </div>
+            <div className="mt-8 w-full max-w-2xl">
+              <HeroSearch />
+            </div>
 
-              {/* Trust pills */}
-              <div className="mt-8 flex flex-col items-center gap-3 md:flex-row md:justify-center md:gap-6">
-                {[
-                  "Save 10-15% vs Airbnb",
-                  "Professionally managed",
-                  "Flexible stays",
-                ].map((text) => (
-                  <div
-                    key={text}
-                    className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm"
+            {/* Trust pills */}
+            <div className="mt-4 flex flex-wrap justify-center gap-4">
+              {[
+                "Save 10-15% vs Airbnb",
+                "Professionally managed",
+                "Flexible stays",
+              ].map((text) => (
+                <div
+                  key={text}
+                  className="flex items-center gap-1.5 text-sm text-white/90"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-4 w-4 text-[#4C6C4E]"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      className="h-4 w-4 text-[#4C6C4E]"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
-                    </svg>
-                    <span>{text}</span>
-                  </div>
-                ))}
-              </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                  <span>{text}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>

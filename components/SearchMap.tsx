@@ -4,20 +4,19 @@ import { useEffect, useRef, useCallback, useState } from "react";
 
 interface MapProperty {
   id: string;
+  name: string;
   latitude: number | null;
   longitude: number | null;
   baseRate: number;
-  propertyType: string;
+  monthlyDiscount?: number | null;
   minNights: number;
-  monthlyDiscount: number;
 }
 
 interface SearchMapProps {
   properties: MapProperty[];
-  onMarkerClick: (id: string) => void;
 }
 
-export default function SearchMap({ properties, onMarkerClick }: SearchMapProps) {
+export default function SearchMap({ properties }: SearchMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
@@ -29,7 +28,6 @@ export default function SearchMap({ properties, onMarkerClick }: SearchMapProps)
     markersRef.current = [];
   }, []);
 
-  // Initialize map once
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
     if (!token || !containerRef.current || mapRef.current) return;
@@ -48,8 +46,9 @@ export default function SearchMap({ properties, onMarkerClick }: SearchMapProps)
       const map = new mapboxgl.Map({
         container: containerRef.current,
         style: "mapbox://styles/mapbox/light-v11",
-        center: [-118.35, 34.05],
+        center: [-118.2437, 34.0522],
         zoom: 9,
+        scrollZoom: true,
         attributionControl: false,
       });
 
@@ -72,7 +71,6 @@ export default function SearchMap({ properties, onMarkerClick }: SearchMapProps)
     };
   }, []);
 
-  // Update markers when properties change or map is ready
   useEffect(() => {
     if (!ready || !mapRef.current || !mapboxRef.current) return;
 
@@ -89,16 +87,31 @@ export default function SearchMap({ properties, onMarkerClick }: SearchMapProps)
       hasCoords = true;
       bounds.extend([p.longitude, p.latitude]);
 
-      const isMonthly = p.propertyType === "monthly" || p.minNights >= 30;
-      const hasMonthlyDiscount = p.monthlyDiscount > 0 && p.monthlyDiscount < 1;
-      const displayPrice = isMonthly
-        ? `$${Math.round(p.baseRate * 30 * (hasMonthlyDiscount ? p.monthlyDiscount : 1)).toLocaleString()}/mo`
-        : `$${p.baseRate.toLocaleString()}`;
+      const isMonthly = p.minNights >= 30;
+      let displayPrice: string;
+      if (isMonthly) {
+        const mo = Math.round(p.baseRate * 30 * (p.monthlyDiscount || 1) / 1000);
+        displayPrice = `$${mo}k/mo`;
+      } else {
+        displayPrice = `$${p.baseRate}`;
+      }
 
       const el = document.createElement("div");
-      el.className = "search-map-marker";
       el.textContent = displayPrice;
-      el.addEventListener("click", () => onMarkerClick(p.id));
+      el.style.background = "white";
+      el.style.border = "1.5px solid #e5e7eb";
+      el.style.borderRadius = "20px";
+      el.style.padding = "4px 10px";
+      el.style.fontSize = "12px";
+      el.style.fontWeight = "600";
+      el.style.cursor = "pointer";
+      el.style.boxShadow = "0 1px 4px rgba(0,0,0,0.15)";
+      el.style.whiteSpace = "nowrap";
+      el.addEventListener("click", () => {
+        window.dispatchEvent(
+          new CustomEvent("propertyHighlight", { detail: { id: p.id } })
+        );
+      });
 
       const marker = new mapboxgl.Marker({ element: el, anchor: "center" })
         .setLngLat([p.longitude, p.latitude])
@@ -110,35 +123,9 @@ export default function SearchMap({ properties, onMarkerClick }: SearchMapProps)
     if (hasCoords && properties.length > 0) {
       map.fitBounds(bounds, { padding: 60, maxZoom: 13, duration: 500 });
     }
-  }, [properties, ready, onMarkerClick, clearMarkers]);
+  }, [properties, ready, clearMarkers]);
 
   if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) return null;
 
-  return (
-    <>
-      <style>{`
-        .search-map-marker {
-          background: white;
-          color: #1a1a1a;
-          font-size: 12px;
-          font-weight: 600;
-          padding: 4px 8px;
-          border-radius: 9999px;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-          cursor: pointer;
-          white-space: nowrap;
-          transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .search-map-marker:hover {
-          transform: scale(1.1);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
-        .search-map-marker.active {
-          background: #4C6C4E;
-          color: white;
-        }
-      `}</style>
-      <div ref={containerRef} className="h-full w-full" />
-    </>
-  );
+  return <div ref={containerRef} className="h-full w-full" />;
 }

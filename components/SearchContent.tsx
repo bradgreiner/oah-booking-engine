@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import PropertyCard from "@/components/PropertyCard";
 import SearchSkeleton from "@/components/SearchSkeleton";
@@ -65,7 +65,6 @@ export default function SearchContent() {
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const [city, setCity] = useState(searchParams.get("city") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
@@ -129,15 +128,22 @@ export default function SearchContent() {
     router.replace(`/search${qs ? `?${qs}` : ""}`, { scroll: false });
   }, [city, sort, activeFilters, router]);
 
-  const handleMarkerClick = useCallback((id: string) => {
-    const el = cardRefs.current.get(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("ring-2", "ring-[#4C6C4E]", "ring-offset-2");
-      setTimeout(() => {
-        el.classList.remove("ring-2", "ring-[#4C6C4E]", "ring-offset-2");
-      }, 2000);
+  // Listen for map marker clicks via CustomEvent
+  useEffect(() => {
+    function handleHighlight(e: Event) {
+      const id = (e as CustomEvent).detail?.id;
+      if (!id) return;
+      const el = document.getElementById(`card-${id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("ring-2", "ring-[#4C6C4E]", "ring-offset-2");
+        setTimeout(() => {
+          el.classList.remove("ring-2", "ring-[#4C6C4E]", "ring-offset-2");
+        }, 2000);
+      }
     }
+    window.addEventListener("propertyHighlight", handleHighlight);
+    return () => window.removeEventListener("propertyHighlight", handleHighlight);
   }, []);
 
   const hasMapToken = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -192,20 +198,18 @@ export default function SearchContent() {
         {loading ? (
           <SearchSkeleton />
         ) : properties.length > 0 ? (
-          <div className={`flex gap-6 ${hasMapToken ? "" : ""}`}>
+          <div className="flex gap-0">
             {/* Left: property grid */}
-            <div className={hasMapToken ? "w-full lg:w-[60%]" : "w-full"}>
+            <div className={`min-w-0 flex-1 ${hasMapToken ? "pr-4" : ""}`}>
               <p className="mb-4 text-sm text-gray-500">
                 {properties.length} {properties.length === 1 ? "home" : "homes"} available
               </p>
-              <div className={`grid gap-4 sm:grid-cols-2 md:gap-6`}>
+              <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
                 {properties.map((property) => (
                   <div
                     key={property.id}
-                    ref={(el) => {
-                      if (el) cardRefs.current.set(property.id, el);
-                    }}
-                    className="transition-all duration-300 rounded-2xl"
+                    id={`card-${property.id}`}
+                    className="rounded-2xl transition-all duration-300"
                   >
                     <PropertyCard
                       id={property.id}
@@ -233,12 +237,9 @@ export default function SearchContent() {
 
             {/* Right: sticky map (desktop only) */}
             {hasMapToken && (
-              <div className="hidden lg:block lg:w-[40%]">
-                <div className="sticky top-20 h-[calc(100vh-120px)] overflow-hidden rounded-xl">
-                  <SearchMap
-                    properties={properties}
-                    onMarkerClick={handleMarkerClick}
-                  />
+              <div className="hidden w-[420px] shrink-0 lg:block">
+                <div className="sticky top-[80px] h-[calc(100vh-80px)] overflow-hidden rounded-xl">
+                  <SearchMap properties={properties} />
                 </div>
               </div>
             )}

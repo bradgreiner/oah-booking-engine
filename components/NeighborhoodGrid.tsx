@@ -1,17 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const NEIGHBORHOODS: { name: string; city: string; image: string }[] = [
-  { name: "Venice Beach", city: "Venice", image: "https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=800&q=80" },
-  { name: "West Hollywood", city: "West Hollywood", image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800&q=80" },
-  { name: "Santa Monica", city: "Santa Monica", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" },
-  { name: "Palm Springs", city: "Palm Springs", image: "https://images.unsplash.com/photo-1572543866240-ee3c2a7ec3f2?w=800&q=80" },
-  { name: "La Quinta", city: "La Quinta", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80" },
-  { name: "Palm Desert", city: "Palm Desert", image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80" },
-  { name: "Manhattan Beach", city: "Manhattan Beach", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" },
-  { name: "Malibu", city: "Malibu", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=80" },
-  { name: "Topanga", city: "Topanga", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" },
-  { name: "Los Angeles", city: "Los Angeles", image: "https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=800&q=80" },
+// key = lowercase lookup in cityCounts, searchCity = value for the search URL
+const NEIGHBORHOODS: { name: string; key: string; searchCity: string; image: string }[] = [
+  { name: "Venice Beach", key: "venice beach", searchCity: "Los Angeles", image: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=800&q=80" },
+  { name: "West Hollywood", key: "west hollywood", searchCity: "West Hollywood", image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800&q=80" },
+  { name: "Santa Monica", key: "santa monica", searchCity: "Santa Monica", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" },
+  { name: "Palm Springs", key: "palm springs", searchCity: "Palm Springs", image: "https://images.unsplash.com/photo-1565768633709-76dbbab1c03d?w=800&q=80" },
+  { name: "La Quinta", key: "la quinta", searchCity: "La Quinta", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80" },
+  { name: "Palm Desert", key: "palm desert", searchCity: "Palm Desert", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80" },
+  { name: "Manhattan Beach", key: "manhattan beach", searchCity: "Manhattan Beach", image: "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=800&q=80" },
+  { name: "Malibu", key: "malibu", searchCity: "Malibu", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=80" },
+  { name: "Topanga", key: "topanga", searchCity: "Topanga", image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80" },
+  { name: "Los Angeles", key: "los angeles", searchCity: "Los Angeles", image: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=800&q=80" },
 ];
 
 interface NeighborhoodGridProps {
@@ -19,11 +20,7 @@ interface NeighborhoodGridProps {
 }
 
 export default function NeighborhoodGrid({ cityCounts }: NeighborhoodGridProps) {
-  // Only show neighborhoods that have at least 1 home
-  const visible = NEIGHBORHOODS.filter((n) => {
-    const count = cityCounts[n.city.toLowerCase()] ?? 0;
-    return count > 0;
-  });
+  const visible = NEIGHBORHOODS.filter((n) => (cityCounts[n.key] ?? 0) > 0);
 
   if (visible.length === 0) return null;
 
@@ -35,11 +32,11 @@ export default function NeighborhoodGrid({ cityCounts }: NeighborhoodGridProps) 
         </h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((n) => {
-            const count = cityCounts[n.city.toLowerCase()] ?? 0;
+            const count = cityCounts[n.key] ?? 0;
             return (
               <Link
                 key={n.name}
-                href={`/search?city=${encodeURIComponent(n.city)}`}
+                href={`/search?city=${encodeURIComponent(n.searchCity)}`}
                 className="group relative flex h-40 items-end overflow-hidden rounded-xl p-5"
               >
                 <Image

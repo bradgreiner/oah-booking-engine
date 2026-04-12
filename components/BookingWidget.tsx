@@ -208,7 +208,7 @@ export default function BookingWidget({
             type="button"
             onClick={() => setGuests((g) => Math.max(1, g - 1))}
             disabled={guests <= 1}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition hover:border-[#4C6C4E] hover:text-[#4C6C4E] disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition hover:border-[#4C6C4E] hover:text-[#4C6C4E] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" /></svg>
           </button>
@@ -219,7 +219,7 @@ export default function BookingWidget({
             type="button"
             onClick={() => setGuests((g) => Math.min(maxGuests, g + 1))}
             disabled={guests >= maxGuests}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition hover:border-[#4C6C4E] hover:text-[#4C6C4E] disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 transition hover:border-[#4C6C4E] hover:text-[#4C6C4E] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
           </button>
@@ -275,13 +275,13 @@ export default function BookingWidget({
               <span className="text-gray-800">${fees.totAmount.toLocaleString()}</span>
             </div>
           ) : null}
-          <div className="flex justify-between border-t border-gray-100 pt-2 font-semibold">
+          <div className="flex justify-between border-t border-gray-100 pt-3 mt-3 font-semibold">
             <span className="text-[#4C6C4E]">Total</span>
             <span className="text-[#4C6C4E]">${fees.grandTotal.toLocaleString()}</span>
           </div>
           {fees.ccFee > 0 && (
-            <p className="text-xs text-[#4C6C4E]">
-              Save ${fees.ccFee.toLocaleString()} with bank transfer — no processing fee
+            <p className="text-sm text-[#4C6C4E]">
+              🏦 Save ${fees.ccFee.toLocaleString()} with bank transfer
             </p>
           )}
         </div>
