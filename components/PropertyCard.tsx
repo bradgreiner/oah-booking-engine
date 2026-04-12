@@ -25,7 +25,6 @@ interface PropertyCardProps {
 export default function PropertyCard({
   id,
   name,
-  neighborhood,
   city,
   bedrooms,
   bathrooms,
@@ -35,7 +34,6 @@ export default function PropertyCard({
   monthlyDiscount,
   minNights,
   propertyType,
-  isOlympic,
   imageUrl,
   createdAt,
   linkPrefix = "",
@@ -48,16 +46,14 @@ export default function PropertyCard({
   const hasMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
   const hasWeeklyDiscount = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1;
 
-  // Monthly: baseRate * 30 * discount multiplier
   const monthlyRate = Math.round(baseRate * 30 * (hasMonthlyDiscount ? monthlyDiscount! : 1));
-  // Weekly discounted nightly rate
   const weeklyNightlyRate = Math.round(baseRate * (hasWeeklyDiscount ? weeklyDiscount! : 1));
 
   return (
-    <Link href={`${linkPrefix}/${id}`} className="group block">
-      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <Link href={`${linkPrefix}/${id}`} className="group block cursor-pointer">
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
         {/* Image */}
-        <div className="relative aspect-[3/2] bg-gradient-to-br from-gray-100 to-gray-200">
+        <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -90,39 +86,24 @@ export default function PropertyCard({
             </div>
           )}
 
-          {/* Badges overlay on image */}
-          <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
-            {(propertyType === "monthly" || propertyType === "both") && (
-              <span className="rounded-full bg-[#4C6C4E] px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
-                MONTHLY
-              </span>
-            )}
-            {(propertyType === "str" || propertyType === "both") && (
-              <span className="rounded-full bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
-                SHORT-TERM
-              </span>
-            )}
-            {isOlympic && (
-              <span className="rounded-full bg-[#C5A55A] px-2.5 py-0.5 text-xs font-medium text-white shadow-sm">
-                OLYMPIC
-              </span>
-            )}
-            {isNew && (
+          {/* Single subtle badge: only NEW */}
+          {isNew && (
+            <div className="absolute left-3 top-3">
               <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-medium text-gray-700 shadow-sm">
                 NEW
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Content */}
         <div className="p-4">
-          <h3 className="truncate font-medium text-gray-900">{name}</h3>
+          <h3 className="line-clamp-2 text-base font-medium leading-snug text-gray-900">
+            {name}
+          </h3>
 
           {city && (
-            <p className="mt-0.5 text-sm text-gray-500">
-              {[neighborhood, city].filter(Boolean).join(", ")}
-            </p>
+            <p className="mt-0.5 text-sm text-gray-400">{city}</p>
           )}
 
           <p className="mt-1 text-sm text-gray-500">
@@ -133,17 +114,17 @@ export default function PropertyCard({
 
           <div className="mt-2">
             {isMonthly ? (
-              <p className="text-lg font-semibold text-[#1a1a1a]">
+              <p className="text-xl font-bold text-gray-900">
                 ${monthlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/mo</span>
               </p>
             ) : hasWeeklyDiscount ? (
-              <p className="text-lg font-semibold text-[#1a1a1a]">
+              <p className="text-xl font-bold text-gray-900">
                 ${weeklyNightlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             ) : (
-              <p className="text-lg font-semibold text-[#1a1a1a]">
+              <p className="text-xl font-bold text-gray-900">
                 ${baseRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>

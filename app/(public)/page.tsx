@@ -22,7 +22,7 @@ export default async function HomePage() {
         {/* Hero */}
         <section className="relative min-h-[500px] overflow-hidden md:min-h-[600px]">
           <Image
-            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80"
+            src="https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=1600&q=80"
             alt="Beautiful furnished home in Southern California"
             fill
             className="object-cover"

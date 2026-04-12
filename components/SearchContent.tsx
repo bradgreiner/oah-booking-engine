@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import PropertyCard from "@/components/PropertyCard";
 import SearchSkeleton from "@/components/SearchSkeleton";
+import SearchMap from "@/components/SearchMap";
 
 interface Property {
   id: string;
@@ -23,6 +24,8 @@ interface Property {
   isOlympic: boolean;
   createdAt: string;
   images: { url: string }[];
+  latitude: number | null;
+  longitude: number | null;
 }
 
 const CITIES = [
@@ -62,6 +65,7 @@ export default function SearchContent() {
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const [city, setCity] = useState(searchParams.get("city") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
@@ -125,6 +129,19 @@ export default function SearchContent() {
     router.replace(`/search${qs ? `?${qs}` : ""}`, { scroll: false });
   }, [city, sort, activeFilters, router]);
 
+  const handleMarkerClick = useCallback((id: string) => {
+    const el = cardRefs.current.get(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-[#4C6C4E]", "ring-offset-2");
+      setTimeout(() => {
+        el.classList.remove("ring-2", "ring-[#4C6C4E]", "ring-offset-2");
+      }, 2000);
+    }
+  }, []);
+
+  const hasMapToken = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
       {/* Filters bar */}
@@ -132,7 +149,7 @@ export default function SearchContent() {
         <select
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+          className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
         >
           <option value="">All Cities</option>
           {CITIES.map((c) => (
@@ -158,7 +175,7 @@ export default function SearchContent() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -170,40 +187,62 @@ export default function SearchContent() {
       {/* Divider */}
       <hr className="mt-4 border-gray-200" />
 
-      {/* Content grid */}
+      {/* Content: split layout with map */}
       <div className="mt-6">
         {loading ? (
           <SearchSkeleton />
         ) : properties.length > 0 ? (
-          <>
-            <p className="mb-4 text-sm text-gray-500">
-              {properties.length} {properties.length === 1 ? "home" : "homes"} available
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+          <div className={`flex gap-6 ${hasMapToken ? "" : ""}`}>
+            {/* Left: property grid */}
+            <div className={hasMapToken ? "w-full lg:w-[60%]" : "w-full"}>
+              <p className="mb-4 text-sm text-gray-500">
+                {properties.length} {properties.length === 1 ? "home" : "homes"} available
+              </p>
+              <div className={`grid gap-4 sm:grid-cols-2 md:gap-6`}>
                 {properties.map((property) => (
-                  <PropertyCard
+                  <div
                     key={property.id}
-                    id={property.id}
-                    slug={property.slug}
-                    name={property.name}
-                    headline={property.headline}
-                    neighborhood={property.neighborhood}
-                    city={property.city}
-                    bedrooms={property.bedrooms}
-                    bathrooms={property.bathrooms}
-                    maxGuests={property.maxGuests}
-                    baseRate={property.baseRate}
-                    weeklyDiscount={property.weeklyDiscount}
-                    monthlyDiscount={property.monthlyDiscount}
-                    minNights={property.minNights}
-                    propertyType={property.propertyType}
-                    isOlympic={property.isOlympic}
-                    imageUrl={property.images[0]?.url}
-                    createdAt={property.createdAt}
-                  />
+                    ref={(el) => {
+                      if (el) cardRefs.current.set(property.id, el);
+                    }}
+                    className="transition-all duration-300 rounded-2xl"
+                  >
+                    <PropertyCard
+                      id={property.id}
+                      slug={property.slug}
+                      name={property.name}
+                      headline={property.headline}
+                      neighborhood={property.neighborhood}
+                      city={property.city}
+                      bedrooms={property.bedrooms}
+                      bathrooms={property.bathrooms}
+                      maxGuests={property.maxGuests}
+                      baseRate={property.baseRate}
+                      weeklyDiscount={property.weeklyDiscount}
+                      monthlyDiscount={property.monthlyDiscount}
+                      minNights={property.minNights}
+                      propertyType={property.propertyType}
+                      isOlympic={property.isOlympic}
+                      imageUrl={property.images[0]?.url}
+                      createdAt={property.createdAt}
+                    />
+                  </div>
                 ))}
+              </div>
             </div>
-          </>
+
+            {/* Right: sticky map (desktop only) */}
+            {hasMapToken && (
+              <div className="hidden lg:block lg:w-[40%]">
+                <div className="sticky top-20 h-[calc(100vh-120px)] overflow-hidden rounded-xl">
+                  <SearchMap
+                    properties={properties}
+                    onMarkerClick={handleMarkerClick}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-12 text-center">
             <p className="text-gray-500">

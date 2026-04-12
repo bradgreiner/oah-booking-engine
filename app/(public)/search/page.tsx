@@ -8,12 +8,12 @@ export default function SearchPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-gray-50">
-        <div className="border-b border-gray-200 bg-white">
+        <div className="border-b border-gray-200 bg-[#FAFAF8]">
           <div className="mx-auto max-w-7xl px-4 py-6">
-            <h1 className="font-serif text-2xl font-normal text-gray-900">
+            <h1 className="font-serif text-4xl font-normal text-gray-900">
               Browse Homes
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-base text-gray-500">
               Furnished rentals across Southern California
             </p>
           </div>
@@ -28,7 +28,7 @@ export default function SearchPage() {
                     key={i}
                     className="animate-pulse rounded-xl bg-white shadow-sm"
                   >
-                    <div className="aspect-[3/2] rounded-t-xl bg-gray-200" />
+                    <div className="aspect-[4/3] rounded-t-xl bg-gray-200" />
                     <div className="p-4">
                       <div className="h-5 w-3/4 rounded bg-gray-200" />
                       <div className="mt-2 h-4 w-1/2 rounded bg-gray-200" />
