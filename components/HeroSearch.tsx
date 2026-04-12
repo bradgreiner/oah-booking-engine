@@ -50,16 +50,16 @@ export default function HeroSearch() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="rounded-xl bg-white/90 p-3 shadow-lg backdrop-blur-md md:p-4">
+      <div className="rounded-2xl bg-white p-2 shadow-2xl">
         <div className="flex flex-col gap-2 md:flex-row md:items-end md:gap-2">
           <div className="flex-1">
-            <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
+            <label className="mb-0.5 block px-3 pt-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:text-xs">
               Where
             </label>
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
+              className="w-full rounded-xl border-0 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none focus:bg-gray-100 focus:ring-0"
             >
               <option value="">All locations</option>
               {CITIES.map((c) => (
@@ -70,13 +70,13 @@ export default function HeroSearch() {
 
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
+              <label className="mb-0.5 block px-3 pt-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:text-xs">
                 Move in
               </label>
               <select
                 value={moveIn}
                 onChange={(e) => setMoveIn(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
+                className="w-full rounded-xl border-0 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none focus:bg-gray-100 focus:ring-0"
               >
                 <option value="">Any month</option>
                 {MONTHS.map((m) => (
@@ -86,13 +86,13 @@ export default function HeroSearch() {
             </div>
 
             <div className="flex-1">
-              <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:mb-1 md:text-xs">
+              <label className="mb-0.5 block px-3 pt-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 md:text-xs">
                 Move out
               </label>
               <select
                 value={moveOut}
                 onChange={(e) => setMoveOut(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E] md:py-2.5"
+                className="w-full rounded-xl border-0 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none focus:bg-gray-100 focus:ring-0"
               >
                 <option value="">Any month</option>
                 {MONTHS.map((m) => (
@@ -104,9 +104,9 @@ export default function HeroSearch() {
 
           <button
             onClick={handleSearch}
-            className="w-full rounded-full bg-[#4C6C4E] px-8 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d5a40] md:w-auto md:py-3 md:whitespace-nowrap"
+            className="w-full rounded-xl bg-[#4C6C4E] px-8 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d5a40] md:w-auto md:py-3 md:whitespace-nowrap"
           >
-            Search homes
+            Search
           </button>
         </div>
       </div>

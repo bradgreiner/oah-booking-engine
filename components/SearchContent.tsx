@@ -146,10 +146,8 @@ export default function SearchContent() {
             onClick={() => toggleFilter(f.key)}
             className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
               activeFilters.has(f.key)
-                ? f.key === "olympic"
-                  ? "border-[#C5A55A] bg-[#C5A55A] text-white"
-                  : "border-[#4C6C4E] bg-[#4C6C4E] text-white"
-                : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                ? "border-[#4C6C4E] bg-[#4C6C4E] text-white"
+                : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
             }`}
           >
             {f.label}
@@ -168,6 +166,9 @@ export default function SearchContent() {
           </select>
         </div>
       </div>
+
+      {/* Divider */}
+      <hr className="mt-4 border-gray-200" />
 
       {/* Content grid */}
       <div className="mt-6">

@@ -55,7 +55,7 @@ export default function PropertyCard({
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
         {/* Image */}
         <div className="relative aspect-[3/2] bg-gradient-to-br from-gray-100 to-gray-200">
           {imageUrl ? (

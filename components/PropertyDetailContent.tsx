@@ -86,12 +86,12 @@ export default function PropertyDetailContent({ property }: Props) {
               <span className="text-gray-600">{property.name}</span>
             </nav>
 
-            <h1 className="font-serif text-3xl font-bold text-[#1a1a1a]">
+            <h1 className="font-serif text-4xl font-normal leading-tight text-gray-900 mt-4 mb-3 md:text-5xl">
               {property.headline || property.name}
             </h1>
 
             {/* Beds / Baths / Guests */}
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-base text-gray-600">
               <span>{property.bedrooms} {property.bedrooms === 1 ? "Bed" : "Beds"}</span>
               <span className="text-gray-300">&middot;</span>
               <span>{property.bathrooms} {property.bathrooms === 1 ? "Bath" : "Baths"}</span>
@@ -106,7 +106,7 @@ export default function PropertyDetailContent({ property }: Props) {
             </div>
 
             {/* Hosted-by line */}
-            <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-600">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-[#4C6C4E]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
@@ -187,6 +187,7 @@ export default function PropertyDetailContent({ property }: Props) {
                 latitude={property.latitude}
                 longitude={property.longitude}
                 city={property.city}
+                propertyId={property.id}
               />
               {!property.latitude && !property.longitude && (
                 <>

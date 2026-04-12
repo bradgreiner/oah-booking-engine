@@ -132,13 +132,13 @@ export default function BookingWidget({
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+    <div className="rounded-2xl border border-gray-200 bg-[#FAFAF8] p-6 shadow-lg">
       {/* Rate display */}
       <div className="mb-1">
-        <span className="text-2xl font-bold text-[#1a1a1a]">
+        <span className="text-3xl font-bold text-gray-900">
           ${displayRate.toLocaleString()}
         </span>
-        <span className="text-sm text-gray-500"> {displayUnit}</span>
+        <span className="text-base font-normal text-gray-500">{displayUnit}</span>
       </div>
 
       {/* Stay-length tabs */}

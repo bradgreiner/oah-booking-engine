@@ -1,9 +1,9 @@
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroSearch from "@/components/HeroSearch";
 import HowItWorks from "@/components/HowItWorks";
 import NeighborhoodGrid from "@/components/NeighborhoodGrid";
-import TrustBadge from "@/components/TrustBadge";
 import PropertyCard from "@/components/PropertyCard";
 import { getFeaturedProperties, getCityCounts } from "@/lib/property-adapter";
 
@@ -20,37 +20,58 @@ export default async function HomePage() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden bg-[#4C6C4E] px-4 py-14 md:py-28">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#3d5a40] via-[#4C6C4E] to-[#3d5a40]" />
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="relative z-10 mx-auto max-w-4xl text-center">
-            <h1 className="font-[Georgia,serif] text-3xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
-              Stay longer, live like a local.
-            </h1>
-            <p className="mx-auto mt-3 max-w-2xl text-base text-white/80 md:mt-4 md:text-lg">
-              Furnished homes for short stays and monthly rentals across
-              Southern California. Lower prices than Airbnb &amp; VRBO. Book
-              direct.
-            </p>
+        <section className="relative min-h-[500px] overflow-hidden md:min-h-[600px]">
+          <Image
+            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80"
+            alt="Beautiful furnished home in Southern California"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
+          <div className="relative z-10 flex min-h-[500px] flex-col items-center justify-center px-4 md:min-h-[600px]">
+            <div className="mx-auto max-w-4xl text-center">
+              <h1 className="font-serif text-5xl font-normal leading-tight text-white md:text-6xl">
+                Stay longer, live like a local.
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 md:text-xl">
+                Furnished homes for short stays and monthly rentals across
+                Southern California.
+              </p>
 
-            <div className="mt-8 md:mt-10">
-              <HeroSearch />
-            </div>
+              <div className="mt-8">
+                <HeroSearch />
+              </div>
 
-            {/* Trust badges */}
-            <div className="mt-8 flex flex-col items-center gap-3 text-xs text-white/80 md:mt-10 md:flex-row md:justify-center md:gap-10 md:text-sm">
-              <TrustBadge
-                icon="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
-                text="Save 10-15% vs Airbnb & VRBO"
-              />
-              <TrustBadge
-                icon="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                text="Professionally managed"
-              />
-              <TrustBadge
-                icon="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                text="Flexible stays: 1 week to 3 months"
-              />
+              {/* Trust pills */}
+              <div className="mt-8 flex flex-col items-center gap-3 md:flex-row md:justify-center md:gap-6">
+                {[
+                  "Save 10-15% vs Airbnb",
+                  "Professionally managed",
+                  "Flexible stays",
+                ].map((text) => (
+                  <div
+                    key={text}
+                    className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-4 w-4 text-[#4C6C4E]"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
+                    </svg>
+                    <span>{text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -61,7 +82,7 @@ export default async function HomePage() {
 
         {/* Featured properties */}
         <section className="mx-auto max-w-7xl px-4 py-16">
-          <h2 className="font-[Georgia,serif] text-2xl font-bold text-[#1a1a1a] md:text-3xl">
+          <h2 className="font-serif text-2xl font-normal text-gray-900 md:text-3xl">
             Featured Homes
           </h2>
           <p className="mt-1 text-sm text-gray-500">

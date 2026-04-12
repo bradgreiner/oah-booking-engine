@@ -6,9 +6,10 @@ interface Props {
   latitude: number | null;
   longitude: number | null;
   city: string | null;
+  propertyId: string;
 }
 
-export default function PropertyMap({ latitude, longitude, city }: Props) {
+export default function PropertyMap({ latitude, longitude, city, propertyId }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<unknown>(null);
   const [loaded, setLoaded] = useState(false);
@@ -16,6 +17,11 @@ export default function PropertyMap({ latitude, longitude, city }: Props) {
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
     if (!token || !containerRef.current || latitude == null || longitude == null) return;
+
+    // Deterministic offset based on listing ID for privacy
+    const offset = (propertyId.charCodeAt(0) % 6) * 0.001 + 0.003;
+    const offsetLat = latitude + offset;
+    const offsetLng = longitude + offset;
 
     let cancelled = false;
 
@@ -30,7 +36,7 @@ export default function PropertyMap({ latitude, longitude, city }: Props) {
       const map = new mapboxgl.Map({
         container: containerRef.current,
         style: "mapbox://styles/mapbox/light-v11",
-        center: [longitude!, latitude!],
+        center: [offsetLng, offsetLat],
         zoom: 13,
         scrollZoom: false,
         attributionControl: false,
@@ -38,17 +44,17 @@ export default function PropertyMap({ latitude, longitude, city }: Props) {
 
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
 
-      // Pulsing circle marker
+      // Privacy circle marker — placed on offset coordinates
       const el = document.createElement("div");
-      el.style.width = "80px";
-      el.style.height = "80px";
+      el.style.width = "120px";
+      el.style.height = "120px";
       el.style.borderRadius = "50%";
-      el.style.background = "rgba(76, 108, 78, 0.2)";
-      el.style.border = "2px solid #4C6C4E";
+      el.style.background = "rgba(76, 108, 78, 0.15)";
+      el.style.border = "2px solid rgba(76, 108, 78, 0.6)";
       el.style.animation = "property-pulse 2s ease-out infinite";
 
       new mapboxgl.Marker({ element: el, anchor: "center" })
-        .setLngLat([longitude!, latitude!])
+        .setLngLat([offsetLng, offsetLat])
         .addTo(map);
 
       mapRef.current = map;
@@ -64,7 +70,7 @@ export default function PropertyMap({ latitude, longitude, city }: Props) {
         mapRef.current = null;
       }
     };
-  }, [latitude, longitude]);
+  }, [latitude, longitude, propertyId]);
 
   if (latitude == null || longitude == null) return null;
   if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) return null;

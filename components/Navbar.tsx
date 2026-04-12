@@ -1,38 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 10);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="border-b border-gray-200 bg-white">
+    <nav
+      className={`sticky top-0 z-50 transition-all duration-200 ${
+        scrolled
+          ? "bg-white/95 shadow-sm backdrop-blur-sm"
+          : "bg-white border-b border-gray-100"
+      }`}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <Link
           href="/"
-          className="font-[Georgia,serif] text-xl font-bold text-[#4C6C4E]"
+          className="font-serif text-xl font-normal text-[#4C6C4E]"
         >
           Open Air Homes
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-6 text-sm md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           <Link
             href="/search"
-            className="text-gray-600 hover:text-[#4C6C4E]"
+            className="text-sm font-medium text-gray-600 hover:text-gray-900"
           >
             Browse Homes
           </Link>
           <Link
             href="/olympics"
-            className="text-gray-600 hover:text-[#4C6C4E]"
+            className="text-sm font-medium text-gray-600 hover:text-gray-900"
           >
             LA 2028
           </Link>
           <Link
             href="#"
-            className="text-gray-600 hover:text-[#4C6C4E]"
+            className="rounded-full border border-[#4C6C4E] px-4 py-1.5 text-sm font-medium text-[#4C6C4E] transition-colors hover:bg-[#4C6C4E] hover:text-white"
           >
             List Your Home
           </Link>
@@ -78,32 +93,36 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="border-t border-gray-100 px-4 pb-4 md:hidden">
+      {/* Mobile slide menu */}
+      <div
+        className={`overflow-hidden transition-all duration-300 md:hidden ${
+          menuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="border-t border-gray-100 px-4 pb-4">
           <Link
             href="/search"
-            className="block py-3 text-sm text-gray-600 hover:text-[#4C6C4E]"
+            className="block py-3 text-sm font-medium text-gray-600 hover:text-gray-900"
             onClick={() => setMenuOpen(false)}
           >
             Browse Homes
           </Link>
           <Link
             href="/olympics"
-            className="block py-3 text-sm text-gray-600 hover:text-[#4C6C4E]"
+            className="block py-3 text-sm font-medium text-gray-600 hover:text-gray-900"
             onClick={() => setMenuOpen(false)}
           >
             LA 2028
           </Link>
           <Link
             href="#"
-            className="block py-3 text-sm text-gray-600 hover:text-[#4C6C4E]"
+            className="block py-3 text-sm font-medium text-gray-600 hover:text-gray-900"
             onClick={() => setMenuOpen(false)}
           >
             List Your Home
           </Link>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
