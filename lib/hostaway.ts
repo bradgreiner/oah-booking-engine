@@ -151,10 +151,14 @@ export async function fetchListings(): Promise<HostawayListing[]> {
     const listings = await hostawayFetch<HostawayListing[]>(
       `/listings?limit=200&isActive=1`
     );
-    const active = Array.isArray(listings)
-      ? listings.filter((l) => !!l.isActive)
-      : [];
-    console.log(`Hostaway: fetched ${Array.isArray(listings) ? listings.length : 0} listings, ${active.length} active`);
+    const listingsArr = Array.isArray(listings) ? listings : [];
+    if (listingsArr.length > 0) {
+      console.log('Hostaway first listing isActive value:', JSON.stringify(listingsArr[0]?.isActive), 'type:', typeof listingsArr[0]?.isActive);
+      console.log('Hostaway listing keys:', Object.keys(listingsArr[0] || {}));
+    }
+    // Temporarily return all listings — isActive field name TBD
+    const active = listingsArr;
+    console.log(`Hostaway: fetched ${listingsArr.length} listings, returning ${active.length}`);
     setCache(cacheKey, active);
     return active;
   } catch (error) {
