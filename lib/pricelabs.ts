@@ -25,6 +25,7 @@ export async function fetchDynamicRates(
   if (cached && cached.expiry > Date.now()) return cached.rates;
 
   try {
+    // Use correct PriceLabs field names: listing_id + pms
     const res = await fetch(`${PRICELABS_BASE}/listing_prices`, {
       method: "POST",
       headers: {
@@ -34,7 +35,8 @@ export async function fetchDynamicRates(
       body: JSON.stringify({
         listings: [
           {
-            id: hostawayListingId.toString(),
+            listing_id: hostawayListingId.toString(),
+            pms: "hostaway",
             start_date: checkIn,
             end_date: checkOut,
           },
@@ -43,25 +45,31 @@ export async function fetchDynamicRates(
     });
 
     if (!res.ok) {
-      console.error(`PriceLabs API ${res.status}: ${await res.text().catch(() => "")}`);
+      const text = await res.text().catch(() => "");
+      console.error(`PriceLabs API ${res.status}: ${text}`);
       return null;
     }
 
     const data = await res.json();
-    const listing = Array.isArray(data) ? data[0] : data?.listings?.[0];
+    console.log('[pricelabs response]', JSON.stringify(data).slice(0, 500));
+
+    // Parse response — try multiple known response shapes
+    const listing = Array.isArray(data) ? data[0] : data?.listings?.[0] ?? data;
     if (!listing) return null;
 
-    // Build date -> price map
+    // Build date -> price map from whichever field contains prices
     const rates: Record<string, number> = {};
-    const prices: { date: string; price: number }[] = listing.prices || listing.data || [];
+    const prices: any[] = listing.prices || listing.data || listing.calendar || [];
     for (const entry of prices) {
-      if (entry.date && typeof entry.price === "number" && entry.price > 0) {
-        rates[entry.date] = entry.price;
+      const date = entry.date || entry.dt;
+      const price = entry.price ?? entry.rate ?? entry.basePrice;
+      if (date && typeof price === "number" && price > 0) {
+        rates[date] = price;
       }
     }
 
     cache.set(cacheKey, { rates, expiry: Date.now() + CACHE_TTL });
-    return rates;
+    return Object.keys(rates).length > 0 ? rates : null;
   } catch (error) {
     console.error("PriceLabs fetchDynamicRates error:", error);
     return null;
