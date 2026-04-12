@@ -12,6 +12,7 @@ interface Property {
   id: string;
   name: string;
   headline: string | null;
+  city: string | null;
   baseRate: number;
   totRate: number;
   maxGuests: number;
@@ -187,12 +188,20 @@ export default function RequestFormContent() {
       <Navbar />
       <main className="min-h-screen bg-gray-50 py-8">
         <div className="mx-auto max-w-5xl px-4">
-          <h1 className="font-[Georgia,serif] text-2xl font-bold text-[#1a1a1a]">
+          {/* Progress bar */}
+          <div className="flex items-center gap-2 text-sm">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4C6C4E] text-xs font-semibold text-white">1</span>
+            <span className="font-medium text-[#4C6C4E]">Your details</span>
+            <span className="text-gray-300">&rarr;</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-400">2</span>
+            <span className="text-gray-400">Review</span>
+            <span className="text-gray-300">&rarr;</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-400">3</span>
+            <span className="text-gray-400">Confirm</span>
+          </div>
+          <h1 className="mt-4 font-serif text-2xl font-bold text-[#1a1a1a]">
             Request to Book
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Complete the form below to submit your booking request
-          </p>
 
           <div className="mt-8 flex flex-col gap-8 lg:flex-row">
             {/* Left: Summary */}
@@ -201,10 +210,12 @@ export default function RequestFormContent() {
                 <BookingSummary
                   propertyName={property?.headline || property?.name || "Loading..."}
                   propertyImage={property?.images?.[0]?.url}
+                  propertyCity={property?.city}
                   checkIn={checkIn}
                   checkOut={checkOut}
                   baseRate={property?.baseRate || 0}
                   totRate={property?.totRate || 0.12}
+                  guests={formData.numGuests}
                   fees={fees}
                   loading={feesLoading}
                 />
@@ -271,15 +282,10 @@ export default function RequestFormContent() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="mt-6 w-full rounded-lg bg-[#4C6C4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3d5a3f] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-6 w-full rounded-full bg-[#4C6C4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {submitting ? "Submitting..." : "Submit Request"}
+                {submitting ? "Submitting..." : "Request to Book"}
               </button>
-
-              <p className="mt-3 text-center text-xs text-gray-400">
-                Your card won&apos;t be charged until we approve your request.
-                We typically review within 24 hours.
-              </p>
             </div>
           </div>
         </div>

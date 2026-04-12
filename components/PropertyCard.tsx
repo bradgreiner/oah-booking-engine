@@ -40,14 +40,12 @@ export default function PropertyCard({
     createdAt &&
     Date.now() - new Date(createdAt).getTime() < 14 * 24 * 60 * 60 * 1000;
 
-  const monthlyRate =
-    monthlyDiscount && monthlyDiscount > 0
-      ? Math.round(baseRate * 30 * (1 - monthlyDiscount / 100))
-      : null;
+  const isMonthly = propertyType === "monthly" || propertyType === "both";
+  const monthlyRate = Math.round(baseRate * 30);
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
         {/* Image */}
         <div className="relative aspect-[3/2] bg-gradient-to-br from-gray-100 to-gray-200">
           {imageUrl ? (
@@ -124,7 +122,7 @@ export default function PropertyCard({
           </p>
 
           <div className="mt-2">
-            {(propertyType === "monthly" || propertyType === "both") && monthlyRate ? (
+            {isMonthly ? (
               <p className="text-lg font-semibold text-[#1a1a1a]">
                 ${monthlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/mo</span>

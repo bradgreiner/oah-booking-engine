@@ -1,12 +1,31 @@
 import Link from "next/link";
 
-export default function Footer() {
+interface FooterProps {
+  showBadges?: boolean;
+}
+
+export default function Footer({ showBadges = true }: FooterProps) {
   return (
-    <footer className="border-t border-gray-200 bg-white py-10">
-      <div className="mx-auto max-w-7xl px-4">
+    <footer className="border-t border-gray-200 bg-white">
+      {/* Trust badges row — public pages only */}
+      {showBadges && (
+        <div className="border-b border-gray-100 py-6">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 text-xs text-gray-400">
+            <span>Airbnb Superhost &middot; 4.9 Stars &middot; 14 Years</span>
+            <span className="hidden sm:inline text-gray-300">|</span>
+            <span>VRBO Premier Host</span>
+            <span className="hidden sm:inline text-gray-300">|</span>
+            <span>3,000+ Five-Star Reviews</span>
+            <span className="hidden sm:inline text-gray-300">|</span>
+            <span>$250M Assets Under Management</span>
+          </div>
+        </div>
+      )}
+
+      <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="font-[Georgia,serif] text-lg font-bold text-[#4C6C4E]">
+            <p className="font-serif text-lg font-bold text-[#4C6C4E]">
               Open Air Homes
             </p>
             <p className="mt-1 text-sm text-gray-500">
