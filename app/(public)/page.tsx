@@ -83,7 +83,9 @@ export default async function HomePage() {
                   bathrooms={property.bathrooms}
                   maxGuests={property.maxGuests}
                   baseRate={property.baseRate}
+                  weeklyDiscount={property.weeklyDiscount}
                   monthlyDiscount={property.monthlyDiscount}
+                  minNights={property.minNights}
                   propertyType={property.propertyType}
                   isOlympic={property.isOlympic}
                   imageUrl={property.images[0]?.url}

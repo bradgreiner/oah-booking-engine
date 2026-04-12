@@ -12,7 +12,9 @@ interface PropertyCardProps {
   bathrooms: number;
   maxGuests: number;
   baseRate: number;
+  weeklyDiscount?: number;
   monthlyDiscount?: number;
+  minNights?: number;
   propertyType: string;
   isOlympic?: boolean;
   imageUrl?: string;
@@ -29,7 +31,9 @@ export default function PropertyCard({
   bathrooms,
   maxGuests,
   baseRate,
+  weeklyDiscount,
   monthlyDiscount,
+  minNights,
   propertyType,
   isOlympic,
   imageUrl,
@@ -40,8 +44,14 @@ export default function PropertyCard({
     createdAt &&
     Date.now() - new Date(createdAt).getTime() < 14 * 24 * 60 * 60 * 1000;
 
-  const isMonthly = propertyType === "monthly" || propertyType === "both";
-  const monthlyRate = Math.round(baseRate * 30);
+  const isMonthly = propertyType === "monthly" || (minNights ?? 0) >= 30;
+  const hasMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
+  const hasWeeklyDiscount = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1;
+
+  // Monthly: baseRate * 30 * discount multiplier
+  const monthlyRate = Math.round(baseRate * 30 * (hasMonthlyDiscount ? monthlyDiscount! : 1));
+  // Weekly discounted nightly rate
+  const weeklyNightlyRate = Math.round(baseRate * (hasWeeklyDiscount ? weeklyDiscount! : 1));
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
@@ -126,6 +136,11 @@ export default function PropertyCard({
               <p className="text-lg font-semibold text-[#1a1a1a]">
                 ${monthlyRate.toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/mo</span>
+              </p>
+            ) : hasWeeklyDiscount ? (
+              <p className="text-lg font-semibold text-[#1a1a1a]">
+                ${weeklyNightlyRate.toLocaleString()}
+                <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             ) : (
               <p className="text-lg font-semibold text-[#1a1a1a]">

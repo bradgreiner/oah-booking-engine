@@ -16,7 +16,9 @@ interface Property {
   bathrooms: number;
   maxGuests: number;
   baseRate: number;
+  weeklyDiscount: number;
   monthlyDiscount: number;
+  minNights: number;
   propertyType: string;
   isOlympic: boolean;
   createdAt: string;
@@ -181,7 +183,9 @@ export default function OlympicBrowseContent() {
                   bathrooms={property.bathrooms}
                   maxGuests={property.maxGuests}
                   baseRate={property.baseRate}
+                  weeklyDiscount={property.weeklyDiscount}
                   monthlyDiscount={property.monthlyDiscount}
+                  minNights={property.minNights}
                   propertyType={property.propertyType}
                   isOlympic={property.isOlympic}
                   imageUrl={property.images[0]?.url}

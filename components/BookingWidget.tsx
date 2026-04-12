@@ -42,6 +42,8 @@ function formatAvailableDate(): string {
   });
 }
 
+type Tab = "nightly" | "weekly" | "monthly" | "quarterly";
+
 export default function BookingWidget({
   propertyId,
   baseRate,
@@ -60,6 +62,42 @@ export default function BookingWidget({
   const [guests, setGuests] = useState(1);
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const weeklyPct = discountPct(weeklyDiscount);
+  const monthlyPct = discountPct(monthlyDiscount);
+  const isMonthlyOnly = minNights >= 30;
+  const isQuarterlyOnly = minNights >= 90;
+
+  // Which tabs are available
+  const showNightlyTab = !isMonthlyOnly;
+  const showWeeklyTab = showNightlyTab && weeklyPct > 0;
+  const show1MonthTab = !isQuarterlyOnly;
+  const show3MonthTab = !isQuarterlyOnly && (maxNights === null || maxNights >= 90);
+
+  // Determine default active tab
+  function getDefaultTab(): Tab {
+    if (isQuarterlyOnly) return "quarterly";
+    if (isMonthlyOnly) return "monthly";
+    return "nightly";
+  }
+  const [activeTab, setActiveTab] = useState<Tab>(getDefaultTab);
+
+  // Compute display rate based on active tab
+  const weeklyMultiplier = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1 ? weeklyDiscount : 1;
+  const monthlyMultiplier = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1 ? monthlyDiscount : 1;
+
+  let displayRate: number;
+  let displayUnit: string;
+  if (activeTab === "monthly" || activeTab === "quarterly") {
+    displayRate = Math.round(baseRate * 30 * monthlyMultiplier);
+    displayUnit = "/mo";
+  } else if (activeTab === "weekly") {
+    displayRate = Math.round(baseRate * weeklyMultiplier);
+    displayUnit = "/night";
+  } else {
+    displayRate = baseRate;
+    displayUnit = "/night";
+  }
 
   useEffect(() => {
     if (!checkIn || !checkOut) {
@@ -83,73 +121,57 @@ export default function BookingWidget({
     router.push(`/request/${propertyId}?${params.toString()}`);
   }
 
-  const weeklyPct = discountPct(weeklyDiscount);
-  const monthlyPct = discountPct(monthlyDiscount);
-  const isMonthlyOnly = minNights >= 30;
-  const isQuarterlyOnly = minNights >= 90;
-  const show1Month = !isQuarterlyOnly && minNights <= 30;
-  const show3Month = (maxNights === null || maxNights >= 90) && !isQuarterlyOnly;
-  const showNightly = !isMonthlyOnly;
-  const showWeekly = showNightly && weeklyPct > 0;
-  const showMonthly = monthlyPct > 0;
-  const showTabs = (showNightly && (showWeekly || showMonthly)) || isMonthlyOnly;
-
-  const monthlyRate = Math.round(baseRate * 30);
   const selectedNights = fees?.numNights ?? 0;
-  const showWeeklyUpsell = showWeekly && checkIn && checkOut && selectedNights > 0 && selectedNights < 7;
+  const showWeeklyUpsell = showWeeklyTab && checkIn && checkOut && selectedNights > 0 && selectedNights < 7;
+  const showTabs = showNightlyTab || isMonthlyOnly || isQuarterlyOnly;
+
+  function tabCls(tab: Tab): string {
+    return activeTab === tab
+      ? "flex-1 rounded-md bg-white px-2 py-1.5 text-center font-medium text-gray-800 shadow-sm cursor-pointer"
+      : "flex-1 rounded-md px-2 py-1.5 text-center text-gray-500 cursor-pointer hover:text-gray-700";
+  }
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
       {/* Rate display */}
       <div className="mb-1">
-        {isMonthlyOnly ? (
-          <>
-            <span className="text-2xl font-bold text-[#1a1a1a]">
-              ${monthlyRate.toLocaleString()}
-            </span>
-            <span className="text-sm text-gray-500"> /mo</span>
-          </>
-        ) : (
-          <>
-            <span className="text-2xl font-bold text-[#1a1a1a]">
-              ${baseRate.toLocaleString()}
-            </span>
-            <span className="text-sm text-gray-500"> /night</span>
-          </>
-        )}
+        <span className="text-2xl font-bold text-[#1a1a1a]">
+          ${displayRate.toLocaleString()}
+        </span>
+        <span className="text-sm text-gray-500"> {displayUnit}</span>
       </div>
 
       {/* Stay-length tabs */}
       {showTabs && (
         <div className="mb-4 flex gap-1 rounded-lg bg-gray-100 p-1 text-xs">
-          {showNightly && (
-            <span className="flex-1 rounded-md bg-white px-2 py-1.5 text-center font-medium text-gray-800 shadow-sm">
+          {showNightlyTab && (
+            <span className={tabCls("nightly")} onClick={() => setActiveTab("nightly")}>
               Nightly
             </span>
           )}
-          {showWeekly && (
-            <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
+          {showWeeklyTab && (
+            <span className={tabCls("weekly")} onClick={() => setActiveTab("weekly")}>
               7+ nights &mdash; Save {weeklyPct}%
             </span>
           )}
-          {isMonthlyOnly && show1Month && (
-            <span className="flex-1 rounded-md bg-white px-2 py-1.5 text-center font-medium text-gray-800 shadow-sm">
+          {isMonthlyOnly && !isQuarterlyOnly && show1MonthTab && (
+            <span className={tabCls("monthly")} onClick={() => setActiveTab("monthly")}>
               1 month
             </span>
           )}
+          {!isMonthlyOnly && monthlyPct > 0 && (
+            <span className={tabCls("monthly")} onClick={() => setActiveTab("monthly")}>
+              30+ nights &mdash; Save {monthlyPct}%
+            </span>
+          )}
           {isQuarterlyOnly && (
-            <span className="flex-1 rounded-md bg-white px-2 py-1.5 text-center font-medium text-gray-800 shadow-sm">
+            <span className={tabCls("quarterly")} onClick={() => setActiveTab("quarterly")}>
               3+ months
             </span>
           )}
-          {show3Month && !isQuarterlyOnly && isMonthlyOnly && (
-            <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
-              3 months {monthlyPct > 0 ? `\u2014 Save ${monthlyPct}%` : ""}
-            </span>
-          )}
-          {showMonthly && !isMonthlyOnly && (
-            <span className="flex-1 rounded-md px-2 py-1.5 text-center text-gray-500">
-              30+ nights &mdash; Save {monthlyPct}%
+          {show3MonthTab && !isQuarterlyOnly && isMonthlyOnly && (
+            <span className={tabCls("quarterly")} onClick={() => setActiveTab("quarterly")}>
+              3 months{monthlyPct > 0 ? ` \u2014 Save ${monthlyPct}%` : ""}
             </span>
           )}
         </div>
