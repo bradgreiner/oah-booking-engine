@@ -1,28 +1,59 @@
 // Brand colors
 export const COLORS = {
-  navy: "#1B2A4A",
-  gold: "#C9A84C",
+  green: "#4C6C4E",
+  greenDark: "#3d5a40",
+  gold: "#C5A55A",
   cream: "#FAF7F2",
   white: "#FFFFFF",
-  charcoal: "#333333",
+  charcoal: "#1a1a1a",
 } as const;
 
-// Transient Occupancy Tax rates by jurisdiction
+// Transient Occupancy Tax rates by city name (direct match from Hostaway listing.city)
+// TOT only applies when numNights < 30. Monthly stays are exempt.
 export const TOT_RATES: Record<string, number> = {
-  "los-angeles-city": 0.14,
-  "los-angeles-county": 0.12,
-  "santa-monica": 0.14,
-  "long-beach": 0.12,
+  "Los Angeles": 0.14,
+  "Santa Monica": 0.14,
+  "West Hollywood": 0.14,
+  "Palm Springs": 0.135,
+  "Palm Desert": 0.09,
+  "La Quinta": 0.10,
+  "Rancho Mirage": 0.10,
+  "Malibu": 0.12,
+  "Manhattan Beach": 0.12,
+  "Marina del Rey": 0.14,
+  "Topanga": 0.10,
+  "Yucca Valley": 0.10,
   default: 0.12,
 } as const;
 
-// Safely damage protection tiers (per reservation)
+export function getTotRate(city: string | null | undefined, numNights: number): number {
+  if (numNights >= 30) return 0; // Monthly stays are TOT-exempt
+  if (!city) return TOT_RATES.default;
+  return TOT_RATES[city] ?? TOT_RATES.default;
+}
+
+// Safely guest protection — flat fee by stay length (not nightly rate)
+// 90+ nights: $0 (security deposit used instead)
 export const SAFELY_TIERS = [
-  { maxNightlyRate: 200, fee: 49 },
-  { maxNightlyRate: 350, fee: 69 },
-  { maxNightlyRate: 500, fee: 89 },
-  { maxNightlyRate: Infinity, fee: 119 },
+  { maxNights: 29, fee: 180 },
+  { maxNights: 59, fee: 650 },
+  { maxNights: 89, fee: 950 },
+  { maxNights: Infinity, fee: 0 }, // 90+ nights: security deposit instead
 ] as const;
 
-// OAH platform fee (percentage of nightly total)
+export function getSafelyFee(numNights: number): number {
+  const tier = SAFELY_TIERS.find((t) => numNights <= t.maxNights);
+  return tier?.fee ?? 0;
+}
+
+// Security deposit for 90+ night stays: 1 month's rent
+export function getSecurityDeposit(nightlyRate: number, numNights: number): number {
+  if (numNights < 90) return 0;
+  return Math.round(nightlyRate * 30);
+}
+
+// OAH platform fee (2% of nightly total)
 export const OAH_FEE_RATE = 0.02;
+
+// CC processing fee (3% of grand total)
+export const CC_FEE_RATE = 0.03;

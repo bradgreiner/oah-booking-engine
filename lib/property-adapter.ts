@@ -335,24 +335,17 @@ export async function getPropertyPricing(
   const numNights = getNightCount(checkIn, checkOut);
   if (numNights <= 0) return null;
 
-  const fees = calculateBookingFees(
-    {
-      baseRate: property.baseRate,
-      cleaningFee: property.cleaningFee,
-      petFee: 0,
-      totRate: numNights < 30 ? property.totRate : 0,
-    },
-    numNights,
-    false
-  );
-
-  return {
-    ...fees,
-    numNights,
-    checkIn,
-    checkOut,
-    source: property.source,
-  };
+  let nightlyRate = property.baseRate;
+  let rateSource = 'hostaway';
+  if (property.hostawayListingId) {
+    const { getAverageNightlyRate } = await import('./pricelabs');
+    const dynamicRate = await getAverageNightlyRate(property.hostawayListingId, checkIn, checkOut);
+    if (dynamicRate && dynamicRate > 0) { nightlyRate = dynamicRate; rateSource = 'pricelabs'; }
+  }
+  const { getTotRate } = await import('./constants');
+  const totRate = getTotRate(property.city, numNights);
+  const fees = calculateBookingFees({ baseRate: nightlyRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
+  return { ...fees, nightlyRate, numNights, checkIn, checkOut, source: property.source, rateSource };
 }
 
 // Homepage featured: only local active + Hostaway merged

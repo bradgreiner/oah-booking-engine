@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "Property" ADD COLUMN     "amenities" TEXT,
+ADD COLUMN     "availableEnd" TIMESTAMP(3),
+ADD COLUMN     "availableStart" TIMESTAMP(3),
+ADD COLUMN     "maxNights" INTEGER,
+ADD COLUMN     "minNights" INTEGER NOT NULL DEFAULT 1,
+ADD COLUMN     "monthlyDiscount" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "neighborhood" TEXT,
+ADD COLUMN     "olympicOnly" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "ownerEmail" TEXT,
+ADD COLUMN     "ownerName" TEXT,
+ADD COLUMN     "ownerPhone" TEXT,
+ADD COLUMN     "propertyType" TEXT NOT NULL DEFAULT 'str',
+ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'draft',
+ADD COLUMN     "weeklyDiscount" DOUBLE PRECISION NOT NULL DEFAULT 0;
