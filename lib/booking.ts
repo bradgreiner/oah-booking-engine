@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import { calculateFees } from "./fees";
+import { getSecurityDeposit } from "./constants";
 import { createPaymentIntent, capturePaymentIntent, cancelPaymentIntent } from "./stripe-server";
 import { sendGuestConfirmation, sendAdminNotification, sendApprovalEmail, sendDeclineEmail } from "./emails";
 import { getProperty } from "./property-adapter";
@@ -37,8 +38,9 @@ export function calculateBookingFees(property: {
 
   const ccFee = Math.round(fees.grandTotal * 0.03 * 100) / 100;
   const grandTotalWithCc = Math.round((fees.grandTotal + ccFee) * 100) / 100;
+  const securityDeposit = getSecurityDeposit(property.baseRate, numNights);
 
-  return { ...fees, ccFee, grandTotal: grandTotalWithCc };
+  return { ...fees, ccFee, grandTotal: grandTotalWithCc, securityDeposit };
 }
 
 export function getNightCount(checkIn: string, checkOut: string): number {
@@ -155,6 +157,7 @@ export async function submitBookingRequest(input: CreateBookingInput) {
     totAmount: fees.totAmount,
     safelyFee: fees.safelyFee,
     ccFee: fees.ccFee,
+    securityDeposit: fees.securityDeposit,
   };
 
   sendGuestConfirmation(emailData).catch(console.error);

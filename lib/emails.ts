@@ -29,6 +29,7 @@ interface BookingEmailData {
   totAmount: number;
   safelyFee: number;
   ccFee: number;
+  securityDeposit?: number;
 }
 
 function formatDate(dateStr: string): string {
@@ -123,6 +124,7 @@ export async function sendAdminNotification(data: BookingEmailData) {
         </div>
         ${hasTot ? `<p style="color: #c00; font-weight: 600; font-size: 14px;">TOT collected: ${formatCurrency(data.totAmount)}. Remember to remit to the city.</p>` : ""}
         ${isMonthlyStay ? `<p style="color: #4C6C4E; font-weight: 600; font-size: 14px;">Monthly stay &mdash; CAR Rental Agreement required. Broker of Record will send after approval.</p>` : ""}
+        ${(data.securityDeposit ?? 0) > 0 ? `<p style="font-size: 14px;"><strong>Security Deposit:</strong> $${data.securityDeposit!.toLocaleString()} (refundable, separate charge)</p>` : ""}
         ${data.tripDescription ? `<p style="font-size: 14px;"><strong>Trip description:</strong> ${data.tripDescription}</p>` : ""}
         ${data.petInfo ? `<p style="font-size: 14px;"><strong>Pet info:</strong> ${data.petInfo}</p>` : ""}
         <p style="margin-top: 24px;">

@@ -30,6 +30,7 @@ interface FeeBreakdown {
   ccFee: number;
   grandTotal: number;
   numNights: number;
+  securityDeposit?: number;
 }
 
 function discountPct(multiplier: number | undefined): number {
@@ -343,6 +344,17 @@ export default function BookingWidget({
             <p className="text-sm text-[#4C6C4E]">
               🏦 Save ${fees.ccFee.toLocaleString()} with bank transfer
             </p>
+          )}
+          {(fees.securityDeposit ?? 0) > 0 && (
+            <div className="mt-3 rounded-lg bg-amber-50 p-3">
+              <div className="flex justify-between text-sm">
+                <span className="font-medium text-amber-800">Refundable security deposit</span>
+                <span className="font-medium text-amber-800">${fees.securityDeposit!.toLocaleString()}</span>
+              </div>
+              <p className="mt-1 text-xs text-amber-600">
+                Returned within 14 days of checkout if no damages
+              </p>
+            </div>
           )}
         </div>
       )}
