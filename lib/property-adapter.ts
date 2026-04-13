@@ -290,8 +290,10 @@ function applySort(properties: UnifiedProperty[], sort?: string): UnifiedPropert
 
 // ---------- PriceLabs overlay ----------
 
-// Overlay PriceLabs dynamic rates onto Hostaway properties.
-// Uses a 30-day window from today for batch pricing on browse/search pages.
+// RULE: PriceLabs is the ONLY pricing source. Hostaway prices are dummy
+// values and must never be shown to guests. When PriceLabs has data, use it.
+// When PriceLabs has no data for a listing, set baseRate to 0 so the UI
+// shows "Contact for pricing" instead of the dummy Hostaway price.
 async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<UnifiedProperty[]> {
   const hostawayProps = properties.filter((p) => p.hostawayListingId);
   if (hostawayProps.length === 0) return properties;
@@ -303,17 +305,15 @@ async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<Uni
 
   const plRates = await fetchPriceLabsBatch(hostawayIds, startDate, endDate);
   console.log('[pricelabs batch]', { sent: hostawayIds.length, received: plRates.size });
-  if (plRates.size === 0) return properties;
 
   return properties.map((p) => {
     if (!p.hostawayListingId) return p;
     const dynamicRate = plRates.get(p.hostawayListingId);
     if (dynamicRate && dynamicRate > 0) {
-      // PriceLabs already accounts for stay-length pricing — zero out
-      // discount multipliers so downstream display doesn't double-apply.
       return { ...p, baseRate: dynamicRate, weeklyDiscount: 0, monthlyDiscount: 0 };
     }
-    return p;
+    // No PriceLabs data — zero out the dummy Hostaway price
+    return { ...p, baseRate: 0, weeklyDiscount: 0, monthlyDiscount: 0 };
   });
 }
 
@@ -378,7 +378,9 @@ export async function getProperty(id: string): Promise<UnifiedProperty | null> {
     }
   }
 
-  // Overlay PriceLabs 30-day average so the detail page header matches browse cards
+  // RULE: PriceLabs is the ONLY pricing source. Hostaway prices are dummy values.
+  // Overlay PriceLabs 30-day average so the detail page header matches browse cards.
+  // If PriceLabs has no data, zero out baseRate so UI shows "Contact for pricing".
   if (property && property.hostawayListingId) {
     const today = new Date();
     const startDate = today.toISOString().split("T")[0];
@@ -387,6 +389,8 @@ export async function getProperty(id: string): Promise<UnifiedProperty | null> {
     const dynamicRate = plRates.get(property.hostawayListingId);
     if (dynamicRate && dynamicRate > 0) {
       property = { ...property, baseRate: dynamicRate, weeklyDiscount: 0, monthlyDiscount: 0 };
+    } else {
+      property = { ...property, baseRate: 0, weeklyDiscount: 0, monthlyDiscount: 0 };
     }
   }
 
@@ -404,8 +408,11 @@ export async function getPropertyPricing(
   const numNights = getNightCount(checkIn, checkOut);
   if (numNights <= 0) return null;
 
+  // RULE: PriceLabs is the ONLY pricing source. No Hostaway discount multipliers.
+  // getProperty already overlays PriceLabs 30-day avg onto baseRate (or zeros it).
+  // For the exact check-in/checkout range, fetch date-specific PriceLabs rates.
   let nightlyRate = property.baseRate;
-  let rateSource = 'hostaway';
+  let rateSource = nightlyRate > 0 ? 'pricelabs' : 'none';
   if (property.hostawayListingId) {
     const hostawayId = parseInt(property.id.replace('hw_', ''), 10);
     const { getAverageNightlyRate } = await import('./pricelabs');
@@ -416,29 +423,18 @@ export async function getPropertyPricing(
       numNights,
       priceLabsRate: dynamicRate,
       baseRate: property.baseRate,
-      monthlyDiscount: property.monthlyDiscount,
-      source: dynamicRate && dynamicRate > 0 ? 'pricelabs' : 'hostaway',
+      source: dynamicRate && dynamicRate > 0 ? 'pricelabs' : 'none',
     });
-    if (dynamicRate && dynamicRate > 0) { nightlyRate = dynamicRate; rateSource = 'pricelabs'; }
-  }
-
-  // Apply stay-length discount multipliers ONLY when using Hostaway rates.
-  // PriceLabs already accounts for stay-length pricing.
-  let discountedRate = nightlyRate;
-  if (rateSource !== 'pricelabs') {
-    const md = property.monthlyDiscount;
-    const wd = property.weeklyDiscount;
-    if (numNights >= 30 && md && md > 0 && md < 1) {
-      discountedRate = nightlyRate * md;
-    } else if (numNights >= 7 && wd && wd > 0 && wd < 1) {
-      discountedRate = nightlyRate * wd;
+    if (dynamicRate && dynamicRate > 0) {
+      nightlyRate = dynamicRate;
+      rateSource = 'pricelabs';
     }
   }
 
   const { getTotRate } = await import('./constants');
   const totRate = getTotRate(property.city, numNights);
-  const fees = calculateBookingFees({ baseRate: discountedRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
-  return { ...fees, nightlyRate: Math.round(discountedRate), numNights, checkIn, checkOut, source: property.source, rateSource };
+  const fees = calculateBookingFees({ baseRate: nightlyRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
+  return { ...fees, nightlyRate: Math.round(nightlyRate), numNights, checkIn, checkOut, source: property.source, rateSource };
 }
 
 // Homepage featured: only local active + Hostaway merged

@@ -103,9 +103,13 @@ export default function BookingWidget({
       displayUnit = "/night";
     }
   } else {
-    // No dates — show prop-based estimate with "From" prefix
+    // No dates — show prop-based estimate with "From" prefix.
+    // When baseRate is 0 (no PriceLabs data), show "Contact for pricing".
     isEstimate = true;
-    if (activeTab === "monthly" || activeTab === "quarterly") {
+    if (baseRate <= 0) {
+      displayRate = null;
+      displayUnit = "";
+    } else if (activeTab === "monthly" || activeTab === "quarterly") {
       displayRate = hasValidMonthlyDiscount
         ? Math.round(baseRate * 30 * monthlyDiscount!)
         : Math.round(baseRate * 30);
