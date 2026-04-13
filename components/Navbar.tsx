@@ -35,13 +35,13 @@ export default function Navbar() {
         <div className="hidden items-center gap-6 md:flex">
           <Link
             href="/search"
-            className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            className="font-sans text-sm font-medium text-gray-700 hover:text-[#4C6C4E]"
           >
             Browse Homes
           </Link>
           <Link
             href="/olympics"
-            className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            className="font-sans text-sm font-medium text-gray-700 hover:text-[#4C6C4E]"
           >
             LA 2028
           </Link>

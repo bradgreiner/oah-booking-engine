@@ -99,7 +99,7 @@ export default function PropertyCard({
 
         {/* Content */}
         <div>
-          <h3 className="mt-3 line-clamp-2 px-3 text-[15px] font-medium leading-snug text-gray-900">
+          <h3 className="mt-3 line-clamp-2 px-3 font-serif text-[15px] font-medium leading-snug text-gray-900">
             {name}
           </h3>
 

@@ -25,7 +25,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased text-gray-900">
+      <body className="font-sans">
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

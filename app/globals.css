@@ -4,3 +4,9 @@
   --font-serif: "Instrument Serif", Georgia, serif;
   --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
 }
+
+body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+}
