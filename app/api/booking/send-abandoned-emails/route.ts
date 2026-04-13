@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
       try {
         await resend.emails.send({
-          from: "Open Air Homes <bookings@openairhomes.com>",
+          from: "Open Air Homes <reservations@openairhomes.com>",
           to: session.guestEmail,
           subject: session.listingName
             ? `Still interested in ${session.listingName}?`

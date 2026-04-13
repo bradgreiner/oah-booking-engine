@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: "Open Air Homes <noreply@openairhomes.com>",
+          from: "Open Air Homes <reservations@openairhomes.com>",
           to: "brad@openairhomes.com",
           subject: `New homeowner lead: ${name}`,
           html: `

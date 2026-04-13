@@ -7,7 +7,7 @@ function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
 
-const FROM_EMAIL = "Open Air Homes <bookings@openairhomes.com>";
+const FROM_EMAIL = "Open Air Homes <reservations@openairhomes.com>";
 const ADMIN_EMAIL = "brad@openairhomes.com";
 
 interface BookingEmailData {
