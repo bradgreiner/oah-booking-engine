@@ -15,6 +15,7 @@ const ratesCache = new Map<string, RatesCacheEntry>();
 interface BatchCacheEntry {
   data: Map<number, number>; // hostawayId → average nightly rate
   expiry: number;
+  requestedCount: number; // how many listings were in the original request
 }
 
 let batchCache: BatchCacheEntry | null = null;
@@ -105,8 +106,12 @@ export async function fetchPriceLabsBatch(
 ): Promise<Map<number, number>> {
   if (!isConfigured() || hostawayIds.length === 0) return new Map();
 
-  // Return cached batch if still valid
-  if (batchCache && batchCache.expiry > Date.now()) return batchCache.data;
+  // Return cached batch if still valid AND it covers enough listings.
+  // A browse-page cache (55 listings) can serve a detail-page request (1 listing),
+  // but a detail-page cache (1 listing) must not starve the browse page.
+  if (batchCache && batchCache.expiry > Date.now() && hostawayIds.length <= batchCache.requestedCount) {
+    return batchCache.data;
+  }
 
   try {
     const listings = hostawayIds.map((id) => ({
@@ -150,7 +155,7 @@ export async function fetchPriceLabsBatch(
       }
     }
 
-    batchCache = { data: result, expiry: Date.now() + CACHE_TTL };
+    batchCache = { data: result, expiry: Date.now() + CACHE_TTL, requestedCount: hostawayIds.length };
     return result;
   } catch (error) {
     console.error("PriceLabs fetchPriceLabsBatch error:", error);
