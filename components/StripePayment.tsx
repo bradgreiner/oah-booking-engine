@@ -56,7 +56,7 @@ function CardForm({
       return;
     }
 
-    console.log("[StripePayment] Confirming card payment, clientSecret:", clientSecret.substring(0, 20) + "...");
+    console.debug("[StripePayment] Confirming card payment, clientSecret:", clientSecret.substring(0, 20) + "...");
 
     const { error, paymentIntent } = await stripe.confirmCardPayment(
       clientSecret,
@@ -68,10 +68,10 @@ function CardForm({
       onError(error.message || "Payment failed");
       setSubmitting(false);
     } else if (paymentIntent && paymentIntent.status === "requires_capture") {
-      console.log("[StripePayment] Payment authorized successfully:", paymentIntent.id, "status:", paymentIntent.status);
+      console.debug("[StripePayment] Payment authorized successfully:", paymentIntent.id, "status:", paymentIntent.status);
       onSuccess(paymentIntent.id);
     } else if (paymentIntent) {
-      console.log("[StripePayment] Unexpected status:", paymentIntent.status, "id:", paymentIntent.id);
+      console.debug("[StripePayment] Unexpected status:", paymentIntent.status, "id:", paymentIntent.id);
       onSuccess(paymentIntent.id);
     } else {
       onError("Payment confirmation returned no result");

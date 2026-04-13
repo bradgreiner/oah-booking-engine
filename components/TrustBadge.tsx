@@ -7,7 +7,7 @@ export default function TrustBadge({ icon, text }: { icon: string; text: string 
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="h-5 w-5 text-[#C5A55A]"
+        className="h-5 w-5 text-[#4C6C4E]"
       >
         <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
       </svg>

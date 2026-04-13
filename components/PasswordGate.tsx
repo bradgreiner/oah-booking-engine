@@ -44,7 +44,7 @@ export default function PasswordGate({ onSuccess }: PasswordGateProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Access password"
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-[#C9A84C] focus:outline-none"
+          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-[#4C6C4E] focus:outline-none"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button

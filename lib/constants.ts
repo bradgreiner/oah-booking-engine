@@ -2,8 +2,8 @@
 export const COLORS = {
   green: "#4C6C4E",
   greenDark: "#3d5a40",
-  gold: "#C5A55A",
-  cream: "#FAF7F2",
+  gold: "#C5A55A", // Olympic accent — kept for Olympic section
+  cream: "#FAFAF8",
   white: "#FFFFFF",
   charcoal: "#1a1a1a",
 } as const;

@@ -20,7 +20,7 @@ export default function HowItWorks() {
   return (
     <section className="bg-white py-16">
       <div className="mx-auto max-w-5xl px-4 text-center">
-        <h2 className="font-serif text-2xl font-bold text-[#1a1a1a] md:text-3xl">
+        <h2 className="font-serif text-2xl font-normal text-[#1a1a1a] md:text-3xl">
           How it works
         </h2>
         <div className="mt-12 grid gap-10 md:grid-cols-3">
@@ -29,7 +29,7 @@ export default function HowItWorks() {
               <span className="text-3xl font-bold text-[#4C6C4E]/30">
                 {s.num}
               </span>
-              <h3 className="mt-2 text-lg font-semibold text-[#1a1a1a]">
+              <h3 className="mt-2 font-serif text-lg font-normal text-[#1a1a1a]">
                 {s.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
