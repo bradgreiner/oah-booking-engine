@@ -38,14 +38,6 @@ function discountPct(multiplier: number | undefined): number {
   return Math.round((1 - multiplier) * 100);
 }
 
-function formatAvailableDate(): string {
-  return new Date().toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
-
 type Tab = "nightly" | "weekly" | "monthly" | "quarterly";
 
 export default function BookingWidget({
@@ -175,7 +167,7 @@ export default function BookingWidget({
 
   const selectedNights = fees?.numNights ?? 0;
   const showWeeklyUpsell = showWeeklyTab && checkIn && checkOut && selectedNights > 0 && selectedNights < 7;
-  const showTabs = showNightlyTab || isMonthlyOnly || isQuarterlyOnly;
+  const showTabs = baseRate > 0 && (showNightlyTab || isMonthlyOnly || isQuarterlyOnly);
 
   function tabCls(tab: Tab): string {
     return activeTab === tab
@@ -217,7 +209,7 @@ export default function BookingWidget({
           )}
           {isMonthlyOnly && !isQuarterlyOnly && show1MonthTab && (
             <span className={tabCls("monthly")} onClick={() => setActiveTab("monthly")}>
-              1 month
+              Monthly{monthlyPct > 0 ? ` \u2014 Save ${monthlyPct}%` : ""}
             </span>
           )}
           {!isMonthlyOnly && monthlyPct > 0 && (
@@ -238,9 +230,10 @@ export default function BookingWidget({
         </div>
       )}
 
-      {/* Available from date */}
+      {/* Stay type info */}
       <p className="mb-2 text-xs text-gray-500">
-        Available from {formatAvailableDate()}
+        {minNights >= 30 ? "Monthly rental" : minNights >= 7 ? "Weekly minimum" : "Nightly available"}
+        {minNights > 1 && ` \u00b7 ${minNights} night minimum`}
       </p>
 
       <DatePicker
