@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingSummary from "@/components/BookingSummary";
 import GuestInfoForm from "@/components/GuestInfoForm";
+import GuestAuthPrompt from "@/components/GuestAuthPrompt";
 import StripePayment from "@/components/StripePayment";
 
 interface Property {
@@ -267,6 +268,18 @@ export default function RequestFormContent() {
           <div className="mt-6 flex flex-col gap-8 lg:flex-row">
             {/* Left: Form */}
             <div className="order-2 flex-1 lg:order-1">
+              {/* Auth prompt */}
+              <GuestAuthPrompt
+                onAutoFill={({ firstName, lastName, email }) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    firstName: prev.firstName || firstName,
+                    lastName: prev.lastName || lastName,
+                    email: prev.email || email,
+                  }));
+                }}
+              />
+
               {/* Who's staying */}
               <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-sm font-semibold text-gray-700">Who&apos;s staying?</h2>
