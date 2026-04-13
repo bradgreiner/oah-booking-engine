@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ConfirmationTimeline from "@/components/ConfirmationTimeline";
+import ShareButton from "@/components/ShareButton";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -98,12 +99,15 @@ export default async function ConfirmationPage({ params }: Props) {
             <ConfirmationTimeline numNights={numNights} />
           </div>
 
-          <Link
-            href="/search"
-            className="mt-8 inline-block rounded-full border border-[#4C6C4E] px-6 py-2.5 text-sm font-semibold text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
-          >
-            Back to browse
-          </Link>
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <Link
+              href="/search"
+              className="inline-block rounded-full border border-[#4C6C4E] px-6 py-2.5 text-sm font-semibold text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
+            >
+              Back to browse
+            </Link>
+            <ShareButton title={`My stay at ${booking.property.headline || booking.property.name}`} />
+          </div>
         </div>
       </main>
       <Footer />

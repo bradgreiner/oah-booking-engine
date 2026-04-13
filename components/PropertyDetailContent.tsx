@@ -2,6 +2,7 @@ import BookingWidget from "@/components/BookingWidget";
 import PropertyDescription from "@/components/PropertyDescription";
 import PhotoGrid from "@/components/PhotoGrid";
 import PropertyMap from "@/components/PropertyMap";
+import ShareButton from "@/components/ShareButton";
 import type { UnifiedProperty } from "@/lib/property-adapter";
 
 interface NearbyPlaceData {
@@ -46,18 +47,21 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
         <div className="flex flex-col gap-8 lg:flex-row">
           {/* Left: details */}
           <div className="flex-1">
-            {/* Breadcrumb */}
-            <nav className="mb-4 text-sm text-gray-500">
-              <a href="/search" className="hover:text-gray-600">Homes</a>
-              {property.city && (
-                <>
-                  <span className="mx-1">/</span>
-                  <a href={`/search?city=${encodeURIComponent(property.city)}`} className="hover:text-gray-600">{property.city}</a>
-                </>
-              )}
-              <span className="mx-1">/</span>
-              <span className="text-gray-600">{property.name}</span>
-            </nav>
+            {/* Breadcrumb + share */}
+            <div className="mb-4 flex items-center justify-between">
+              <nav className="text-sm text-gray-500">
+                <a href="/search" className="hover:text-gray-600">Homes</a>
+                {property.city && (
+                  <>
+                    <span className="mx-1">/</span>
+                    <a href={`/search?city=${encodeURIComponent(property.city)}`} className="hover:text-gray-600">{property.city}</a>
+                  </>
+                )}
+                <span className="mx-1">/</span>
+                <span className="text-gray-600">{property.name}</span>
+              </nav>
+              <ShareButton title={property.headline || property.name} />
+            </div>
 
             <h1 className="font-serif text-2xl font-normal leading-tight text-gray-900 mt-4 mb-3 sm:text-4xl md:text-5xl">
               {property.headline || property.name}
