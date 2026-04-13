@@ -20,6 +20,8 @@ interface PropertyCardProps {
   imageUrl?: string;
   createdAt?: string;
   linkPrefix?: string;
+  checkIn?: string;
+  checkOut?: string;
 }
 
 export default function PropertyCard({
@@ -37,6 +39,8 @@ export default function PropertyCard({
   imageUrl,
   createdAt,
   linkPrefix = "",
+  checkIn,
+  checkOut,
 }: PropertyCardProps) {
   const isNew =
     createdAt &&
@@ -50,8 +54,10 @@ export default function PropertyCard({
     ? Math.round(baseRate * 30 * (hasValidMonthlyDiscount ? monthlyDiscount! : 1))
     : null;
 
+  const dateParams = checkIn ? `?checkIn=${checkIn}${checkOut ? `&checkOut=${checkOut}` : ""}` : "";
+
   return (
-    <Link href={`${linkPrefix}/${id}`} className="group block">
+    <Link href={`${linkPrefix}/${id}${dateParams}`} className="group block">
       <div className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
         {/* Image */}
         <div className="relative w-full overflow-hidden bg-gray-100" style={{ aspectRatio: "4/3" }}>

@@ -15,6 +15,8 @@ interface BookingWidgetProps {
   maxNights: number | null;
   weeklyDiscount?: number;
   monthlyDiscount?: number;
+  initialCheckIn?: string;
+  initialCheckOut?: string;
 }
 
 interface FeeBreakdown {
@@ -56,10 +58,12 @@ export default function BookingWidget({
   maxNights,
   weeklyDiscount,
   monthlyDiscount,
+  initialCheckIn,
+  initialCheckOut,
 }: BookingWidgetProps) {
   const router = useRouter();
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const [checkIn, setCheckIn] = useState(initialCheckIn || "");
+  const [checkOut, setCheckOut] = useState(initialCheckOut || "");
   const [guests, setGuests] = useState(1);
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [loading, setLoading] = useState(false);

@@ -6,9 +6,11 @@ import type { UnifiedProperty } from "@/lib/property-adapter";
 
 interface Props {
   property: UnifiedProperty;
+  initialCheckIn?: string;
+  initialCheckOut?: string;
 }
 
-export default function PropertyDetailContent({ property }: Props) {
+export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut }: Props) {
   const amenities: string[] = property.amenities
     ? JSON.parse(property.amenities)
     : [];
@@ -205,6 +207,8 @@ export default function PropertyDetailContent({ property }: Props) {
                 maxNights={property.maxNights}
                 weeklyDiscount={property.weeklyDiscount}
                 monthlyDiscount={property.monthlyDiscount}
+                initialCheckIn={initialCheckIn}
+                initialCheckOut={initialCheckOut}
               />
             </div>
           </div>

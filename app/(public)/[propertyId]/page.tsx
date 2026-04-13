@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 interface Props {
   params: { propertyId: string };
+  searchParams: { checkIn?: string; checkOut?: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PropertyDetailPage({ params }: Props) {
+export default async function PropertyDetailPage({ params, searchParams }: Props) {
   const property = await getProperty(params.propertyId);
 
   if (!property || property.status === "removed") {
@@ -54,7 +55,11 @@ export default async function PropertyDetailPage({ params }: Props) {
     <>
       <Navbar />
       <main className="min-h-screen bg-white pb-20 lg:pb-0">
-        <PropertyDetailContent property={property} />
+        <PropertyDetailContent
+          property={property}
+          initialCheckIn={searchParams.checkIn}
+          initialCheckOut={searchParams.checkOut}
+        />
 
         {/* Full booking widget on mobile (hidden on desktop since it's in the sidebar) */}
         <div className="mx-auto max-w-7xl px-4 pb-8 lg:hidden">
@@ -69,6 +74,8 @@ export default async function PropertyDetailPage({ params }: Props) {
             maxNights={property.maxNights}
             weeklyDiscount={property.weeklyDiscount}
             monthlyDiscount={property.monthlyDiscount}
+            initialCheckIn={searchParams.checkIn}
+            initialCheckOut={searchParams.checkOut}
           />
         </div>
 

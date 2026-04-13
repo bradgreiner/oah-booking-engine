@@ -54,6 +54,8 @@ export default function SearchContent() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [checkIn, setCheckIn] = useState(searchParams.get("checkIn") || "");
+  const [checkOut, setCheckOut] = useState(searchParams.get("checkOut") || "");
   const [city, setCity] = useState(searchParams.get("city") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(() => {
@@ -112,9 +114,11 @@ export default function SearchContent() {
     if (activeFilters.has("monthly")) params.set("type", "monthly");
     if (activeFilters.has("str")) params.set("type", "str");
     if (activeFilters.has("olympic")) params.set("olympic", "true");
+    if (checkIn) params.set("checkIn", checkIn);
+    if (checkOut) params.set("checkOut", checkOut);
     const qs = params.toString();
     router.replace(`/search${qs ? `?${qs}` : ""}`, { scroll: false });
-  }, [city, sort, activeFilters, router]);
+  }, [city, sort, activeFilters, checkIn, checkOut, router]);
 
   // Listen for map marker clicks via CustomEvent
   useEffect(() => {
@@ -192,6 +196,22 @@ export default function SearchContent() {
               <p className="mb-4 text-sm text-gray-500">
                 {properties.length} {properties.length === 1 ? "home" : "homes"} available
               </p>
+              {(checkIn || checkOut) && (
+                <p className="mb-4 text-sm text-gray-500">
+                  {checkIn && checkOut
+                    ? `Showing availability for ${new Date(checkIn + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })} \u2013 ${new Date(checkOut + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                    : "Flexible dates"}
+                  <button
+                    onClick={() => {
+                      setCheckIn("");
+                      setCheckOut("");
+                    }}
+                    className="ml-2 text-[#4C6C4E] hover:underline"
+                  >
+                    Clear
+                  </button>
+                </p>
+              )}
               <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
                 {properties.map((property) => (
                   <div
@@ -217,6 +237,8 @@ export default function SearchContent() {
                       isOlympic={property.isOlympic}
                       imageUrl={property.images[0]?.url}
                       createdAt={property.createdAt}
+                      checkIn={checkIn}
+                      checkOut={checkOut}
                     />
                   </div>
                 ))}
