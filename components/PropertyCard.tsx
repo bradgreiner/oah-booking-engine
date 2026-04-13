@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { trackEvent } from "@/lib/analytics";
+import { calculateSavings } from "@/lib/savings";
 
 interface PropertyCardProps {
   id: string;
@@ -56,6 +57,11 @@ export default function PropertyCard({
   const monthlyPrice = isMonthly && baseRate > 0
     ? Math.round(baseRate * 30 * (hasValidMonthlyDiscount ? monthlyDiscount! : 1))
     : null;
+
+  // Calculate savings vs Airbnb
+  const savings = isMonthly
+    ? calculateSavings(baseRate, 30, hasValidMonthlyDiscount ? monthlyDiscount : undefined)
+    : calculateSavings(baseRate, 7, weeklyDiscount);
 
   const dateParams = checkIn ? `?checkIn=${checkIn}${checkOut ? `&checkOut=${checkOut}` : ""}` : "";
 
@@ -139,6 +145,11 @@ export default function PropertyCard({
               </p>
             ) : (
               <p className="text-sm italic text-gray-500">Contact for pricing</p>
+            )}
+            {savings && savings.savings > 50 && (
+              <p className="mt-1 text-xs font-medium text-[#4C6C4E]">
+                Save ${savings.savings.toLocaleString()} vs Airbnb
+              </p>
             )}
           </div>
         </div>

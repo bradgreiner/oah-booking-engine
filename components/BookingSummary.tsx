@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { calculateSavings } from "@/lib/savings";
 
 interface FeeBreakdown {
   nightlyTotal: number;
@@ -135,6 +136,16 @@ export default function BookingSummary({
             <span className="text-[#4C6C4E]">Total</span>
             <span className="text-[#4C6C4E]">${fees.grandTotal.toLocaleString()}</span>
           </div>
+          {(() => {
+            const s = calculateSavings(baseRate, fees.numNights);
+            return s && s.savings > 50 ? (
+              <div className="mt-2 flex items-center gap-2 rounded-lg bg-[#4C6C4E]/5 px-3 py-2">
+                <span className="text-sm font-medium text-[#4C6C4E]">
+                  You save ${s.savings.toLocaleString()} vs Airbnb
+                </span>
+              </div>
+            ) : null;
+          })()}
           {(fees.securityDeposit ?? 0) > 0 && (
             <div className="mt-3 rounded-lg bg-amber-50 p-3">
               <div className="flex justify-between text-sm">
