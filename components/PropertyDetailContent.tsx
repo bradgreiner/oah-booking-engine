@@ -44,8 +44,13 @@ export default function PropertyDetailContent({ property }: Props) {
             ) : (
               <PhotoPlaceholder size="lg" />
             )}
+            {property.images.length > 1 && (
+              <button className="absolute bottom-4 left-4 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm md:hidden">
+                View all photos ({property.images.length})
+              </button>
+            )}
             {property.images.length > 5 && (
-              <button className="absolute bottom-4 left-4 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm">
+              <button className="absolute bottom-4 left-4 hidden rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm md:block">
                 View all photos ({property.images.length})
               </button>
             )}
@@ -86,7 +91,7 @@ export default function PropertyDetailContent({ property }: Props) {
               <span className="text-gray-600">{property.name}</span>
             </nav>
 
-            <h1 className="font-serif text-4xl font-normal leading-tight text-gray-900 mt-4 mb-3 md:text-5xl">
+            <h1 className="font-serif text-2xl font-normal leading-tight text-gray-900 mt-4 mb-3 sm:text-4xl md:text-5xl">
               {property.headline || property.name}
             </h1>
 
@@ -129,7 +134,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* Amenities */}
             <div className="mb-8">
-              <h2 className="font-serif text-2xl font-normal text-gray-900">
+              <h2 className="font-serif text-xl font-normal text-gray-900 md:text-2xl">
                 Your stay includes
               </h2>
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -148,7 +153,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* House rules */}
             <div className="mb-8">
-              <h2 className="font-serif text-2xl font-normal text-gray-900">
+              <h2 className="font-serif text-xl font-normal text-gray-900 md:text-2xl">
                 House rules
               </h2>
               <ul className="mt-4 space-y-2 text-sm text-gray-600">
@@ -164,7 +169,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* Cancellation policy */}
             <div className="mb-8">
-              <h2 className="font-serif text-2xl font-normal text-gray-900">
+              <h2 className="font-serif text-xl font-normal text-gray-900 md:text-2xl">
                 Cancellation policy
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-gray-600">
@@ -177,7 +182,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* Location */}
             <div className="mb-8">
-              <h2 className="font-serif text-2xl font-normal text-gray-900">
+              <h2 className="font-serif text-xl font-normal text-gray-900 md:text-2xl">
                 Location
               </h2>
               <p className="mt-2 text-sm text-gray-600">
@@ -205,7 +210,7 @@ export default function PropertyDetailContent({ property }: Props) {
 
             {/* TODO: pull from listing_content table per property */}
             <div>
-              <h2 className="font-serif text-2xl font-normal text-gray-900">
+              <h2 className="font-serif text-xl font-normal text-gray-900 md:text-2xl">
                 Things we love nearby
               </h2>
               <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">

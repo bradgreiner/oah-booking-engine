@@ -31,7 +31,7 @@ export default async function HomePage() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-            <h1 className="max-w-3xl text-center font-serif text-5xl font-normal leading-tight text-white md:text-6xl">
+            <h1 className="max-w-3xl text-center font-serif text-3xl font-normal leading-tight text-white sm:text-5xl md:text-6xl">
               Stay longer, live like a local.
             </h1>
             <p className="mt-4 max-w-xl text-center text-lg text-white/80 md:text-xl">

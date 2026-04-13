@@ -242,7 +242,7 @@ export default function RequestFormContent() {
 
           <div className="mt-6 flex flex-col gap-8 lg:flex-row">
             {/* Left: Form */}
-            <div className="flex-1">
+            <div className="order-2 flex-1 lg:order-1">
               {/* Who's staying */}
               <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-sm font-semibold text-gray-700">Who&apos;s staying?</h2>
@@ -331,8 +331,8 @@ export default function RequestFormContent() {
               </p>
             </div>
 
-            {/* Right: Sidebar */}
-            <div className="w-full lg:w-[340px] lg:shrink-0">
+            {/* Right: Sidebar — shown first on mobile so guest sees summary */}
+            <div className="order-1 w-full lg:order-2 lg:w-[340px] lg:shrink-0">
               <div className="sticky top-6">
                 <BookingSummary
                   propertyName={property?.headline || property?.name || "Loading..."}

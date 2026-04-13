@@ -37,7 +37,7 @@ export default function NeighborhoodGrid({ cityCounts }: NeighborhoodGridProps) 
               <Link
                 key={n.name}
                 href={`/search?city=${encodeURIComponent(n.searchCity)}`}
-                className="group relative flex h-40 items-end overflow-hidden rounded-xl p-5"
+                className="group relative flex h-32 items-end overflow-hidden rounded-xl p-5 sm:h-40"
               >
                 <Image
                   src={n.image}
@@ -48,7 +48,7 @@ export default function NeighborhoodGrid({ cityCounts }: NeighborhoodGridProps) 
                 />
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10">
-                  <h3 className="text-lg font-semibold text-white transition group-hover:text-[#C5A55A]">
+                  <h3 className="text-lg font-semibold text-white transition group-hover:text-white/90">
                     {n.name}
                   </h3>
                   <p className="text-sm text-gray-300">
