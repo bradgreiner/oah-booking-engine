@@ -27,6 +27,7 @@ interface BookingSummaryProps {
   guests: number;
   fees: FeeBreakdown | null;
   loading: boolean;
+  paymentMethod?: "card" | "ach";
 }
 
 function formatDate(dateStr: string): string {
@@ -48,6 +49,7 @@ export default function BookingSummary({
   guests,
   fees,
   loading,
+  paymentMethod,
 }: BookingSummaryProps) {
   const numNights = fees?.numNights ?? 0;
   const months = numNights >= 30 ? Math.round(numNights / 30) : 0;
@@ -132,9 +134,17 @@ export default function BookingSummary({
               <span className="text-gray-800">${fees.totAmount.toLocaleString()}</span>
             </div>
           ) : null}
+          {paymentMethod === "card" && fees.ccFee > 0 && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">Card processing (3%)</span>
+              <span className="text-gray-800">${fees.ccFee.toLocaleString()}</span>
+            </div>
+          )}
           <div className="mt-1 flex justify-between border-t border-gray-100 pt-3 text-base font-semibold">
             <span className="text-[#4C6C4E]">Total</span>
-            <span className="text-[#4C6C4E]">${fees.grandTotal.toLocaleString()}</span>
+            <span className="text-[#4C6C4E]">
+              ${paymentMethod === "card" ? Math.round(fees.grandTotal + fees.ccFee).toLocaleString() : fees.grandTotal.toLocaleString()}
+            </span>
           </div>
           {(() => {
             const s = calculateSavings(baseRate, fees.numNights);

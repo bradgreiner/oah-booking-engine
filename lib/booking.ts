@@ -37,10 +37,11 @@ export function calculateBookingFees(property: {
   });
 
   const ccFee = Math.round(fees.grandTotal * 0.03 * 100) / 100;
-  const grandTotalWithCc = Math.round((fees.grandTotal + ccFee) * 100) / 100;
   const securityDeposit = getSecurityDeposit(property.baseRate, numNights);
 
-  return { ...fees, ccFee, grandTotal: grandTotalWithCc, securityDeposit };
+  // DO NOT add ccFee to grandTotal. Return the base total.
+  // The UI will show ccFee as an add-on when card payment is selected.
+  return { ...fees, ccFee, securityDeposit };
 }
 
 export function getNightCount(checkIn: string, checkOut: string): number {
@@ -62,7 +63,9 @@ export async function createBookingPaymentIntent(
 
   const fees = calculateBookingFees(property, numNights, hasPets);
 
-  const paymentIntent = await createPaymentIntent(fees.grandTotal, {
+  // PaymentIntent is only used for card payments, so include the CC fee
+  const totalForCard = Math.round((fees.grandTotal + fees.ccFee) * 100) / 100;
+  const paymentIntent = await createPaymentIntent(totalForCard, {
     propertyId,
     checkIn,
     checkOut,
@@ -86,6 +89,12 @@ export async function submitBookingRequest(input: CreateBookingInput) {
   const numNights = getNightCount(input.checkIn, input.checkOut);
   const hasPets = input.numPets > 0;
   const fees = calculateBookingFees(property, numNights, hasPets);
+
+  // Card payments include CC fee; ACH does not
+  const isCardPayment = !!input.stripePaymentIntentId;
+  const actualGrandTotal = isCardPayment
+    ? Math.round((fees.grandTotal + fees.ccFee) * 100) / 100
+    : fees.grandTotal;
 
   // For Hostaway properties, we need a local Property record to FK against.
   // Use or create a placeholder record for Hostaway listings.
@@ -125,10 +134,10 @@ export async function submitBookingRequest(input: CreateBookingInput) {
       safelyFee: fees.safelyFee,
       totAmount: fees.totAmount,
       oahFee: fees.oahFee,
-      ccFee: fees.ccFee,
-      grandTotal: fees.grandTotal,
+      ccFee: isCardPayment ? fees.ccFee : 0,
+      grandTotal: actualGrandTotal,
       stripePaymentId: input.stripePaymentIntentId,
-      paymentMethod: "card",
+      paymentMethod: isCardPayment ? "card" : "ach",
       tripDescription: input.tripDescription,
       petInfo: input.petInfo || null,
       houseRulesAck: input.houseRulesAck,
@@ -147,10 +156,10 @@ export async function submitBookingRequest(input: CreateBookingInput) {
     checkOut: input.checkOut,
     numNights,
     numGuests: input.numGuests,
-    grandTotal: fees.grandTotal,
+    grandTotal: actualGrandTotal,
     tripDescription: input.tripDescription,
     petInfo: input.petInfo,
-    paymentMethod: "card",
+    paymentMethod: isCardPayment ? "card" : "ach",
     nightlyTotal: fees.nightlyTotal,
     cleaningFee: fees.cleaningFee,
     oahFee: fees.oahFee,

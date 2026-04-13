@@ -344,8 +344,9 @@ export default function BookingWidget({
             <span className="text-[#4C6C4E]">${fees.grandTotal.toLocaleString()}</span>
           </div>
           {fees.ccFee > 0 && (
-            <p className="text-sm text-[#4C6C4E]">
-              Save ${fees.ccFee.toLocaleString()} with bank transfer
+            <p className="mt-2 text-xs text-gray-500">
+              Credit card adds 3% (${fees.ccFee.toLocaleString()}).{" "}
+              <span className="font-medium text-[#4C6C4E]">Bank transfer has no fee.</span>
             </p>
           )}
           {(() => {

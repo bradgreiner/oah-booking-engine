@@ -350,7 +350,7 @@ export default function RequestFormContent() {
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-800">Instant bank transfer</p>
                         <p className="text-xs text-gray-500">No processing fee {ccSavings > 0 && <>&mdash; Save ${ccSavings.toLocaleString()} vs card</>}</p>
-                        {fees && <p className="mt-1 text-sm font-semibold text-[#4C6C4E]">${(fees.grandTotal - fees.ccFee).toLocaleString()}</p>}
+                        {fees && <p className="mt-1 text-sm font-semibold text-[#4C6C4E]">${fees.grandTotal.toLocaleString()}</p>}
                       </div>
                     </label>
 
@@ -360,7 +360,7 @@ export default function RequestFormContent() {
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-800">Credit or debit card</p>
                         <p className="text-xs text-gray-500">Including 3% card processing fee &middot; Visa MC Disc Amex</p>
-                        {fees && <p className="mt-1 text-sm font-semibold text-gray-800">${fees.grandTotal.toLocaleString()}</p>}
+                        {fees && <p className="mt-1 text-sm font-semibold text-gray-800">${Math.round(fees.grandTotal + fees.ccFee).toLocaleString()}</p>}
                       </div>
                     </label>
 
@@ -413,6 +413,7 @@ export default function RequestFormContent() {
                   guests={formData.numGuests}
                   fees={fees}
                   loading={feesLoading}
+                  paymentMethod={isLongStay ? "ach" : paymentMethod}
                 />
               </div>
             </div>
