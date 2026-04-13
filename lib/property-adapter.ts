@@ -347,31 +347,50 @@ export async function getProperties(
 }
 
 export async function getProperty(id: string): Promise<UnifiedProperty | null> {
+  let property: UnifiedProperty | null = null;
+
   // Hostaway IDs are prefixed with "hw_"
   if (id.startsWith("hw_")) {
     const hostawayId = parseInt(id.slice(3), 10);
     if (isNaN(hostawayId)) return null;
     const allListings = await fetchListings();
     const bulkMatch = allListings.find((l) => l.id === hostawayId);
-    if (bulkMatch) return mapHostawayToUnified(bulkMatch);
-    const listing = await fetchListing(hostawayId);
-    if (!listing) return null;
-    return mapHostawayToUnified(listing);
+    if (bulkMatch) {
+      property = mapHostawayToUnified(bulkMatch);
+    } else {
+      const listing = await fetchListing(hostawayId);
+      if (!listing) return null;
+      property = mapHostawayToUnified(listing);
+    }
+  } else {
+    // Local property (CUID)
+    try {
+      const dbProp = await prisma.property.findUnique({
+        where: { id },
+        include: {
+          images: { orderBy: { sortOrder: "asc" } },
+        },
+      });
+      if (!dbProp) return null;
+      property = mapLocalToUnified(dbProp);
+    } catch {
+      return null;
+    }
   }
 
-  // Local property (CUID)
-  try {
-    const property = await prisma.property.findUnique({
-      where: { id },
-      include: {
-        images: { orderBy: { sortOrder: "asc" } },
-      },
-    });
-    if (!property) return null;
-    return mapLocalToUnified(property);
-  } catch {
-    return null;
+  // Overlay PriceLabs 30-day average so the detail page header matches browse cards
+  if (property && property.hostawayListingId) {
+    const today = new Date();
+    const startDate = today.toISOString().split("T")[0];
+    const endDate = new Date(today.getTime() + 30 * 86400000).toISOString().split("T")[0];
+    const plRates = await fetchPriceLabsBatch([property.hostawayListingId], startDate, endDate);
+    const dynamicRate = plRates.get(property.hostawayListingId);
+    if (dynamicRate && dynamicRate > 0) {
+      property = { ...property, baseRate: dynamicRate, weeklyDiscount: 0, monthlyDiscount: 0 };
+    }
   }
+
+  return property;
 }
 
 export async function getPropertyPricing(

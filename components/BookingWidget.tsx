@@ -83,21 +83,40 @@ export default function BookingWidget({
   }
   const [activeTab, setActiveTab] = useState<Tab>(getDefaultTab);
 
-  // Compute display rate based on active tab
+  // Compute display rate: use API nightlyRate when fees loaded, otherwise prop-based estimate
   const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
   const weeklyMultiplier = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1 ? weeklyDiscount : 1;
+  const hasDates = !!(fees && !loading);
 
   let displayRate: number | null;
   let displayUnit: string;
-  if (activeTab === "monthly" || activeTab === "quarterly") {
-    displayRate = hasValidMonthlyDiscount ? Math.round(baseRate * 30 * monthlyDiscount!) : null;
-    displayUnit = "/mo";
-  } else if (activeTab === "weekly") {
-    displayRate = Math.round(baseRate * weeklyMultiplier);
-    displayUnit = "/night";
+  let isEstimate = false;
+
+  if (hasDates) {
+    // Dates selected — show exact rate from pricing API
+    const apiRate = fees.nightlyRate;
+    if (activeTab === "monthly" || activeTab === "quarterly") {
+      displayRate = Math.round(apiRate * 30);
+      displayUnit = "/mo";
+    } else {
+      displayRate = Math.round(apiRate);
+      displayUnit = "/night";
+    }
   } else {
-    displayRate = baseRate;
-    displayUnit = "/night";
+    // No dates — show prop-based estimate with "From" prefix
+    isEstimate = true;
+    if (activeTab === "monthly" || activeTab === "quarterly") {
+      displayRate = hasValidMonthlyDiscount
+        ? Math.round(baseRate * 30 * monthlyDiscount!)
+        : Math.round(baseRate * 30);
+      displayUnit = "/mo";
+    } else if (activeTab === "weekly") {
+      displayRate = Math.round(baseRate * weeklyMultiplier);
+      displayUnit = "/night";
+    } else {
+      displayRate = Math.round(baseRate);
+      displayUnit = "/night";
+    }
   }
 
   useEffect(() => {
@@ -138,6 +157,9 @@ export default function BookingWidget({
       <div className="mb-1">
         {displayRate !== null ? (
           <>
+            {isEstimate && (
+              <span className="text-sm font-normal text-gray-400">From </span>
+            )}
             <span className="text-3xl font-bold text-gray-900">
               ${displayRate.toLocaleString()}
             </span>
