@@ -3,8 +3,29 @@ import SessionProvider from "@/components/SessionProvider";
 import Script from "next/script";
 
 export const metadata = {
-  title: "OAH Booking Engine",
-  description: "Direct booking platform for OAH vacation rental properties",
+  title: {
+    default: "Open Air Homes — Furnished Rentals in Southern California",
+    template: "%s | Open Air Homes",
+  },
+  description: "Book furnished homes for short stays and monthly rentals across Los Angeles and Palm Springs. Save 10-15% vs Airbnb. Professionally managed by Open Air Homes.",
+  keywords: ["furnished rentals", "monthly rentals Los Angeles", "short term rentals Palm Springs", "Venice Beach monthly rental", "direct booking vacation rental"],
+  openGraph: {
+    type: "website",
+    siteName: "Open Air Homes",
+    title: "Open Air Homes — Furnished Rentals in Southern California",
+    description: "Book furnished homes for short stays and monthly rentals. Save 10-15% vs Airbnb.",
+    url: "https://oah-booking-engine.vercel.app",
+    images: [{ url: "/images/homes/Washington_38.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Open Air Homes — Furnished Rentals",
+    description: "Furnished homes across Southern California. Save 10-15% vs Airbnb.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
