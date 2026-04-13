@@ -56,16 +56,26 @@ function CardForm({
       return;
     }
 
+    console.log("[StripePayment] Confirming card payment, clientSecret:", clientSecret.substring(0, 20) + "...");
+
     const { error, paymentIntent } = await stripe.confirmCardPayment(
       clientSecret,
       { payment_method: { card: cardElement } }
     );
 
     if (error) {
+      console.error("[StripePayment] Payment error:", error.message);
       onError(error.message || "Payment failed");
       setSubmitting(false);
-    } else if (paymentIntent) {
+    } else if (paymentIntent && paymentIntent.status === "requires_capture") {
+      console.log("[StripePayment] Payment authorized successfully:", paymentIntent.id, "status:", paymentIntent.status);
       onSuccess(paymentIntent.id);
+    } else if (paymentIntent) {
+      console.log("[StripePayment] Unexpected status:", paymentIntent.status, "id:", paymentIntent.id);
+      onSuccess(paymentIntent.id);
+    } else {
+      onError("Payment confirmation returned no result");
+      setSubmitting(false);
     }
   };
 
