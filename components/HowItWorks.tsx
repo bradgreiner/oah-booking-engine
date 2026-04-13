@@ -1,18 +1,18 @@
 const STEPS = [
   {
     num: "01",
-    title: "Browse & compare",
-    desc: "Explore furnished homes across Southern California. Filter by location, budget, and length of stay.",
+    title: "Find your home",
+    desc: "Browse 55+ furnished homes across LA and Palm Springs. Filter by location, length of stay, and budget.",
   },
   {
     num: "02",
-    title: "Book direct",
-    desc: "Skip the middleman. Book directly with us and save 10-15% compared to Airbnb and VRBO.",
+    title: "Book direct and save",
+    desc: "Skip Airbnb's 14% guest fee. Our 2% platform fee means you save hundreds or thousands on monthly stays.",
   },
   {
     num: "03",
-    title: "Move in",
-    desc: "We handle everything — cleaning, linens, and support. Just bring your bags and settle in.",
+    title: "Settle in with full support",
+    desc: "Dedicated local teams handle cleaning, maintenance, and 24/7 guest support. Just bring your bags.",
   },
 ];
 

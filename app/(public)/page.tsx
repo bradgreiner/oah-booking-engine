@@ -3,7 +3,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroSearch from "@/components/HeroSearch";
 import HowItWorks from "@/components/HowItWorks";
+import WhyBookDirect from "@/components/WhyBookDirect";
 import NeighborhoodGrid from "@/components/NeighborhoodGrid";
+import Testimonials from "@/components/Testimonials";
 import PropertyCard from "@/components/PropertyCard";
 import { getFeaturedProperties, getCityCounts } from "@/lib/property-adapter";
 
@@ -37,12 +39,14 @@ export default async function HomePage() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
         />
-        {/* Hero */}
+
+        {/* 1. Hero with search */}
         <section className="relative min-h-[560px] md:min-h-[680px]">
           <Image
             src="/images/homes/Washington_38.jpg"
             alt="Luxury furnished home with pool in Southern California"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
             quality={90}
@@ -93,11 +97,16 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* 2. How it works (updated copy) */}
         <HowItWorks />
 
+        {/* 3. Why book direct (new) */}
+        <WhyBookDirect />
+
+        {/* 4. Neighborhood grid */}
         <NeighborhoodGrid cityCounts={cityCounts} />
 
-        {/* Featured properties */}
+        {/* 5. Featured properties */}
         <section className="mx-auto max-w-7xl px-4 py-16">
           <h2 className="font-serif text-2xl font-normal text-gray-900 md:text-3xl">
             Featured Homes
@@ -149,6 +158,27 @@ export default async function HomePage() {
               </a>
             </div>
           )}
+        </section>
+
+        {/* 6. Testimonials (new) */}
+        <Testimonials />
+
+        {/* 7. CTA */}
+        <section className="bg-white py-16">
+          <div className="mx-auto max-w-2xl px-4 text-center">
+            <h2 className="font-serif text-2xl font-normal text-[#1a1a1a] md:text-3xl">
+              Ready to find your home?
+            </h2>
+            <p className="mt-2 text-sm text-gray-500">
+              Browse furnished homes for short stays and monthly rentals across Southern California.
+            </p>
+            <a
+              href="/search"
+              className="mt-6 inline-block rounded-full bg-[#4C6C4E] px-8 py-3 text-sm font-medium text-white transition hover:bg-[#3d5a40]"
+            >
+              Browse all homes
+            </a>
+          </div>
         </section>
       </main>
       <Footer />
