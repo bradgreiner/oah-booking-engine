@@ -57,9 +57,11 @@ Every booking calculates fees as follows:
 7. **Grand total** = sum of all above
 
 ## Brand Colors
-- Navy: `#1B2A4A`
-- Gold: `#C9A84C`
-- Cream: `#FAF7F2`
+- Green: `#4C6C4E` (primary)
+- Green hover: `#3d5a40`
+- Cream: `#FAFAF8`
+- Charcoal: `#1a1a1a`
+- Gold: `#C5A55A` (Olympic section only)
 
 ## Environment Variables
 ```
@@ -105,3 +107,35 @@ OLYMPICS_PASSWORD=
 - If PriceLabs does not return data for a listing, set `baseRate` to 0 so the UI shows "Contact for pricing".
 - Never apply Hostaway `weeklyDiscount` or `monthlyDiscount` multipliers on top of PriceLabs rates.
 - PriceLabs rates already reflect dynamic market pricing — do not double-apply any discounts.
+
+## What's Built (as of latest session)
+
+### Guest-facing booking portal
+- Homepage: hero with date search, featured properties, neighborhood grid, how-it-works
+- Browse/search: filter by city/market, amenity pills (Pool, Pets, Monthly, STR), sort by price
+- Property detail: photo grid with fullscreen gallery, booking widget with date picker, fee breakdown, amenities, house rules, cancellation, neighborhood map, nearby places
+- Request-to-book: guest info form, payment method selection (card/ACH), Stripe integration, booking session tracking
+- Confirmation page: green checkmark, booking summary, timeline of next steps
+- Abandoned booking recovery: session tracking, hourly cron email, unsubscribe page
+- City SEO landing pages: /cities/[slug] with property grid, FAQ, meta tags
+
+### Admin dashboard
+- Booking management: approve/decline with Stripe capture/cancel, stats bar, expanded row details
+- Property management: CRUD via admin panel
+
+### Infrastructure
+- PriceLabs dynamic pricing (sole source, Hostaway prices are dummy)
+- Hostaway calendar integration (blocked dates, min nights)
+- Stripe payments (PaymentIntent with manual capture)
+- Resend email (guest confirmation, admin notification, approval, decline, abandoned recovery)
+- Vercel cron for abandoned emails
+- GTM tracking
+- SEO meta tags + Open Graph
+- Mobile responsive across all pages
+- Map privacy (deterministic offset, non-interactive detail map)
+
+### Design system
+- Fonts: Instrument Serif (headings), DM Sans (body)
+- Colors: #4C6C4E (green), #3d5a40 (hover), #FAFAF8 (cream), #1a1a1a (charcoal)
+- Cards: hover lift + green accent border
+- Buttons: pill-shaped, full-width CTAs
