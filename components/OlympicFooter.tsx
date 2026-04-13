@@ -15,9 +15,9 @@ export default function OlympicFooter() {
             </p>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:text-gray-700">About</Link>
-            <Link href="#" className="hover:text-gray-700">Contact</Link>
-            <Link href="#" className="hover:text-gray-700">Privacy</Link>
+            <Link href="/about" className="hover:text-gray-700">About</Link>
+            <Link href="mailto:brad@openairhomes.com" className="hover:text-gray-700">Contact</Link>
+            <Link href="/privacy" className="hover:text-gray-700">Privacy</Link>
           </div>
         </div>
       </div>
