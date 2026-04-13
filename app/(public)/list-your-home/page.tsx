@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { trackEvent } from "@/lib/analytics";
 
 const CITIES = [
   "Venice",
@@ -117,6 +118,7 @@ export default function ListYourHomePage() {
         body: JSON.stringify(body),
       });
       if (res.ok) {
+        trackEvent("lead_submitted", { city: body.city, source: body.source });
         setSubmittedName(body.name.split(" ")[0] || body.name);
         setSubmitted(true);
       } else {

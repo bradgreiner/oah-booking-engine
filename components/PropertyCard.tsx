@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { trackEvent } from "@/lib/analytics";
 
 interface PropertyCardProps {
   id: string;
@@ -58,7 +61,10 @@ export default function PropertyCard({
 
   return (
     <Link href={`${linkPrefix}/${id}${dateParams}`} className="group block">
-      <div className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div
+        onClickCapture={() => trackEvent("listing_view", { propertyId: id, propertyName: name, city })}
+        className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      >
         {/* Image */}
         <div className="relative w-full overflow-hidden bg-gray-100" style={{ aspectRatio: "4/3" }}>
           {imageUrl ? (

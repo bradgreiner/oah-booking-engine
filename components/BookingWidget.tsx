@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DatePicker from "@/components/DatePicker";
+import { trackEvent } from "@/lib/analytics";
 
 interface BookingWidgetProps {
   propertyId: string;
@@ -138,6 +139,14 @@ export default function BookingWidget({
 
   async function handleRequestToBook() {
     if (!checkIn || !checkOut) return;
+
+    trackEvent("request_started", {
+      propertyId,
+      checkIn,
+      checkOut,
+      numNights: fees?.numNights,
+      grandTotal: fees?.grandTotal,
+    });
 
     // Create a booking session for abandoned cart tracking
     let sessionId = "";

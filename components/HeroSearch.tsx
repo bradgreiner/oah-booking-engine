@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/analytics";
 
 const MARKET_OPTIONS = [
   { value: "Los Angeles", label: "Los Angeles" },
@@ -17,6 +18,7 @@ export default function HeroSearch() {
   const today = new Date().toISOString().split("T")[0];
 
   function handleSearch() {
+    trackEvent("search_executed", { city, checkIn, checkOut });
     const params = new URLSearchParams();
     if (city) params.set("city", city);
     if (checkIn) params.set("checkIn", checkIn);

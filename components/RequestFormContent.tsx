@@ -9,6 +9,7 @@ import BookingSummary from "@/components/BookingSummary";
 import GuestInfoForm from "@/components/GuestInfoForm";
 import GuestAuthPrompt from "@/components/GuestAuthPrompt";
 import StripePayment from "@/components/StripePayment";
+import { trackEvent } from "@/lib/analytics";
 
 interface Property {
   id: string;
@@ -159,6 +160,13 @@ export default function RequestFormContent() {
   async function handleSubmit() {
     if (!validate()) return;
     setPaymentError("");
+
+    trackEvent("payment_initiated", {
+      propertyId,
+      paymentMethod,
+      grandTotal: fees?.grandTotal,
+    });
+
     if (isLongStay || paymentMethod === "ach") {
       setSubmitting(true);
       await submitRequest("");
@@ -186,6 +194,13 @@ export default function RequestFormContent() {
       });
       if (res.ok) {
         const booking = await res.json();
+        trackEvent("booking_completed", {
+          propertyId,
+          checkIn,
+          checkOut,
+          grandTotal: fees?.grandTotal,
+          paymentMethod,
+        });
         updateBookingSession({ stepReached: "completed" });
         router.push(`/confirmation/${booking.id}`);
       } else {

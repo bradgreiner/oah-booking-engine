@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import PropertyCard from "@/components/PropertyCard";
 import SearchSkeleton from "@/components/SearchSkeleton";
 import SearchMap from "@/components/SearchMap";
+import { trackEvent } from "@/lib/analytics";
 
 interface Property {
   id: string;
@@ -96,6 +97,11 @@ export default function SearchContent() {
       if (res.ok) {
         const data = await res.json();
         setProperties(data);
+        trackEvent("filter_applied", {
+          city,
+          filters: Array.from(activeFilters),
+          sort,
+        });
       }
     } catch {
       // Silently handle fetch errors
