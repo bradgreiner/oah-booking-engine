@@ -47,7 +47,7 @@ export default async function VenuesPage() {
                     {venue.name}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-[#C5A55A] ring-1 ring-[#C5A55A]/20">
+                    <span className="inline-flex rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-[#4C6C4E] ring-1 ring-[#4C6C4E]/20">
                       {venue.sport}
                     </span>
                   </td>

@@ -28,7 +28,7 @@ export default async function OlympicPropertyPage({ params }: Props) {
       <OlympicHeader />
 
       {/* Gold accent bar */}
-      <div className="border-b border-[#C5A55A]/20 bg-[#C5A55A]/5 px-4 py-2 text-center text-xs font-medium text-[#C5A55A]">
+      <div className="border-b border-[#4C6C4E]/20 bg-[#4C6C4E]/5 px-4 py-2 text-center text-xs font-medium text-[#4C6C4E]">
         LA 2028 Olympics Collection
       </div>
 

@@ -99,7 +99,7 @@ export default function OlympicBrowseContent() {
           <h1 className="font-serif text-2xl font-bold text-[#1a1a1a]">
             Olympic Home Collection
           </h1>
-          <span className="rounded-full border border-[#C5A55A]/30 bg-[#C5A55A]/10 px-3 py-1 text-xs font-semibold text-[#C5A55A]">
+          <span className="rounded-full border border-[#4C6C4E]/30 bg-[#4C6C4E]/10 px-3 py-1 text-xs font-semibold text-[#4C6C4E]">
             LA 2028
           </span>
         </div>
@@ -117,7 +117,7 @@ export default function OlympicBrowseContent() {
           onClick={() => setActiveCluster(null)}
           className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
             !activeCluster
-              ? "border-[#C5A55A] bg-[#C5A55A]/10 text-[#C5A55A]"
+              ? "border-[#4C6C4E] bg-[#4C6C4E]/10 text-[#4C6C4E]"
               : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
           }`}
         >
@@ -129,7 +129,7 @@ export default function OlympicBrowseContent() {
             onClick={() => setActiveCluster(activeCluster === c.key ? null : c.key)}
             className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
               activeCluster === c.key
-                ? "border-[#C5A55A] bg-[#C5A55A]/10 text-[#C5A55A]"
+                ? "border-[#4C6C4E] bg-[#4C6C4E]/10 text-[#4C6C4E]"
                 : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
             }`}
           >
@@ -141,7 +141,7 @@ export default function OlympicBrowseContent() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 outline-none focus:border-[#C5A55A] focus:ring-1 focus:ring-[#C5A55A]"
+            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -196,7 +196,7 @@ export default function OlympicBrowseContent() {
             </div>
           </>
         ) : (
-          <div className="rounded-xl border-2 border-dashed border-[#C5A55A]/20 bg-white p-12 text-center">
+          <div className="rounded-xl border-2 border-dashed border-[#4C6C4E]/20 bg-white p-12 text-center">
             <p className="text-gray-500">
               No Olympic properties available yet. Check back soon.
             </p>

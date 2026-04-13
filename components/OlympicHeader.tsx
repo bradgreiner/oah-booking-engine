@@ -7,7 +7,7 @@ export default function OlympicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="border-b border-[#C5A55A]/20 bg-white">
+    <nav className="border-b border-[#4C6C4E]/20 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="font-serif text-xl font-bold text-[#4C6C4E]">
@@ -16,7 +16,7 @@ export default function OlympicHeader() {
           <span className="hidden text-gray-300 sm:inline">&middot;</span>
           <Link
             href="/olympics/browse"
-            className="hidden font-serif text-sm font-semibold text-[#C5A55A] sm:inline"
+            className="hidden font-serif text-sm font-semibold text-[#4C6C4E] sm:inline"
           >
             LA 2028
           </Link>
@@ -24,7 +24,7 @@ export default function OlympicHeader() {
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 text-sm md:flex">
-          <Link href="/olympics/browse" className="text-gray-600 hover:text-[#C5A55A]">
+          <Link href="/olympics/browse" className="text-gray-600 hover:text-[#4C6C4E]">
             Browse Homes
           </Link>
           <Link href="/search" className="text-gray-600 hover:text-[#4C6C4E]">

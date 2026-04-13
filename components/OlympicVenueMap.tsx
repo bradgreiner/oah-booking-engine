@@ -105,7 +105,7 @@ export default function OlympicVenueMap({
           el.style.width = "32px";
           el.style.height = "32px";
           el.style.borderRadius = "50%";
-          el.style.background = "#C5A55A";
+          el.style.background = "#4C6C4E";
           el.style.border = "2px solid #fff";
           el.style.display = "flex";
           el.style.alignItems = "center";
@@ -166,7 +166,7 @@ export default function OlympicVenueMap({
 
   if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
     return (
-      <div className="flex h-[300px] items-center justify-center rounded-xl border border-[#C5A55A]/20 bg-[#C5A55A]/5 md:h-[500px]">
+      <div className="flex h-[300px] items-center justify-center rounded-xl border border-[#4C6C4E]/20 bg-[#4C6C4E]/5 md:h-[500px]">
         <p className="text-sm text-gray-400">Map requires NEXT_PUBLIC_MAPBOX_TOKEN</p>
       </div>
     );
@@ -175,7 +175,7 @@ export default function OlympicVenueMap({
   return (
     <div
       ref={mapContainer}
-      className="h-[300px] w-full overflow-hidden rounded-xl border border-[#C5A55A]/20 md:h-[500px]"
+      className="h-[300px] w-full overflow-hidden rounded-xl border border-[#4C6C4E]/20 md:h-[500px]"
     />
   );
 }

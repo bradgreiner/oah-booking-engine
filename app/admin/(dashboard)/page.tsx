@@ -19,7 +19,7 @@ export default async function AdminDashboard() {
     {
       label: "Olympic Properties",
       value: olympicProperties,
-      accent: "text-[#C5A55A]",
+      accent: "text-[#4C6C4E]",
     },
     {
       label: "Total Bookings",
@@ -88,7 +88,7 @@ export default async function AdminDashboard() {
               href="/admin/venues"
               className="flex items-center gap-3 rounded-lg border border-gray-200 p-4 text-sm font-medium text-gray-700 transition-colors hover:border-amber-200 hover:bg-amber-50/50"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-[#C5A55A]">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-[#4C6C4E]">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />

@@ -2,7 +2,7 @@
 export const COLORS = {
   green: "#4C6C4E",
   greenDark: "#3d5a40",
-  gold: "#C5A55A", // Olympic accent — kept for Olympic section
+  gold: "#C5A55A", // Legacy Olympic accent — no longer used in UI
   cream: "#FAFAF8",
   white: "#FFFFFF",
   charcoal: "#1a1a1a",

@@ -45,7 +45,7 @@ export default function NearbyVenues({ propertyCity, venues }: NearbyVenuesProps
   if (nearby.length === 0) return null;
 
   return (
-    <div className="mt-8 rounded-xl border border-[#C5A55A]/20 bg-[#C5A55A]/5 p-6">
+    <div className="mt-8 rounded-xl border border-[#4C6C4E]/20 bg-[#4C6C4E]/5 p-6">
       <h3 className="font-serif text-lg font-semibold text-[#1a1a1a]">
         Nearby Olympic Venues
       </h3>
@@ -53,9 +53,9 @@ export default function NearbyVenues({ propertyCity, venues }: NearbyVenuesProps
         {nearby.slice(0, 6).map((v) => (
           <span
             key={v.id}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#C5A55A]/20 bg-white px-3 py-1.5 text-xs text-gray-600"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[#4C6C4E]/20 bg-white px-3 py-1.5 text-xs text-gray-600"
           >
-            <span className="inline-block h-2 w-2 rounded-full bg-[#C5A55A]" />
+            <span className="inline-block h-2 w-2 rounded-full bg-[#4C6C4E]" />
             {v.name} ({v.distance.toFixed(1)} mi) &middot;{" "}
             <span className="text-gray-500">{v.sport}</span>
           </span>

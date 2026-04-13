@@ -32,12 +32,12 @@ export default function OlympicsGatePage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#F5F3EF]">
       {/* Header */}
-      <header className="border-b border-[#C5A55A]/20 bg-white">
+      <header className="border-b border-[#4C6C4E]/20 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <Link href="/" className="font-serif text-xl font-bold text-[#4C6C4E]">
             Open Air Homes
           </Link>
-          <span className="rounded-full border border-[#C5A55A]/30 bg-[#C5A55A]/10 px-3 py-1 text-xs font-medium text-[#C5A55A]">
+          <span className="rounded-full border border-[#4C6C4E]/30 bg-[#4C6C4E]/10 px-3 py-1 text-xs font-medium text-[#4C6C4E]">
             LA 2028
           </span>
         </div>
@@ -46,8 +46,8 @@ export default function OlympicsGatePage() {
       {/* Gate */}
       <main className="flex flex-1 items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#C5A55A]/10">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-[#C5A55A]">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#4C6C4E]/10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-[#4C6C4E]">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
           </div>
@@ -55,7 +55,7 @@ export default function OlympicsGatePage() {
           <h1 className="mt-6 font-serif text-3xl font-bold text-[#1a1a1a]">
             LA 2028 Olympics
           </h1>
-          <p className="mt-1 font-serif text-lg text-[#C5A55A]">
+          <p className="mt-1 font-serif text-lg text-[#4C6C4E]">
             Private Home Collection
           </p>
           <p className="mx-auto mt-4 max-w-sm text-sm text-gray-500">
@@ -69,7 +69,7 @@ export default function OlympicsGatePage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter access code"
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm outline-none focus:border-[#C5A55A] focus:ring-1 focus:ring-[#C5A55A]"
+              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
             />
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button
