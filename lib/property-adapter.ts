@@ -9,6 +9,7 @@ import {
 import { calculateBookingFees, getNightCount } from "./booking";
 import { fetchPriceLabsBatch } from "./pricelabs";
 import { getMarketCities } from "./constants";
+import { cleanDescription } from "./description-cleaner";
 
 // ---------- Unified property shape ----------
 
@@ -145,12 +146,15 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     (l as any).basePrice,
   ) || 0;
 
+  const cleanedDesc = cleanDescription(listing.description);
+  const summary = (listing as any).airbnbSummary;
+
   return {
     id: `hw_${listing.id}`,
     slug: `hw-${listing.id}`,
     name: listing.name,
     headline: listing.name,
-    description: listing.description || null,
+    description: cleanedDesc || (typeof summary === "string" && summary.length > 50 ? summary : null),
     neighborhood: null,
     city: listing.city || null,
     state: listing.state || null,
@@ -411,6 +415,14 @@ export async function getProperty(id: string): Promise<UnifiedProperty | null> {
       property = mapLocalToUnified(dbProp);
     } catch {
       return null;
+    }
+  }
+
+  // Clean the description if it hasn't been cleaned already
+  if (property && property.description) {
+    const cleaned = cleanDescription(property.description);
+    if (cleaned !== property.description) {
+      property = { ...property, description: cleaned };
     }
   }
 
