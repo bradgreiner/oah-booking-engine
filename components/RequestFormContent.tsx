@@ -202,6 +202,22 @@ export default function RequestFormContent() {
     );
   }
 
+  if (property && property.baseRate <= 0) {
+    return (
+      <>
+        <Navbar />
+        <main className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="font-serif text-2xl text-gray-900">Pricing unavailable</h1>
+            <p className="mt-2 text-sm text-gray-500">This property doesn&apos;t have pricing configured yet. Contact us directly.</p>
+            <a href="mailto:brad@openairhomes.com" className="mt-4 inline-block text-[#4C6C4E] hover:underline">brad@openairhomes.com</a>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <Navbar />

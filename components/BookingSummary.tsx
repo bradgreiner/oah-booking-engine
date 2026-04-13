@@ -97,7 +97,7 @@ export default function BookingSummary({
           <div className="h-4 animate-pulse rounded bg-gray-100" />
           <div className="h-4 animate-pulse rounded bg-gray-100" />
         </div>
-      ) : fees ? (
+      ) : fees && fees.grandTotal > 0 ? (
         <div className="mt-4 space-y-2 border-t border-gray-100 pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">${baseRate.toLocaleString()} x {fees.numNights} nights</span>
@@ -134,6 +134,11 @@ export default function BookingSummary({
             <span className="text-[#4C6C4E]">Total</span>
             <span className="text-[#4C6C4E]">${fees.grandTotal.toLocaleString()}</span>
           </div>
+        </div>
+      ) : fees ? (
+        <div className="mt-4 text-center text-sm text-gray-500">
+          <p>Pricing not available for the selected dates.</p>
+          <p className="mt-1">Contact us at brad@openairhomes.com</p>
         </div>
       ) : null}
 
