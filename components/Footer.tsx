@@ -50,6 +50,9 @@ export default function Footer({ showBadges = true }: FooterProps) {
             <Link href="/about" className="hover:text-gray-700">
               About
             </Link>
+            <Link href="/contact" className="hover:text-gray-700">
+              Contact
+            </Link>
             <Link href="/terms" className="hover:text-gray-700">
               Terms
             </Link>
