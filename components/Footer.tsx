@@ -58,11 +58,11 @@ export default function Footer({ showBadges = true }: FooterProps) {
             </Link>
           </div>
         </div>
-        <p className="mt-4 text-xs text-gray-400">
+        <p className="mt-4 text-xs text-gray-500">
           Open Air Homes is a service of OpenAiRE Brokerage Inc. CA DRE
           #02164159
         </p>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-gray-500">
           &copy; 2026 Open Air Homes, Inc. All rights reserved.
         </p>
       </div>

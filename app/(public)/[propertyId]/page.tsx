@@ -102,7 +102,7 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-white pb-20 lg:pb-0">
+      <main id="main-content" className="min-h-screen bg-white pb-20 lg:pb-0">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -147,8 +147,8 @@ export default function PhotoGallery({ images, initialIndex, onClose }: PhotoGal
             alt={current.alt || `Photo ${index + 1}`}
             width={1200}
             height={800}
+            sizes="90vw"
             className="max-h-[85vh] max-w-[90vw] object-contain"
-            priority
           />
         </div>
         {current.alt && (

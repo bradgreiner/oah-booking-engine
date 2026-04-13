@@ -26,7 +26,7 @@ export default function MobileBookingBar({ propertyId, propertyName, baseRate, m
               <span className="text-sm text-gray-500"> {unit}</span>
             </div>
           ) : (
-            <p className="text-sm italic text-gray-400">Contact for pricing</p>
+            <p className="text-sm italic text-gray-500">Contact for pricing</p>
           )}
         </div>
         {hasRate ? (

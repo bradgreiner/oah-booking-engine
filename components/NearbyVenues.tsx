@@ -57,7 +57,7 @@ export default function NearbyVenues({ propertyCity, venues }: NearbyVenuesProps
           >
             <span className="inline-block h-2 w-2 rounded-full bg-[#C5A55A]" />
             {v.name} ({v.distance.toFixed(1)} mi) &middot;{" "}
-            <span className="text-gray-400">{v.sport}</span>
+            <span className="text-gray-500">{v.sport}</span>
           </span>
         ))}
       </div>

@@ -34,7 +34,7 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
-      <main>
+      <main id="main-content">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}

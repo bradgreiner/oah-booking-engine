@@ -80,7 +80,7 @@ export default function BookingRow({ booking, onApprove, onDecline, actionLoadin
       >
         <td className="px-4 py-3 text-sm text-gray-500">
           <div>{new Date(booking.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
-          <div className="text-xs text-gray-400">{relativeTime(booking.createdAt)}</div>
+          <div className="text-xs text-gray-500">{relativeTime(booking.createdAt)}</div>
         </td>
         <td className="px-4 py-3 text-sm font-medium text-gray-900">
           {booking.guest.firstName} {booking.guest.lastName}
@@ -104,7 +104,7 @@ export default function BookingRow({ booking, onApprove, onDecline, actionLoadin
                 STR
               </span>
             )}
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
               {booking.paymentMethod === "card" ? "Card" : "ACH"}
             </span>
           </div>

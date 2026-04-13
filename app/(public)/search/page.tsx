@@ -8,13 +8,14 @@ export default function SearchPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-50">
+      <main id="main-content" className="min-h-screen bg-gray-50">
         {/* Photo header */}
         <div className="relative h-[220px] overflow-hidden">
           <Image
             src="/images/homes/Washington_20.jpg"
             alt="Browse homes"
             fill
+            sizes="100vw"
             className="object-cover"
             quality={85}
           />

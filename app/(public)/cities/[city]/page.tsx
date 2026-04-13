@@ -249,6 +249,7 @@ export default async function CityPage({ params }: { params: { city: string } })
           src={cityData.heroImage}
           alt={cityData.name}
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />

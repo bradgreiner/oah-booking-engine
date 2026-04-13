@@ -246,13 +246,13 @@ export default function RequestFormContent() {
             </div>
             <div className="mb-4 h-px w-8 bg-gray-300" />
             <div className="flex flex-col items-center gap-1">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-400">2</span>
-              <span className="text-xs text-gray-400">Review</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-500">2</span>
+              <span className="text-xs text-gray-500">Review</span>
             </div>
             <div className="mb-4 h-px w-8 bg-gray-300" />
             <div className="flex flex-col items-center gap-1">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-400">3</span>
-              <span className="text-xs text-gray-400">Confirm</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-500">3</span>
+              <span className="text-xs text-gray-500">Confirm</span>
             </div>
           </div>
 
@@ -370,7 +370,7 @@ export default function RequestFormContent() {
                 className="mt-6 w-full rounded-full bg-[#4C6C4E] py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#3d5a40] disabled:cursor-not-allowed disabled:opacity-50">
                 {submitting ? "Submitting..." : "Request to Book"}
               </button>
-              <p className="mt-3 text-center text-xs text-gray-400">
+              <p className="mt-3 text-center text-xs text-gray-500">
                 Secure checkout powered by Stripe &middot; You won&apos;t be charged until we approve your request &middot; We typically review within 24 hours &middot; By submitting, you agree to our Rental Terms &amp; Conditions
               </p>
             </div>

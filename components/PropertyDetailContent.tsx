@@ -47,7 +47,7 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
           {/* Left: details */}
           <div className="flex-1">
             {/* Breadcrumb */}
-            <nav className="mb-4 text-sm text-gray-400">
+            <nav className="mb-4 text-sm text-gray-500">
               <a href="/search" className="hover:text-gray-600">Homes</a>
               {property.city && (
                 <>
@@ -87,7 +87,7 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
             </div>
 
             {/* Inline trust badges */}
-            <p className="mt-1.5 text-xs text-gray-400">
+            <p className="mt-1.5 text-xs text-gray-500">
               Managed by OAH &middot; Licensed CA Brokerage &middot; 4.89 stars on Airbnb
             </p>
 

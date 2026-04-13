@@ -189,7 +189,7 @@ export default function BookingWidget({
         {displayRate !== null ? (
           <>
             {isEstimate && (
-              <span className="text-sm font-normal text-gray-400">From </span>
+              <span className="text-sm font-normal text-gray-500">From </span>
             )}
             <span className="text-3xl font-bold text-gray-900">
               ${displayRate.toLocaleString()}
@@ -238,7 +238,7 @@ export default function BookingWidget({
       )}
 
       {/* Available from date */}
-      <p className="mb-2 text-xs text-gray-400">
+      <p className="mb-2 text-xs text-gray-500">
         Available from {formatAvailableDate()}
       </p>
 
@@ -325,7 +325,7 @@ export default function BookingWidget({
                 <span className="text-gray-600">Occupancy tax</span>
                 <span className="text-[#4C6C4E]">$0 &#10003;</span>
               </div>
-              <p className="mt-0.5 text-xs text-gray-400">
+              <p className="mt-0.5 text-xs text-gray-500">
                 Monthly rentals are exempt from transient occupancy tax
               </p>
             </div>
@@ -355,13 +355,13 @@ export default function BookingWidget({
         Request to Book
       </button>
 
-      <div className="mt-2 space-y-1 text-center text-xs text-gray-400">
+      <div className="mt-2 space-y-1 text-center text-xs text-gray-500">
         <p>Your card won&apos;t be charged until we approve your request</p>
         <p>We typically review within 24 hours</p>
       </div>
 
       {(minNights > 1 || maxNights) && (
-        <p className="mt-2 text-center text-xs text-gray-400">
+        <p className="mt-2 text-center text-xs text-gray-500">
           {minNights > 1 && `${minNights} night minimum`}
           {minNights > 1 && maxNights && " · "}
           {maxNights && `${maxNights} night maximum`}

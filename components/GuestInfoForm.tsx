@@ -84,7 +84,7 @@ export default function GuestInfoForm({
       {/* Phone */}
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700">
-          Phone <span className="font-normal text-gray-400">(optional — for faster approval)</span>
+          Phone <span className="font-normal text-gray-500">(optional, for faster approval)</span>
         </label>
         <input
           type="tel"
@@ -125,7 +125,7 @@ export default function GuestInfoForm({
         {errors.tripDescription && (
           <p className="mt-1 text-xs text-red-500">{errors.tripDescription}</p>
         )}
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-gray-500">
           {data.tripDescription.length}/20 characters minimum
         </p>
       </div>

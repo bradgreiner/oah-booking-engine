@@ -124,7 +124,7 @@ export default function PropertyCard({
                   <span className="text-sm font-normal text-gray-500">/mo</span>
                 </p>
               ) : (
-                <p className="text-sm italic text-gray-400">Contact for pricing</p>
+                <p className="text-sm italic text-gray-500">Contact for pricing</p>
               )
             ) : baseRate > 0 ? (
               <p className="text-lg font-bold text-gray-900">
@@ -132,7 +132,7 @@ export default function PropertyCard({
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             ) : (
-              <p className="text-sm italic text-gray-400">Contact for pricing</p>
+              <p className="text-sm italic text-gray-500">Contact for pricing</p>
             )}
           </div>
         </div>
