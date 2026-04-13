@@ -2,6 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 
+// Deterministic privacy offset (~200-400m) based on property ID hash
+function deterministicOffset(id: string, coord: number): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+  }
+  const normalized = (hash % 1000) / 1000; // roughly -1 to 1
+  return coord + normalized * 0.003;
+}
+
 interface Props {
   latitude: number | null;
   longitude: number | null;
@@ -18,10 +28,9 @@ export default function PropertyMap({ latitude, longitude, city, propertyId }: P
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
     if (!token || !containerRef.current || latitude == null || longitude == null) return;
 
-    // Deterministic offset based on listing ID for privacy
-    const offset = (propertyId.charCodeAt(0) % 6) * 0.001 + 0.003;
-    const offsetLat = latitude + offset;
-    const offsetLng = longitude + offset;
+    // Deterministic privacy offset so the marker doesn't jump on reload
+    const offsetLat = deterministicOffset(propertyId, latitude);
+    const offsetLng = deterministicOffset(propertyId + "_lng", longitude);
 
     let cancelled = false;
 
@@ -38,11 +47,11 @@ export default function PropertyMap({ latitude, longitude, city, propertyId }: P
         style: "mapbox://styles/mapbox/light-v11",
         center: [offsetLng, offsetLat],
         zoom: 13,
-        scrollZoom: false,
+        interactive: false,
         attributionControl: false,
       });
 
-      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+      // No navigation controls — map is non-interactive to prevent address discovery
 
       // Privacy circle marker — placed on offset coordinates
       const el = document.createElement("div");

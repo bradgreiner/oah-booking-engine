@@ -2,6 +2,16 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 
+// Deterministic privacy offset (~200-400m) based on property ID hash
+function deterministicOffset(id: string, coord: number): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+  }
+  const normalized = (hash % 1000) / 1000;
+  return coord + normalized * 0.003;
+}
+
 interface MapProperty {
   id: string;
   name: string;
@@ -84,8 +94,12 @@ export default function SearchMap({ properties }: SearchMapProps) {
     for (const p of properties) {
       if (p.latitude == null || p.longitude == null) continue;
 
+      // Privacy: use deterministic offset so markers show neighborhood, not exact address
+      const privLat = deterministicOffset(p.id, p.latitude);
+      const privLng = deterministicOffset(p.id + "_lng", p.longitude);
+
       hasCoords = true;
-      bounds.extend([p.longitude, p.latitude]);
+      bounds.extend([privLng, privLat]);
 
       const isMonthly = p.minNights >= 30;
       const hasValidMonthlyDiscount = p.monthlyDiscount != null && p.monthlyDiscount > 0 && p.monthlyDiscount < 1;
@@ -119,7 +133,7 @@ export default function SearchMap({ properties }: SearchMapProps) {
       });
 
       const marker = new mapboxgl.Marker({ element: el, anchor: "center" })
-        .setLngLat([p.longitude, p.latitude])
+        .setLngLat([privLng, privLat])
         .addTo(map);
 
       markersRef.current.push(marker);
