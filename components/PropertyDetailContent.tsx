@@ -1,7 +1,6 @@
-import Image from "next/image";
 import BookingWidget from "@/components/BookingWidget";
 import PropertyDescription from "@/components/PropertyDescription";
-import PhotoPlaceholder from "@/components/PhotoPlaceholder";
+import PhotoGrid from "@/components/PhotoGrid";
 import PropertyMap from "@/components/PropertyMap";
 import type { UnifiedProperty } from "@/lib/property-adapter";
 
@@ -29,49 +28,7 @@ export default function PropertyDetailContent({ property }: Props) {
   return (
     <>
       {/* Photo grid */}
-      <div className="mx-auto max-w-7xl md:px-4 md:pt-6">
-        <div className="grid h-[250px] grid-cols-1 gap-2 overflow-hidden md:h-[420px] md:grid-cols-4 md:grid-rows-2 md:rounded-xl">
-          <div className="relative col-span-1 row-span-2 bg-gray-100 md:col-span-2">
-            {property.images[0] ? (
-              <Image
-                src={property.images[0].url}
-                alt={property.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 60vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <PhotoPlaceholder size="lg" />
-            )}
-            {property.images.length > 1 && (
-              <button className="absolute bottom-4 left-4 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm md:hidden">
-                View all photos ({property.images.length})
-              </button>
-            )}
-            {property.images.length > 5 && (
-              <button className="absolute bottom-4 left-4 hidden rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm md:block">
-                View all photos ({property.images.length})
-              </button>
-            )}
-          </div>
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="relative hidden bg-gray-100 md:block">
-              {property.images[i] ? (
-                <Image
-                  src={property.images[i].url}
-                  alt={`${property.name} ${i + 1}`}
-                  fill
-                  sizes="20vw"
-                  className="object-cover"
-                />
-              ) : (
-                <PhotoPlaceholder size="sm" />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+      <PhotoGrid images={property.images} propertyName={property.name} />
 
       {/* Content + sidebar */}
       <div className="mx-auto max-w-7xl px-4 py-8">
