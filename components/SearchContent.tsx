@@ -58,6 +58,7 @@ export default function SearchContent() {
   const [checkOut, setCheckOut] = useState(searchParams.get("checkOut") || "");
   const [city, setCity] = useState(searchParams.get("city") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
+  const [bedrooms, setBedrooms] = useState("");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(() => {
     const filters = new Set<string>();
     if (searchParams.get("type") === "monthly") filters.add("monthly");
@@ -140,14 +141,19 @@ export default function SearchContent() {
 
   const hasMapToken = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+  // Client-side bedroom filter
+  const filtered = bedrooms
+    ? properties.filter((p) => p.bedrooms >= parseInt(bedrooms))
+    : properties;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
       {/* Filters bar */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex items-center gap-3">
         <select
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+          className="shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
         >
           <option value="">All Cities</option>
           {MARKET_OPTIONS.map((m) => (
@@ -155,21 +161,35 @@ export default function SearchContent() {
           ))}
         </select>
 
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => toggleFilter(f.key)}
-            className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-              activeFilters.has(f.key)
-                ? "border-[#4C6C4E] bg-[#4C6C4E] text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+        <select
+          value={bedrooms}
+          onChange={(e) => setBedrooms(e.target.value)}
+          className="shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
+        >
+          <option value="">Any bedrooms</option>
+          <option value="1">1+ Bed</option>
+          <option value="2">2+ Beds</option>
+          <option value="3">3+ Beds</option>
+          <option value="4">4+ Beds</option>
+        </select>
 
-        <div className="ml-auto">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => toggleFilter(f.key)}
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${
+                activeFilters.has(f.key)
+                  ? "border-[#4C6C4E] bg-[#4C6C4E] text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="ml-auto shrink-0">
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
@@ -189,12 +209,13 @@ export default function SearchContent() {
       <div className="mt-6">
         {loading ? (
           <SearchSkeleton />
-        ) : properties.length > 0 ? (
+        ) : filtered.length > 0 ? (
           <div className="flex gap-0">
             {/* Left: property grid */}
             <div className={`min-w-0 flex-1 ${hasMapToken ? "pr-4" : ""}`}>
               <p className="mb-4 text-sm text-gray-500">
-                {properties.length} {properties.length === 1 ? "home" : "homes"} available
+                {filtered.length} {filtered.length === 1 ? "home" : "homes"}
+                {city ? ` in ${city}` : " across Los Angeles & Palm Springs"}
               </p>
               {(checkIn || checkOut) && (
                 <p className="mb-4 text-sm text-gray-500">
@@ -213,7 +234,7 @@ export default function SearchContent() {
                 </p>
               )}
               <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
-                {properties.map((property) => (
+                {filtered.map((property) => (
                   <div
                     key={property.id}
                     id={`card-${property.id}`}
@@ -249,26 +270,34 @@ export default function SearchContent() {
             {hasMapToken && (
               <div className="hidden w-[420px] shrink-0 lg:block">
                 <div className="sticky top-[80px] h-[calc(100vh-80px)] overflow-hidden rounded-xl">
-                  <SearchMap properties={properties} />
+                  <SearchMap properties={filtered} />
                 </div>
               </div>
             )}
           </div>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-gray-200 bg-white p-12 text-center">
-            <p className="text-gray-500">
-              No homes match your filters. Try adjusting your search.
-            </p>
-            <button
-              onClick={() => {
-                setCity("");
-                setActiveFilters(new Set());
-                setSort("newest");
-              }}
-              className="mt-4 rounded-full border border-[#4C6C4E] px-6 py-2 text-sm font-medium text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
-            >
-              Clear filters
-            </button>
+            <h3 className="font-serif text-lg text-gray-900">No homes match your filters</h3>
+            <p className="mt-2 text-sm text-gray-500">Try removing a filter or switching markets.</p>
+            <div className="mt-4 flex justify-center gap-3">
+              <button
+                onClick={() => {
+                  setCity("");
+                  setBedrooms("");
+                  setActiveFilters(new Set());
+                  setSort("newest");
+                }}
+                className="rounded-full border border-[#4C6C4E] px-6 py-2 text-sm font-medium text-[#4C6C4E] transition hover:bg-[#4C6C4E] hover:text-white"
+              >
+                Clear all filters
+              </button>
+              <a
+                href="/search"
+                className="rounded-full bg-[#4C6C4E] px-6 py-2 text-sm font-medium text-white hover:bg-[#3d5a40]"
+              >
+                View all homes
+              </a>
+            </div>
           </div>
         )}
       </div>
