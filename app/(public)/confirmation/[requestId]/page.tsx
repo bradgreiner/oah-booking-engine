@@ -83,6 +83,11 @@ export default async function ConfirmationPage({ params }: Props) {
                 A hold has been placed but you have not been charged
               </p>
             </div>
+            {numNights >= 30 && (
+              <p className="mt-2 text-xs text-[#4C6C4E]">
+                A CAR rental agreement will be sent for your signature after approval.
+              </p>
+            )}
           </div>
 
           {/* Timeline */}
