@@ -28,21 +28,9 @@ interface Property {
   longitude: number | null;
 }
 
-const CITIES = [
-  "Los Angeles",
-  "West Hollywood",
-  "Santa Monica",
-  "Palm Springs",
-  "Palm Desert",
-  "Rancho Mirage",
-  "La Quinta",
-  "Cathedral City",
-  "Manhattan Beach",
-  "Malibu",
-  "Topanga",
-  "Yucca Valley",
-  "Venice",
-  "Marina del Rey",
+const MARKET_OPTIONS = [
+  { value: "Los Angeles", label: "Los Angeles" },
+  { value: "Palm Springs", label: "Palm Springs" },
 ];
 
 const FILTERS = [
@@ -158,8 +146,8 @@ export default function SearchContent() {
           className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
         >
           <option value="">All Cities</option>
-          {CITIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+          {MARKET_OPTIONS.map((m) => (
+            <option key={m.value} value={m.value}>{m.label}</option>
           ))}
         </select>
 

@@ -8,6 +8,7 @@ import {
 } from "./hostaway";
 import { calculateBookingFees, getNightCount } from "./booking";
 import { fetchPriceLabsBatch } from "./pricelabs";
+import { getMarketCities } from "./constants";
 
 // ---------- Unified property shape ----------
 
@@ -217,8 +218,14 @@ function applyFilters(
   let result = properties;
 
   if (filters.city) {
-    const cityLower = filters.city.toLowerCase();
-    result = result.filter((p) => p.city?.toLowerCase() === cityLower);
+    const marketCities = getMarketCities(filters.city);
+    if (marketCities) {
+      const marketLower = marketCities.map((c) => c.toLowerCase());
+      result = result.filter((p) => p.city && marketLower.includes(p.city.toLowerCase()));
+    } else {
+      const cityLower = filters.city.toLowerCase();
+      result = result.filter((p) => p.city?.toLowerCase() === cityLower);
+    }
   }
 
   if (filters.propertyType) {
@@ -301,7 +308,9 @@ async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<Uni
     if (!p.hostawayListingId) return p;
     const dynamicRate = plRates.get(p.hostawayListingId);
     if (dynamicRate && dynamicRate > 0) {
-      return { ...p, baseRate: dynamicRate };
+      // PriceLabs already accounts for stay-length pricing — zero out
+      // discount multipliers so downstream display doesn't double-apply.
+      return { ...p, baseRate: dynamicRate, weeklyDiscount: 0, monthlyDiscount: 0 };
     }
     return p;
   });
@@ -378,25 +387,29 @@ export async function getPropertyPricing(
   let nightlyRate = property.baseRate;
   let rateSource = 'hostaway';
   if (property.hostawayListingId) {
-    const { getAverageNightlyRate } = await import('./pricelabs');
-    const dynamicRate = await getAverageNightlyRate(property.hostawayListingId, checkIn, checkOut);
+    const hostawayId = parseInt(property.id.replace('hw_', ''), 10);
+    const plRates = await fetchPriceLabsBatch([hostawayId], checkIn, checkOut);
+    const dynamicRate = plRates.get(hostawayId);
     if (dynamicRate && dynamicRate > 0) { nightlyRate = dynamicRate; rateSource = 'pricelabs'; }
   }
 
-  // Apply stay-length discount multipliers (monthly takes priority over weekly, never both)
+  // Apply stay-length discount multipliers ONLY when using Hostaway rates.
+  // PriceLabs already accounts for stay-length pricing.
   let discountedRate = nightlyRate;
-  const md = property.monthlyDiscount;
-  const wd = property.weeklyDiscount;
-  if (numNights >= 30 && md && md > 0 && md < 1) {
-    discountedRate = nightlyRate * md;
-  } else if (numNights >= 7 && wd && wd > 0 && wd < 1) {
-    discountedRate = nightlyRate * wd;
+  if (rateSource !== 'pricelabs') {
+    const md = property.monthlyDiscount;
+    const wd = property.weeklyDiscount;
+    if (numNights >= 30 && md && md > 0 && md < 1) {
+      discountedRate = nightlyRate * md;
+    } else if (numNights >= 7 && wd && wd > 0 && wd < 1) {
+      discountedRate = nightlyRate * wd;
+    }
   }
 
   const { getTotRate } = await import('./constants');
   const totRate = getTotRate(property.city, numNights);
   const fees = calculateBookingFees({ baseRate: discountedRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
-  return { ...fees, nightlyRate: discountedRate, numNights, checkIn, checkOut, source: property.source, rateSource };
+  return { ...fees, nightlyRate: Math.round(discountedRate), numNights, checkIn, checkOut, source: property.source, rateSource };
 }
 
 // Homepage featured: only local active + Hostaway merged
@@ -461,7 +474,12 @@ async function fetchLocalProperties(filters: PropertyFilters) {
   }
 
   if (filters.city) {
-    where.city = { equals: filters.city, mode: "insensitive" };
+    const marketCities = getMarketCities(filters.city);
+    if (marketCities) {
+      where.city = { in: marketCities, mode: "insensitive" };
+    } else {
+      where.city = { equals: filters.city, mode: "insensitive" };
+    }
   }
 
   if (filters.propertyType) {

@@ -3,21 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const CITIES = [
-  "Los Angeles",
-  "Santa Monica",
-  "West Hollywood",
-  "Palm Springs",
-  "Palm Desert",
-  "Rancho Mirage",
-  "La Quinta",
-  "Cathedral City",
-  "Manhattan Beach",
-  "Malibu",
-  "Topanga",
-  "Yucca Valley",
-  "Venice",
-  "Marina del Rey",
+const MARKET_OPTIONS = [
+  { value: "Los Angeles", label: "Los Angeles" },
+  { value: "Palm Springs", label: "Palm Springs" },
 ];
 
 function getNextMonths(count: number): { value: string; label: string }[] {
@@ -62,8 +50,8 @@ export default function HeroSearch() {
               className="w-full rounded-xl border-0 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none focus:bg-gray-100 focus:ring-0"
             >
               <option value="">All locations</option>
-              {CITIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {MARKET_OPTIONS.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
               ))}
             </select>
           </div>

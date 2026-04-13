@@ -45,9 +45,10 @@ export default function PropertyCard({
   const isMonthly = propertyType === "monthly" || (minNights ?? 0) >= 30;
   const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
 
-  // Monthly card: baseRate * 30 * monthlyDiscount (accommodation only, no fees baked in)
-  const monthlyPrice = isMonthly && hasValidMonthlyDiscount
-    ? Math.round(baseRate * 30 * monthlyDiscount!)
+  // Monthly card: baseRate * 30 (with discount multiplier if present).
+  // When PriceLabs provides the rate, discounts are zeroed out so we just use baseRate * 30.
+  const monthlyPrice = isMonthly
+    ? Math.round(baseRate * 30 * (hasValidMonthlyDiscount ? monthlyDiscount! : 1))
     : null;
 
   return (
@@ -122,7 +123,7 @@ export default function PropertyCard({
               )
             ) : (
               <p className="text-lg font-bold text-gray-900">
-                ${baseRate.toLocaleString()}
+                ${Math.round(baseRate).toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             )}

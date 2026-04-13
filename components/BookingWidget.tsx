@@ -19,6 +19,7 @@ interface BookingWidgetProps {
 
 interface FeeBreakdown {
   nightlyTotal: number;
+  nightlyRate: number;
   cleaningFee: number;
   petFee: number;
   safelyFee: number;
@@ -244,7 +245,7 @@ export default function BookingWidget({
         <div className="mb-4 space-y-2 border-t border-gray-100 pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">
-              ${baseRate.toLocaleString()} x {fees.numNights}{" "}
+              ${Math.round(fees.nightlyRate)}/night &times; {fees.numNights}{" "}
               {fees.numNights === 1 ? "night" : "nights"}
             </span>
             <span className="text-gray-800">${fees.nightlyTotal.toLocaleString()}</span>

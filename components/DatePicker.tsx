@@ -86,7 +86,7 @@ export default function DatePicker({
       } else {
         onCheckOutChange(dateStr);
         setSelecting("checkin");
-        setOpen(false);
+        setTimeout(() => setOpen(false), 300);
       }
     }
   }
@@ -241,6 +241,13 @@ export default function DatePicker({
             {renderMonth(baseMonth)}
             {renderMonth(month2)}
           </div>
+
+          {/* Minimum stay note */}
+          {minNights > 1 && selecting === "checkout" && checkIn && (
+            <p className="mt-3 text-center text-xs text-gray-500">
+              Minimum stay: {minNights} nights
+            </p>
+          )}
 
           {/* Clear / close */}
           <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">

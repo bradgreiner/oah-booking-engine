@@ -52,6 +52,38 @@ export function getSecurityDeposit(nightlyRate: number, numNights: number): numb
   return Math.round(nightlyRate * 30);
 }
 
+// ---------- Market groupings ----------
+
+export const MARKETS = {
+  "Los Angeles": [
+    "Los Angeles",
+    "Santa Monica",
+    "West Hollywood",
+    "Manhattan Beach",
+    "Malibu",
+    "Topanga",
+    "Marina del Rey",
+    "Rancho Palos Verdes",
+    "Venice",
+  ],
+  "Palm Springs": [
+    "Palm Springs",
+    "Palm Desert",
+    "La Quinta",
+    "Rancho Mirage",
+    "Cathedral City",
+    "Yucca Valley",
+  ],
+} as const;
+
+export type MarketName = keyof typeof MARKETS;
+
+/** Given a city filter value, return the array of cities it covers (or null for no filter). */
+export function getMarketCities(cityFilter: string): string[] | null {
+  const cities = MARKETS[cityFilter as MarketName];
+  return cities ? [...cities] : null;
+}
+
 // OAH platform fee (2% of nightly total)
 export const OAH_FEE_RATE = 0.02;
 
