@@ -105,6 +105,21 @@ function extractImages(listing: HostawayListing): { url: string; alt: string | n
 
 function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
   const amenities = mapHostawayAmenities(listing);
+
+  // Fallback: detect amenities from listing name and description
+  // (bulk listings endpoint doesn't include listingAmenities)
+  const nameLC = (listing.name || "").toLowerCase();
+  const descLC = (listing.description || "").toLowerCase();
+  const detected: string[] = [];
+  if (nameLC.includes("pool") || descLC.includes("pool")) detected.push("Pool");
+  if (nameLC.includes("pet") || descLC.includes("pet friendly") || descLC.includes("pets welcome")) detected.push("Pet Friendly");
+  if (nameLC.includes("hot tub") || nameLC.includes("spa") || descLC.includes("hot tub") || descLC.includes("jacuzzi")) detected.push("Hot Tub");
+  if (nameLC.includes("firepit") || nameLC.includes("fire pit") || descLC.includes("fire pit") || descLC.includes("firepit")) detected.push("Fire Pit");
+  if (nameLC.includes("sauna") || descLC.includes("sauna")) detected.push("Sauna");
+  if (nameLC.includes("ocean") || nameLC.includes("beach") || descLC.includes("beach access") || descLC.includes("steps to the sand")) detected.push("Beach Access");
+
+  const combined = Array.from(new Set([...amenities, ...detected]));
+
   const images = extractImages(listing);
   const l = listing as Record<string, unknown>;
 
@@ -153,7 +168,7 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     maxNights: listing.maxNights ?? null,
     totRate: 0.12,
     isOlympic: false,
-    amenities: amenities.length > 0 ? JSON.stringify(amenities) : null,
+    amenities: combined.length > 0 ? JSON.stringify(combined) : null,
     status: "active",
     isPublished: true,
     createdAt: new Date().toISOString(),
@@ -275,12 +290,17 @@ function applyFilters(
   return result;
 }
 
+function getSortPrice(p: UnifiedProperty): number {
+  const isMonthly = p.propertyType === "monthly" || (p.minNights ?? 0) >= 28;
+  return isMonthly ? p.baseRate * 30 : p.baseRate;
+}
+
 function applySort(properties: UnifiedProperty[], sort?: string): UnifiedProperty[] {
   if (sort === "price_asc") {
-    return [...properties].sort((a, b) => a.baseRate - b.baseRate);
+    return [...properties].sort((a, b) => getSortPrice(a) - getSortPrice(b));
   }
   if (sort === "price_desc") {
-    return [...properties].sort((a, b) => b.baseRate - a.baseRate);
+    return [...properties].sort((a, b) => getSortPrice(b) - getSortPrice(a));
   }
   // Default: newest first
   return [...properties].sort(
