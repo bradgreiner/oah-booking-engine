@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
 
 const MARKET_OPTIONS = [
@@ -18,7 +18,6 @@ export default function Navbar() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [city, setCity] = useState("");
@@ -26,24 +25,6 @@ export default function Navbar() {
   const [checkOut, setCheckOut] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
-
-  // Show active search in pill
-  const activeCity = searchParams.get("city") || "";
-  const activeCheckIn = searchParams.get("checkIn") || "";
-  const activeCheckOut = searchParams.get("checkOut") || "";
-
-  function formatShortDate(dateStr: string): string {
-    return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-  }
-
-  const pillText = activeCity
-    ? activeCheckIn && activeCheckOut
-      ? `${activeCity} · ${formatShortDate(activeCheckIn)} – ${formatShortDate(activeCheckOut)}`
-      : activeCity
-    : "Where are you going?";
 
   useEffect(() => {
     function handleScroll() {
@@ -167,7 +148,7 @@ export default function Navbar() {
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
-            <span className="max-w-[200px] truncate">{pillText}</span>
+            <span className="max-w-[200px] truncate">Where are you going?</span>
           </button>
 
           {/* Search dropdown */}
