@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     function handleScroll() {
@@ -39,6 +41,14 @@ export default function Navbar() {
           >
             Browse Homes
           </Link>
+          {session && (
+            <Link
+              href="/account"
+              className="font-sans text-sm font-medium text-gray-700 hover:text-[#4C6C4E]"
+            >
+              My Bookings
+            </Link>
+          )}
           <Link
             href="/olympics"
             className="font-sans text-sm font-medium text-gray-700 hover:text-[#4C6C4E]"
@@ -107,6 +117,15 @@ export default function Navbar() {
           >
             Browse Homes
           </Link>
+          {session && (
+            <Link
+              href="/account"
+              className="block py-3 text-sm font-medium text-gray-600 hover:text-gray-900"
+              onClick={() => setMenuOpen(false)}
+            >
+              My Bookings
+            </Link>
+          )}
           <Link
             href="/olympics"
             className="block py-3 text-sm font-medium text-gray-600 hover:text-gray-900"
