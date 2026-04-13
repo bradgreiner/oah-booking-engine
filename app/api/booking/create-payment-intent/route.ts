@@ -24,6 +24,13 @@ export async function POST(request: NextRequest) {
       hasPets || false
     );
 
+    if (result.fees.grandTotal <= 0) {
+      return NextResponse.json(
+        { error: "Cannot create payment: pricing unavailable for this listing" },
+        { status: 422 }
+      );
+    }
+
     console.log("[create-payment-intent] PaymentIntent created:", result.paymentIntentId, "amount cents:", Math.round(result.fees.grandTotal * 100));
 
     return NextResponse.json(result);

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { submitBookingRequest } from "@/lib/booking";
+import { stripe } from "@/lib/stripe";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +23,18 @@ export async function POST(request: NextRequest) {
         { error: "Trip description must be at least 20 characters" },
         { status: 400 }
       );
+    }
+
+    // Verify Stripe payment intent if provided
+    if (body.stripePaymentIntentId) {
+      try {
+        const pi = await stripe.paymentIntents.retrieve(body.stripePaymentIntentId);
+        if (pi.status !== "requires_capture") {
+          return NextResponse.json({ error: "Invalid payment status" }, { status: 400 });
+        }
+      } catch {
+        return NextResponse.json({ error: "Invalid payment reference" }, { status: 400 });
+      }
     }
 
     const booking = await submitBookingRequest({

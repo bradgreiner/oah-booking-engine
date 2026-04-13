@@ -78,6 +78,7 @@ export default function RequestFormContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+  const [piError, setPiError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "ach">("card");
   const stripeSubmitRef = useRef<(() => void) | null>(null);
   const [bookingSessionId, setBookingSessionId] = useState(
@@ -120,7 +121,14 @@ export default function RequestFormContent() {
       if (feeRes.ok) setFees(await feeRes.json());
       if (piRes.ok) {
         const piData = await piRes.json();
-        setClientSecret(piData.clientSecret);
+        if (piData.clientSecret) {
+          setClientSecret(piData.clientSecret);
+        } else {
+          setPiError(piData.error || "Unable to initialize payment");
+        }
+      } else {
+        const errData = await piRes.json().catch(() => ({ error: "Payment service unavailable" }));
+        setPiError(errData.error);
       }
       setFeesLoading(false);
     }
@@ -334,6 +342,13 @@ export default function RequestFormContent() {
                   </div>
                 )}
 
+                {piError && (
+                  <div className="mt-3 rounded-lg bg-red-50 p-4 text-sm text-red-700">
+                    <p className="font-medium">Payment setup failed</p>
+                    <p className="mt-1">{piError}</p>
+                    <p className="mt-2 text-xs text-red-500">Please try refreshing the page. If the problem persists, contact us at brad@openairhomes.com</p>
+                  </div>
+                )}
                 {paymentError && <p className="mt-3 text-sm text-red-600">{paymentError}</p>}
               </div>
 

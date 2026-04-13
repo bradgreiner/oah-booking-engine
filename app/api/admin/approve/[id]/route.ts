@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { approveBooking } from "@/lib/booking";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
