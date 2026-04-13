@@ -114,13 +114,18 @@ OLYMPICS_PASSWORD=
 ## What's Built (as of latest session)
 
 ### Guest-facing booking portal
-- Homepage: hero with date search, featured properties, neighborhood grid, how-it-works
-- Browse/search: filter by city/market, amenity pills (Pool, Pets, Monthly, STR), sort by price
-- Property detail: photo grid with fullscreen gallery, booking widget with date picker, fee breakdown, amenities, house rules, cancellation, neighborhood map, nearby places
+- Homepage: hero with date search, featured properties, neighborhood grid, how-it-works, why-book-direct comparison, testimonials, CTA
+- Browse/search: filter by city/market, amenity pills (Pool, Pets, Monthly, STR), bedroom filter, sort by price, scrollable filter pills on mobile, improved empty state
+- Property detail: photo grid with fullscreen gallery, booking widget with date picker, fee breakdown, amenities, house rules, cancellation, neighborhood map, nearby places, JSON-LD structured data
 - Request-to-book: guest info form, payment method selection (card/ACH), Stripe integration, booking session tracking
 - Confirmation page: green checkmark, booking summary, timeline of next steps
 - Abandoned booking recovery: session tracking, hourly cron email, unsubscribe page
 - City SEO landing pages: /cities/[slug] with property grid, FAQ, meta tags
+- Guest account page: /account with booking history (requires Google sign-in)
+- List Your Home: /list-your-home lead gen page with form, email notification via Resend, HomeownerLead Prisma model
+- About page: /about with company info, markets, contact
+- Terms of Service: /terms with booking process, cancellation, liability
+- Privacy Policy: /privacy with data collection, third-party services, rights
 
 ### Admin dashboard
 - Booking management: approve/decline with Stripe capture/cancel, stats bar, expanded row details
@@ -129,13 +134,16 @@ OLYMPICS_PASSWORD=
 ### Infrastructure
 - PriceLabs dynamic pricing (sole source, Hostaway prices are dummy)
 - Hostaway calendar integration (blocked dates, min nights)
+- Hostaway description cleaning (lib/description-cleaner.ts strips boilerplate before display)
 - Stripe payments (PaymentIntent with manual capture)
-- Resend email (guest confirmation, admin notification, approval, decline, abandoned recovery)
+- Resend email (guest confirmation, admin notification, approval, decline, abandoned recovery, homeowner lead notification)
 - Vercel cron for abandoned emails
 - GTM tracking
-- SEO meta tags + Open Graph
+- SEO: meta tags, Open Graph, robots.txt, dynamic sitemap, JSON-LD (Organization + LodgingBusiness)
 - Mobile responsive across all pages
 - Map privacy (deterministic offset, non-interactive detail map)
+- Accessibility: focus-visible states, skip-to-content link, WCAG AA contrast compliance, aria-labels on gallery controls
+- Performance: responsive image sizes on all Image components, lazy loading defaults
 
 ### Design system
 - Fonts: Instrument Serif (headings), DM Sans (body)
