@@ -18,6 +18,7 @@ interface GuestInfoFormProps {
   onChange: (data: GuestFormData) => void;
   maxGuests: number;
   errors: Record<string, string>;
+  onEmailBlur?: (email: string) => void;
 }
 
 export default function GuestInfoForm({
@@ -25,6 +26,7 @@ export default function GuestInfoForm({
   onChange,
   maxGuests,
   errors,
+  onEmailBlur,
 }: GuestInfoFormProps) {
   function update(field: string, value: string | number | boolean) {
     onChange({ ...data, [field]: value });
@@ -69,6 +71,11 @@ export default function GuestInfoForm({
           type="email"
           value={data.email}
           onChange={(e) => update("email", e.target.value)}
+          onBlur={() => {
+            if (onEmailBlur && data.email.includes("@")) {
+              onEmailBlur(data.email);
+            }
+          }}
           className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#4C6C4E] focus:ring-1 focus:ring-[#4C6C4E]"
         />
         {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}

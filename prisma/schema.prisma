@@ -155,3 +155,21 @@ model SiteSetting {
   key   String @unique
   value String
 }
+
+model BookingSession {
+  id           String   @id @default(cuid())
+  listingId    String
+  listingName  String?
+  checkIn      String?
+  checkOut     String?
+  guestEmail   String?
+  stepReached  String   @default("widget")
+  imageUrl     String?
+  emailSent    Boolean  @default(false)
+  unsubscribed Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([guestEmail])
+  @@index([stepReached])
+}

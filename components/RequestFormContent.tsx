@@ -80,6 +80,29 @@ export default function RequestFormContent() {
   const [paymentError, setPaymentError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "ach">("card");
   const stripeSubmitRef = useRef<(() => void) | null>(null);
+  const [bookingSessionId, setBookingSessionId] = useState(
+    searchParams.get("sessionId") || ""
+  );
+
+  // Helper to update the booking session (fire-and-forget)
+  function updateBookingSession(data: Record<string, string>) {
+    const payload: Record<string, string> = { ...data };
+    if (bookingSessionId) payload.sessionId = bookingSessionId;
+    else payload.listingId = propertyId;
+
+    fetch("/api/booking/update-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.ok ? res.json() : null)
+      .then((json) => {
+        if (json?.sessionId && !bookingSessionId) {
+          setBookingSessionId(json.sessionId);
+        }
+      })
+      .catch(() => {});
+  }
 
   useEffect(() => {
     if (!propertyId || !checkIn || !checkOut) return;
@@ -102,6 +125,10 @@ export default function RequestFormContent() {
       setFeesLoading(false);
     }
     load();
+
+    // Track that user reached the request form
+    updateBookingSession({ stepReached: "request_form", checkIn, checkOut });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyId, checkIn, checkOut]);
 
   const numNights = fees?.numNights || 0;
@@ -150,6 +177,7 @@ export default function RequestFormContent() {
       });
       if (res.ok) {
         const booking = await res.json();
+        updateBookingSession({ stepReached: "completed" });
         router.push(`/confirmation/${booking.id}`);
       } else {
         const data = await res.json();
@@ -234,7 +262,13 @@ export default function RequestFormContent() {
               <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-lg font-semibold text-[#1a1a1a]">Guest Information</h2>
                 <div className="mt-4">
-                  <GuestInfoForm data={formData} onChange={setFormData} maxGuests={property?.maxGuests || 10} errors={errors} />
+                  <GuestInfoForm
+                    data={formData}
+                    onChange={setFormData}
+                    maxGuests={property?.maxGuests || 10}
+                    errors={errors}
+                    onEmailBlur={(email) => updateBookingSession({ guestEmail: email })}
+                  />
                 </div>
               </div>
 

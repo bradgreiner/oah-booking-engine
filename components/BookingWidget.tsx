@@ -139,9 +139,32 @@ export default function BookingWidget({
     fetchPricing();
   }, [checkIn, checkOut, propertyId]);
 
-  function handleRequestToBook() {
+  async function handleRequestToBook() {
     if (!checkIn || !checkOut) return;
+
+    // Create a booking session for abandoned cart tracking
+    let sessionId = "";
+    try {
+      const res = await fetch("/api/booking/update-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId: propertyId,
+          checkIn,
+          checkOut,
+          stepReached: "widget",
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        sessionId = data.sessionId || "";
+      }
+    } catch {
+      // Non-blocking — don't prevent booking flow
+    }
+
     const params = new URLSearchParams({ checkIn, checkOut, guests: String(guests) });
+    if (sessionId) params.set("sessionId", sessionId);
     router.push(`/request/${propertyId}?${params.toString()}`);
   }
 
