@@ -2,16 +2,17 @@ import Link from "next/link";
 import Image from "next/image";
 
 // key = lowercase lookup in cityCounts, searchCity = value for the search URL
-const NEIGHBORHOODS: { name: string; key: string; searchCity: string; image: string }[] = [
-  { name: "Venice Beach", key: "venice beach", searchCity: "Los Angeles", image: "/images/homes/Washington_36.jpg" },
-  { name: "West Hollywood", key: "west hollywood", searchCity: "West Hollywood", image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800&q=80" },
-  { name: "Santa Monica", key: "santa monica", searchCity: "Santa Monica", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" },
-  { name: "Palm Springs", key: "palm springs", searchCity: "Palm Springs", image: "https://images.unsplash.com/photo-1565768633709-76dbbab1c03d?w=800&q=80" },
-  { name: "La Quinta", key: "la quinta", searchCity: "La Quinta", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80" },
+// slug = matches CITY_DATA keys in the city landing page — if set, links to /cities/[slug]
+const NEIGHBORHOODS: { name: string; key: string; searchCity: string; image: string; slug?: string }[] = [
+  { name: "Venice Beach", key: "venice beach", searchCity: "Los Angeles", image: "/images/homes/Washington_36.jpg", slug: "venice-beach" },
+  { name: "West Hollywood", key: "west hollywood", searchCity: "West Hollywood", image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800&q=80", slug: "west-hollywood" },
+  { name: "Santa Monica", key: "santa monica", searchCity: "Santa Monica", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", slug: "santa-monica" },
+  { name: "Palm Springs", key: "palm springs", searchCity: "Palm Springs", image: "https://images.unsplash.com/photo-1565768633709-76dbbab1c03d?w=800&q=80", slug: "palm-springs" },
+  { name: "La Quinta", key: "la quinta", searchCity: "La Quinta", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80", slug: "la-quinta" },
   { name: "Palm Desert", key: "palm desert", searchCity: "Palm Desert", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80" },
-  { name: "Manhattan Beach", key: "manhattan beach", searchCity: "Manhattan Beach", image: "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=800&q=80" },
-  { name: "Malibu", key: "malibu", searchCity: "Malibu", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=80" },
-  { name: "Topanga", key: "topanga", searchCity: "Topanga", image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80" },
+  { name: "Manhattan Beach", key: "manhattan beach", searchCity: "Manhattan Beach", image: "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=800&q=80", slug: "manhattan-beach" },
+  { name: "Malibu", key: "malibu", searchCity: "Malibu", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=80", slug: "malibu" },
+  { name: "Topanga", key: "topanga", searchCity: "Topanga", image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80", slug: "topanga" },
   { name: "Los Angeles", key: "los angeles", searchCity: "Los Angeles", image: "https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=800&q=80" },
 ];
 
@@ -36,7 +37,7 @@ export default function NeighborhoodGrid({ cityCounts }: NeighborhoodGridProps) 
             return (
               <Link
                 key={n.name}
-                href={`/search?city=${encodeURIComponent(n.searchCity)}`}
+                href={n.slug ? `/cities/${n.slug}` : `/search?city=${encodeURIComponent(n.searchCity)}`}
                 className="group relative flex h-32 items-end overflow-hidden rounded-xl p-5 sm:h-40"
               >
                 <Image
