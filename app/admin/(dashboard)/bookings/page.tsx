@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import BookingRow from "@/components/BookingRow";
 
 interface Booking {
@@ -22,6 +22,7 @@ interface Booking {
   petInfo: string | null;
   paymentMethod: string;
   source: string;
+  stripePaymentId: string | null;
   createdAt: string;
   guest: { firstName: string; lastName: string; email: string; phone: string | null };
   property: { name: string; headline: string | null };
@@ -34,8 +35,15 @@ const tabs = [
   { key: "declined", label: "Declined" },
 ];
 
+function nightCount(checkIn: string, checkOut: string) {
+  return Math.ceil(
+    (new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)
+  );
+}
+
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -44,17 +52,49 @@ export default function BookingsPage() {
     fetchBookings();
   }, [activeTab]);
 
+  // Fetch all bookings for stats on initial load
+  useEffect(() => {
+    fetch("/api/admin/bookings")
+      .then((res) => res.ok ? res.json() : [])
+      .then(setAllBookings)
+      .catch(() => {});
+  }, []);
+
+  const stats = useMemo(() => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const pending = allBookings.filter((b) => b.status === "pending").length;
+    const approvedThisMonth = allBookings.filter(
+      (b) => b.status === "approved" && new Date(b.createdAt) >= monthStart
+    );
+    const approvedCount = approvedThisMonth.length;
+    const approvedRevenue = approvedThisMonth.reduce((sum, b) => sum + b.grandTotal, 0);
+    return { pending, approvedCount, approvedRevenue };
+  }, [allBookings]);
+
   async function fetchBookings() {
     setLoading(true);
     const params = new URLSearchParams();
     if (activeTab !== "all") params.set("status", activeTab);
     const res = await fetch(`/api/admin/bookings?${params}`);
-    if (res.ok) setBookings(await res.json());
+    if (res.ok) {
+      const data = await res.json();
+      setBookings(data);
+      if (activeTab === "all") setAllBookings(data);
+    }
     setLoading(false);
   }
 
   async function handleApprove(id: string) {
-    if (!confirm("Approve this booking? The guest's card will be charged.")) return;
+    const booking = bookings.find((b) => b.id === id);
+    if (!booking) return;
+    const nights = nightCount(booking.checkIn, booking.checkOut);
+    const guestName = `${booking.guest.firstName} ${booking.guest.lastName}`;
+    let msg = `Approve booking for ${guestName}?\n\nThe guest's card will be charged $${booking.grandTotal.toLocaleString()}.`;
+    if (booking.source === "hostaway") msg += "\nA confirmed reservation will be created in Hostaway.";
+    if (nights >= 30) msg += "\nA CAR Rental Agreement will need to be sent separately.";
+    if (booking.totAmount > 0 && nights < 30) msg += `\nTOT of $${booking.totAmount.toLocaleString()} was collected. Remember to remit to the city.`;
+    if (!confirm(msg)) return;
     setActionLoading(id);
     const res = await fetch(`/api/admin/approve/${id}`, { method: "POST" });
     if (res.ok) await fetchBookings();
@@ -80,6 +120,25 @@ export default function BookingsPage() {
         <p className="mt-1 text-sm text-gray-500">
           Manage guest booking requests
         </p>
+      </div>
+
+      {/* Stats bar */}
+      <div className="mt-4 flex flex-wrap gap-4">
+        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5">
+          <span className="h-2 w-2 rounded-full bg-amber-400" />
+          <span className="text-sm text-gray-600">Pending:</span>
+          <span className="text-sm font-semibold text-gray-900">{stats.pending}</span>
+        </div>
+        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5">
+          <span className="h-2 w-2 rounded-full bg-green-500" />
+          <span className="text-sm text-gray-600">Approved this month:</span>
+          <span className="text-sm font-semibold text-gray-900">{stats.approvedCount}</span>
+        </div>
+        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5">
+          <span className="h-2 w-2 rounded-full bg-green-500" />
+          <span className="text-sm text-gray-600">Revenue this month:</span>
+          <span className="text-sm font-semibold text-green-700">${stats.approvedRevenue.toLocaleString()}</span>
+        </div>
       </div>
 
       {/* Tabs */}
