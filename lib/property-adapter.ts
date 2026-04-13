@@ -330,10 +330,26 @@ async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<Uni
     if (!p.hostawayListingId) return p;
     const dynamicRate = plRates.get(p.hostawayListingId);
     if (dynamicRate && dynamicRate > 0) {
-      return { ...p, baseRate: dynamicRate, weeklyDiscount: 0, monthlyDiscount: 0 };
+      // PriceLabs replaces the dummy Hostaway base price.
+      // KEEP weeklyDiscount and monthlyDiscount — they are REAL values
+      // actively managed by the team. Airbnb/VRBO use them to calculate
+      // discounted weekly/monthly prices. Zeroing them out makes our
+      // direct booking portal MORE expensive than Airbnb.
+      console.log('[pricing]', {
+        name: p.name,
+        hostawayId: p.hostawayListingId,
+        priceLabsRate: dynamicRate,
+        monthlyDiscount: p.monthlyDiscount,
+        weeklyDiscount: p.weeklyDiscount,
+        isMonthly: (p.minNights ?? 0) >= 28,
+        displayMonthly: p.monthlyDiscount && p.monthlyDiscount > 0 && p.monthlyDiscount < 1
+          ? Math.round(dynamicRate * p.monthlyDiscount * 30)
+          : Math.round(dynamicRate * 30),
+      });
+      return { ...p, baseRate: dynamicRate };
     }
     // No PriceLabs data — zero out the dummy Hostaway price
-    return { ...p, baseRate: 0, weeklyDiscount: 0, monthlyDiscount: 0 };
+    return { ...p, baseRate: 0 };
   });
 }
 
@@ -408,9 +424,11 @@ export async function getProperty(id: string): Promise<UnifiedProperty | null> {
     const plRates = await fetchPriceLabsBatch([property.hostawayListingId], startDate, endDate);
     const dynamicRate = plRates.get(property.hostawayListingId);
     if (dynamicRate && dynamicRate > 0) {
-      property = { ...property, baseRate: dynamicRate, weeklyDiscount: 0, monthlyDiscount: 0 };
+      // Replace dummy Hostaway price with PriceLabs rate.
+      // KEEP discount multipliers — they are real, not dummy.
+      property = { ...property, baseRate: dynamicRate };
     } else {
-      property = { ...property, baseRate: 0, weeklyDiscount: 0, monthlyDiscount: 0 };
+      property = { ...property, baseRate: 0 };
     }
   }
 
@@ -451,10 +469,22 @@ export async function getPropertyPricing(
     }
   }
 
+  // PriceLabs provides the base nightly rate (same rate that goes to Airbnb/VRBO).
+  // Monthly and weekly discounts from Hostaway are REAL and must be applied.
+  // Airbnb applies these same discounts — if we don't, our portal is more expensive.
+  let discountedRate = nightlyRate;
+  const md = property.monthlyDiscount;
+  const wd = property.weeklyDiscount;
+  if (numNights >= 30 && md && md > 0 && md < 1) {
+    discountedRate = nightlyRate * md;
+  } else if (numNights >= 7 && wd && wd > 0 && wd < 1) {
+    discountedRate = nightlyRate * wd;
+  }
+
   const { getTotRate } = await import('./constants');
   const totRate = getTotRate(property.city, numNights);
-  const fees = calculateBookingFees({ baseRate: nightlyRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
-  return { ...fees, nightlyRate: Math.round(nightlyRate), numNights, checkIn, checkOut, source: property.source, rateSource };
+  const fees = calculateBookingFees({ baseRate: discountedRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
+  return { ...fees, nightlyRate: Math.round(discountedRate), numNights, checkIn, checkOut, source: property.source, rateSource };
 }
 
 // Homepage featured: only local active + Hostaway merged

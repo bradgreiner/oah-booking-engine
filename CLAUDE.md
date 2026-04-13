@@ -103,10 +103,13 @@ OLYMPICS_PASSWORD=
 - Build must pass (`npx next build`) before pushing.
 
 ## Pricing Rules
-- PriceLabs is the ONLY pricing source. Hostaway `price` fields are dummy values and must NEVER be used.
+- PriceLabs is the ONLY source for the base nightly rate (`baseRate`). The Hostaway `price` field is a dummy and must NEVER be used as `baseRate`.
 - If PriceLabs does not return data for a listing, set `baseRate` to 0 so the UI shows "Contact for pricing".
-- Never apply Hostaway `weeklyDiscount` or `monthlyDiscount` multipliers on top of PriceLabs rates.
-- PriceLabs rates already reflect dynamic market pricing — do not double-apply any discounts.
+- The `monthlyDiscount` and `weeklyDiscount` fields in Hostaway are REAL — they are actively managed by the team and match what Airbnb/VRBO use. They must ALWAYS be preserved and applied.
+- Monthly card price = PriceLabs avg nightly × monthlyDiscount × 30.
+- Weekly rate = PriceLabs avg nightly × weeklyDiscount.
+- STR nightly rate = PriceLabs avg nightly (no discount).
+- Never zero out monthlyDiscount or weeklyDiscount. Only the Hostaway `price` field is dummy.
 
 ## What's Built (as of latest session)
 
