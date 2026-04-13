@@ -78,6 +78,12 @@ export default function DatePicker({
       onCheckInChange(dateStr);
       onCheckOutChange("");
       setSelecting("checkout");
+      // For monthly+ listings, jump calendar to show the earliest valid checkout month
+      if (minNights >= 30) {
+        const checkInDate = new Date(dateStr + "T00:00:00");
+        const earliestCheckout = new Date(checkInDate.getTime() + minNights * 86400000);
+        setBaseMonth(new Date(earliestCheckout.getFullYear(), earliestCheckout.getMonth(), 1));
+      }
     } else {
       if (dateStr <= checkIn) {
         onCheckInChange(dateStr);
@@ -107,6 +113,17 @@ export default function DatePicker({
       }
     }
     return false;
+  }
+
+  /** True when a date is disabled specifically because it's too close to check-in (minNights). */
+  function isMinNightsRestricted(dateStr: string): boolean {
+    if (selecting !== "checkout" || !checkIn) return false;
+    if (dateStr <= checkIn) return false;
+    if (dateStr < today || blocked.has(dateStr)) return false;
+    const cin = new Date(checkIn + "T00:00:00");
+    const d = new Date(dateStr + "T00:00:00");
+    const diffDays = Math.round((d.getTime() - cin.getTime()) / 86400000);
+    return diffDays > 0 && diffDays < minNights;
   }
 
   function isInRange(dateStr: string): boolean {
@@ -147,14 +164,17 @@ export default function DatePicker({
             const inRange = isInRange(dateStr);
             const isBlocked = blocked.has(dateStr);
             const isPast = dateStr < today;
+            const isMinNightsBlocked = isMinNightsRestricted(dateStr);
 
             let cls = "relative mx-auto flex h-8 w-8 items-center justify-center rounded-full text-xs transition-colors ";
             if (isCheckIn || isCheckOut) {
               cls += "bg-[#4C6C4E] font-semibold text-white ";
             } else if (inRange) {
               cls += "bg-[#4C6C4E]/10 text-[#4C6C4E] ";
+            } else if (isMinNightsBlocked) {
+              cls += "text-gray-200 line-through cursor-not-allowed pointer-events-none ";
             } else if (disabled || isPast) {
-              cls += isBlocked ? "text-gray-300 line-through " : "text-gray-300 ";
+              cls += isBlocked ? "text-gray-300 line-through cursor-not-allowed " : "text-gray-300 cursor-not-allowed ";
             } else {
               cls += "text-gray-700 hover:bg-[#4C6C4E]/10 cursor-pointer ";
             }

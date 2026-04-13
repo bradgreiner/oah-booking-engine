@@ -302,6 +302,7 @@ async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<Uni
   const endDate = new Date(today.getTime() + 30 * 86400000).toISOString().split("T")[0];
 
   const plRates = await fetchPriceLabsBatch(hostawayIds, startDate, endDate);
+  console.log('[pricelabs batch]', { sent: hostawayIds.length, received: plRates.size });
   if (plRates.size === 0) return properties;
 
   return properties.map((p) => {
@@ -388,8 +389,17 @@ export async function getPropertyPricing(
   let rateSource = 'hostaway';
   if (property.hostawayListingId) {
     const hostawayId = parseInt(property.id.replace('hw_', ''), 10);
-    const plRates = await fetchPriceLabsBatch([hostawayId], checkIn, checkOut);
-    const dynamicRate = plRates.get(hostawayId);
+    const { getAverageNightlyRate } = await import('./pricelabs');
+    const dynamicRate = await getAverageNightlyRate(hostawayId, checkIn, checkOut);
+    console.log('[pricing debug]', {
+      propertyId: property.id,
+      hostawayId,
+      numNights,
+      priceLabsRate: dynamicRate,
+      baseRate: property.baseRate,
+      monthlyDiscount: property.monthlyDiscount,
+      source: dynamicRate && dynamicRate > 0 ? 'pricelabs' : 'hostaway',
+    });
     if (dynamicRate && dynamicRate > 0) { nightlyRate = dynamicRate; rateSource = 'pricelabs'; }
   }
 
