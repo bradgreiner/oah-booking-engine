@@ -61,10 +61,52 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
     } catch { /* table may not exist yet in production */ }
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    name: property.headline || property.name,
+    description: property.description?.slice(0, 200),
+    image: property.images[0]?.url,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: property.city,
+      addressRegion: "CA",
+      addressCountry: "US",
+    },
+    numberOfRooms: property.bedrooms,
+    amenityFeature: property.amenities
+      ? JSON.parse(property.amenities).map((a: string) => ({
+          "@type": "LocationFeatureSpecification",
+          name: a,
+          value: true,
+        }))
+      : [],
+    ...(property.baseRate > 0
+      ? {
+          priceRange:
+            property.minNights >= 30
+              ? `From $${Math.round(
+                  property.baseRate *
+                    (property.monthlyDiscount &&
+                    property.monthlyDiscount > 0 &&
+                    property.monthlyDiscount < 1
+                      ? property.monthlyDiscount
+                      : 1) *
+                    30
+                ).toLocaleString()}/month`
+              : `From $${Math.round(property.baseRate)}/night`,
+        }
+      : {}),
+  };
+
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-white pb-20 lg:pb-0">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <PropertyDetailContent
           property={property}
           initialCheckIn={searchParams.checkIn}

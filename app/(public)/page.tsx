@@ -15,10 +15,28 @@ export default async function HomePage() {
     getCityCounts(),
   ]);
 
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Open Air Homes",
+    url: "https://oah-booking-engine.vercel.app",
+    description:
+      "Furnished rentals for short stays and monthly rentals across Southern California.",
+    address: {
+      "@type": "PostalAddress",
+      addressRegion: "CA",
+      addressCountry: "US",
+    },
+  };
+
   return (
     <>
       <Navbar />
       <main>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+        />
         {/* Hero */}
         <section className="relative min-h-[560px] md:min-h-[680px]">
           <Image
