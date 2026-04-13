@@ -94,3 +94,14 @@ OLYMPICS_PASSWORD=
 - Prisma schema changes require `npx prisma generate` after editing
 - Brand colors are defined in `lib/constants.ts` — reference them, don't hardcode hex values in new components
 - Tailwind classes use the brand palette via direct hex values in className (e.g., `text-[#1B2A4A]`)
+
+## Git Rules
+- ALWAYS commit directly to main. NEVER create feature branches.
+- Run `git checkout main` before any changes.
+- Build must pass (`npx next build`) before pushing.
+
+## Pricing Rules
+- PriceLabs is the ONLY pricing source. Hostaway `price` fields are dummy values and must NEVER be used.
+- If PriceLabs does not return data for a listing, set `baseRate` to 0 so the UI shows "Contact for pricing".
+- Never apply Hostaway `weeklyDiscount` or `monthlyDiscount` multipliers on top of PriceLabs rates.
+- PriceLabs rates already reflect dynamic market pricing — do not double-apply any discounts.
