@@ -173,7 +173,7 @@ export default function PropertyForm({
 
       {/* Basic Information */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Basic Information
         </h2>
         <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -253,7 +253,7 @@ export default function PropertyForm({
 
       {/* Property Details */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Property Details
         </h2>
         <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -333,7 +333,7 @@ export default function PropertyForm({
 
       {/* Pricing */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Pricing
         </h2>
         <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -437,7 +437,7 @@ export default function PropertyForm({
 
       {/* Olympic Settings */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Olympic Settings
         </h2>
         <div className="mt-5 space-y-4">
@@ -492,7 +492,7 @@ export default function PropertyForm({
 
       {/* Homeowner Info */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Homeowner Information
         </h2>
         <p className="mt-1 text-xs text-gray-400">
@@ -534,7 +534,7 @@ export default function PropertyForm({
 
       {/* Amenities */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Amenities
         </h2>
         <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
@@ -554,7 +554,7 @@ export default function PropertyForm({
 
       {/* Photo Upload Placeholder */}
       <section className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-        <h2 className="font-[Georgia,serif] text-base font-semibold text-gray-900">
+        <h2 className="font-serif text-base font-semibold text-gray-900">
           Photos
         </h2>
         <div className="mt-5 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-10">

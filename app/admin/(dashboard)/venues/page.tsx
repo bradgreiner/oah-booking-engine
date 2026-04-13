@@ -8,7 +8,7 @@ export default async function VenuesPage() {
   return (
     <div>
       <div>
-        <h1 className="font-[Georgia,serif] text-2xl font-bold text-gray-900">
+        <h1 className="font-serif text-2xl font-bold text-gray-900">
           Olympic Venues
         </h1>
         <p className="mt-1 text-sm text-gray-500">

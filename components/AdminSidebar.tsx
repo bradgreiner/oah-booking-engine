@@ -68,7 +68,7 @@ export default function AdminSidebar() {
           <span className="text-sm font-bold text-white">O</span>
         </div>
         <div>
-          <span className="font-[Georgia,serif] text-lg font-bold text-[#4C6C4E]">OAH</span>
+          <span className="font-serif text-lg font-bold text-[#4C6C4E]">OAH</span>
           <span className="ml-1.5 text-xs font-medium text-gray-400">Admin</span>
         </div>
       </div>

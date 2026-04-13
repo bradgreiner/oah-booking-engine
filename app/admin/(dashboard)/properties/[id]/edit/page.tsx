@@ -149,7 +149,7 @@ export default function EditPropertyPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-[Georgia,serif] text-2xl font-bold text-gray-900">
+          <h1 className="font-serif text-2xl font-bold text-gray-900">
             Edit Property
           </h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -172,7 +172,7 @@ export default function EditPropertyPage() {
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="mx-4 w-full max-w-md rounded-lg border border-gray-100 bg-white p-6 shadow-xl">
-            <h3 className="font-[Georgia,serif] text-lg font-semibold text-gray-900">
+            <h3 className="font-serif text-lg font-semibold text-gray-900">
               Delete Property
             </h3>
             <p className="mt-2 text-sm text-gray-600">

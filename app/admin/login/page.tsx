@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#4C6C4E]">
               <span className="text-lg font-bold text-white">O</span>
             </div>
-            <h1 className="font-[Georgia,serif] text-xl font-bold text-gray-900">
+            <h1 className="font-serif text-xl font-bold text-gray-900">
               OAH Admin
             </h1>
             <p className="mt-1 text-sm text-gray-500">

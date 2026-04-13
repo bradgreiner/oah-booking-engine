@@ -34,7 +34,7 @@ export default function OlympicsGatePage() {
       {/* Header */}
       <header className="border-b border-[#C5A55A]/20 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link href="/" className="font-[Georgia,serif] text-xl font-bold text-[#4C6C4E]">
+          <Link href="/" className="font-serif text-xl font-bold text-[#4C6C4E]">
             Open Air Homes
           </Link>
           <span className="rounded-full border border-[#C5A55A]/30 bg-[#C5A55A]/10 px-3 py-1 text-xs font-medium text-[#C5A55A]">
@@ -52,10 +52,10 @@ export default function OlympicsGatePage() {
             </svg>
           </div>
 
-          <h1 className="mt-6 font-[Georgia,serif] text-3xl font-bold text-[#1a1a1a]">
+          <h1 className="mt-6 font-serif text-3xl font-bold text-[#1a1a1a]">
             LA 2028 Olympics
           </h1>
-          <p className="mt-1 font-[Georgia,serif] text-lg text-[#C5A55A]">
+          <p className="mt-1 font-serif text-lg text-[#C5A55A]">
             Private Home Collection
           </p>
           <p className="mx-auto mt-4 max-w-sm text-sm text-gray-500">

@@ -35,7 +35,7 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="font-[Georgia,serif] text-2xl font-bold text-gray-900">
+      <h1 className="font-serif text-2xl font-bold text-gray-900">
         Dashboard
       </h1>
       <p className="mt-1 text-sm text-gray-500">
@@ -60,7 +60,7 @@ export default async function AdminDashboard() {
       {/* Quick Actions */}
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="font-[Georgia,serif] text-lg font-semibold text-gray-900">
+          <h2 className="font-serif text-lg font-semibold text-gray-900">
             Quick Actions
           </h2>
           <div className="mt-4 space-y-3">
@@ -100,7 +100,7 @@ export default async function AdminDashboard() {
         </div>
 
         <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="font-[Georgia,serif] text-lg font-semibold text-gray-900">
+          <h2 className="font-serif text-lg font-semibold text-gray-900">
             Recent Activity
           </h2>
           <div className="mt-4 flex h-32 items-center justify-center rounded-lg bg-gray-50">

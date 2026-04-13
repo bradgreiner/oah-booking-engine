@@ -46,7 +46,7 @@ export default function NearbyVenues({ propertyCity, venues }: NearbyVenuesProps
 
   return (
     <div className="mt-8 rounded-xl border border-[#C5A55A]/20 bg-[#C5A55A]/5 p-6">
-      <h3 className="font-[Georgia,serif] text-lg font-semibold text-[#1a1a1a]">
+      <h3 className="font-serif text-lg font-semibold text-[#1a1a1a]">
         Nearby Olympic Venues
       </h3>
       <div className="mt-3 flex flex-wrap gap-2">

@@ -20,7 +20,7 @@ export default function HowItWorks() {
   return (
     <section className="bg-white py-16">
       <div className="mx-auto max-w-5xl px-4 text-center">
-        <h2 className="font-[Georgia,serif] text-2xl font-bold text-[#1a1a1a] md:text-3xl">
+        <h2 className="font-serif text-2xl font-bold text-[#1a1a1a] md:text-3xl">
           How it works
         </h2>
         <div className="mt-12 grid gap-10 md:grid-cols-3">

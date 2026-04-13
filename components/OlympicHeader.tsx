@@ -10,13 +10,13 @@ export default function OlympicHeader() {
     <nav className="border-b border-[#C5A55A]/20 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <div className="flex items-center gap-3">
-          <Link href="/" className="font-[Georgia,serif] text-xl font-bold text-[#4C6C4E]">
+          <Link href="/" className="font-serif text-xl font-bold text-[#4C6C4E]">
             Open Air Homes
           </Link>
           <span className="hidden text-gray-300 sm:inline">&middot;</span>
           <Link
             href="/olympics/browse"
-            className="hidden font-[Georgia,serif] text-sm font-semibold text-[#C5A55A] sm:inline"
+            className="hidden font-serif text-sm font-semibold text-[#C5A55A] sm:inline"
           >
             LA 2028
           </Link>
