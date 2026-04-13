@@ -52,7 +52,7 @@ export default function PropertyCard({
 
   return (
     <Link href={`${linkPrefix}/${id}`} className="group block">
-      <div className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl">
+      <div className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
         {/* Image */}
         <div className="relative w-full overflow-hidden bg-gray-100" style={{ aspectRatio: "4/3" }}>
           {imageUrl ? (
@@ -98,7 +98,7 @@ export default function PropertyCard({
         </div>
 
         {/* Content */}
-        <div>
+        <div className="border-t-2 border-[#4C6C4E]">
           <h3 className="mt-3 line-clamp-2 px-3 font-serif text-[15px] font-medium leading-snug text-gray-900">
             {name}
           </h3>

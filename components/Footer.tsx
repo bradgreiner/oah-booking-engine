@@ -14,7 +14,7 @@ interface FooterProps {
 
 export default function Footer({ showBadges = true }: FooterProps) {
   return (
-    <footer className="border-t border-gray-200 bg-white">
+    <footer className="border-t border-gray-200 bg-gray-50">
       {/* Trust badges row */}
       {showBadges && (
         <div className="flex flex-wrap items-center justify-center gap-8 border-b border-gray-100 px-4 py-8 mb-8">
@@ -26,7 +26,7 @@ export default function Footer({ showBadges = true }: FooterProps) {
                 width={120}
                 height={36}
                 unoptimized
-                className="h-9 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+                className="h-8 w-auto object-contain grayscale opacity-80 transition-opacity hover:opacity-100 hover:grayscale-0"
               />
             </div>
           ))}
