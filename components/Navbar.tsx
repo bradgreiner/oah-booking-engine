@@ -46,7 +46,7 @@ export default function Navbar() {
             LA 2028
           </Link>
           <Link
-            href="#"
+            href="/list-your-home"
             className="rounded-full border border-[#4C6C4E] px-4 py-1.5 text-sm font-medium text-[#4C6C4E] transition-colors hover:bg-[#4C6C4E] hover:text-white"
           >
             List Your Home
@@ -115,7 +115,7 @@ export default function Navbar() {
             LA 2028
           </Link>
           <Link
-            href="#"
+            href="/list-your-home"
             className="block py-3 text-sm font-medium text-gray-600 hover:text-gray-900"
             onClick={() => setMenuOpen(false)}
           >

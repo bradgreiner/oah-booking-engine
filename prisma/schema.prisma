@@ -185,3 +185,19 @@ model NearbyPlace {
 
   @@index([listingId])
 }
+
+model HomeownerLead {
+  id              String   @id @default(cuid())
+  name            String
+  email           String
+  phone           String
+  propertyAddress String
+  city            String?
+  message         String?
+  source          String?
+  status          String   @default("new")
+  createdAt       DateTime @default(now())
+
+  @@index([email])
+  @@index([status])
+}
