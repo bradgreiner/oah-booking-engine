@@ -173,3 +173,15 @@ model BookingSession {
   @@index([guestEmail])
   @@index([stepReached])
 }
+
+model NearbyPlace {
+  id        String  @id @default(cuid())
+  listingId Int
+  emoji     String
+  name      String
+  category  String  @default("restaurant")
+  distance  String?
+  note      String?
+
+  @@index([listingId])
+}

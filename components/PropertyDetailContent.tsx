@@ -4,13 +4,22 @@ import PhotoGrid from "@/components/PhotoGrid";
 import PropertyMap from "@/components/PropertyMap";
 import type { UnifiedProperty } from "@/lib/property-adapter";
 
+interface NearbyPlaceData {
+  emoji: string;
+  name: string;
+  category: string;
+  distance: string | null;
+  note: string | null;
+}
+
 interface Props {
   property: UnifiedProperty;
   initialCheckIn?: string;
   initialCheckOut?: string;
+  nearbyPlaces?: NearbyPlaceData[];
 }
 
-export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut }: Props) {
+export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [] }: Props) {
   const amenities: string[] = property.amenities
     ? JSON.parse(property.amenities)
     : [];
@@ -167,20 +176,26 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
 
             <hr className="my-8 border-gray-100" />
 
-            {/* TODO: pull from listing_content table per property */}
             <div>
               <h2 className="font-serif text-xl font-normal text-gray-900 md:text-2xl">
                 Things we love nearby
               </h2>
               <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {[
-                  { emoji: "\uD83C\uDF55", name: "Gjusta", desc: "Venice Beach staple, 0.3 mi" },
-                  { emoji: "\u2615", name: "Groundwork Coffee", desc: "Local roaster, 0.5 mi" },
-                  { emoji: "\uD83C\uDFD6\uFE0F", name: "Venice Beach", desc: "Walk to the sand, 0.4 mi" },
-                  { emoji: "\uD83D\uDED2", name: "Erewhon Venice", desc: "Organic groceries, 0.8 mi" },
-                  { emoji: "\uD83C\uDF2E", name: "Gjelina", desc: "James Beard nominated, 0.2 mi" },
-                  { emoji: "\uD83C\uDFCB\uFE0F", name: "Equinox West Hollywood", desc: "Full gym, 1.2 mi" },
-                ].map((place) => (
+                {(nearbyPlaces.length > 0
+                  ? nearbyPlaces.map((place) => ({
+                      emoji: place.emoji,
+                      name: place.name,
+                      desc: [place.note, place.distance].filter(Boolean).join(", "),
+                    }))
+                  : [
+                      { emoji: "\uD83C\uDF55", name: "Gjusta", desc: "Venice Beach staple, 0.3 mi" },
+                      { emoji: "\u2615", name: "Groundwork Coffee", desc: "Local roaster, 0.5 mi" },
+                      { emoji: "\uD83C\uDFD6\uFE0F", name: "Venice Beach", desc: "Walk to the sand, 0.4 mi" },
+                      { emoji: "\uD83D\uDED2", name: "Erewhon Venice", desc: "Organic groceries, 0.8 mi" },
+                      { emoji: "\uD83C\uDF2E", name: "Gjelina", desc: "James Beard nominated, 0.2 mi" },
+                      { emoji: "\uD83C\uDFCB\uFE0F", name: "Equinox West Hollywood", desc: "Full gym, 1.2 mi" },
+                    ]
+                ).map((place) => (
                   <div key={place.name} className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50">
                     <span className="text-xl">{place.emoji}</span>
                     <div>

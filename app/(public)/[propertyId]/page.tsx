@@ -6,6 +6,7 @@ import BookingWidget from "@/components/BookingWidget";
 import MobileBookingBar from "@/components/MobileBookingBar";
 import PropertyDetailContent from "@/components/PropertyDetailContent";
 import { getProperty } from "@/lib/property-adapter";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,15 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
     notFound();
   }
 
+  let nearbyPlaces: { emoji: string; name: string; category: string; distance: string | null; note: string | null }[] = [];
+  if (property.hostawayListingId) {
+    try {
+      nearbyPlaces = await prisma.nearbyPlace.findMany({
+        where: { listingId: property.hostawayListingId },
+      });
+    } catch { /* table may not exist yet in production */ }
+  }
+
   return (
     <>
       <Navbar />
@@ -59,6 +69,7 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
           property={property}
           initialCheckIn={searchParams.checkIn}
           initialCheckOut={searchParams.checkOut}
+          nearbyPlaces={nearbyPlaces}
         />
 
         {/* Full booking widget on mobile (hidden on desktop since it's in the sidebar) */}
