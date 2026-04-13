@@ -116,34 +116,42 @@ OLYMPICS_PASSWORD=
 ### Guest-facing booking portal
 - Homepage: hero with date search, featured properties, neighborhood grid, how-it-works, why-book-direct comparison, testimonials, CTA
 - Browse/search: filter by city/market, amenity pills (Pool, Pets, Monthly, STR), bedroom filter, sort by price, scrollable filter pills on mobile, improved empty state
-- Property detail: photo grid with fullscreen gallery, booking widget with date picker, fee breakdown, amenities, house rules, cancellation, neighborhood map, nearby places, JSON-LD structured data
+- Property detail: photo grid with fullscreen gallery, booking widget with date picker, fee breakdown, amenities, house rules, cancellation, neighborhood map, nearby places, JSON-LD structured data, share button
 - Request-to-book: guest info form, payment method selection (card/ACH), Stripe integration, booking session tracking
-- Confirmation page: green checkmark, booking summary, timeline of next steps
+- Confirmation page: green checkmark, booking summary, timeline of next steps, share button
 - Abandoned booking recovery: session tracking, hourly cron email, unsubscribe page
 - City SEO landing pages: /cities/[slug] with property grid, FAQ, meta tags
 - Guest account page: /account with booking history (requires Google sign-in)
 - List Your Home: /list-your-home lead gen page with form, email notification via Resend, HomeownerLead Prisma model
 - About page: /about with company info, markets, contact
+- Contact page: /contact with form, email notification via Resend, office hours, quick links
 - Terms of Service: /terms with booking process, cancellation, liability
 - Privacy Policy: /privacy with data collection, third-party services, rights
+- Loading skeletons: homepage, browse, detail, city, and request pages all have loading.tsx files
+- Compact navbar search: search pill on desktop, expandable search on mobile, accessible from any page
+- "Save vs Airbnb" badges: on listing cards, booking widget, and request form sidebar
 
 ### Admin dashboard
 - Booking management: approve/decline with Stripe capture/cancel, stats bar, expanded row details
 - Property management: CRUD via admin panel
+- Pricing dashboard: /admin/pricing with sortable table, PriceLabs data quality indicators, city/type/PriceLabs filters
 
 ### Infrastructure
 - PriceLabs dynamic pricing (sole source, Hostaway prices are dummy)
 - Hostaway calendar integration (blocked dates, min nights)
 - Hostaway description cleaning (lib/description-cleaner.ts strips boilerplate before display)
 - Stripe payments (PaymentIntent with manual capture)
-- Resend email (guest confirmation, admin notification, approval, decline, abandoned recovery, homeowner lead notification)
+- CC fee not baked into base total — shown as add-on for card payments only
+- Resend email (guest confirmation, admin notification, approval, decline, abandoned recovery, homeowner lead notification, contact form)
 - Vercel cron for abandoned emails
-- GTM tracking
+- GTM tracking with custom events: listing_view, search_executed, filter_applied, request_started, payment_initiated, booking_completed, lead_submitted (lib/analytics.ts)
+- Prisma migrations for BookingSession, NearbyPlace, and HomeownerLead models
 - SEO: meta tags, Open Graph, robots.txt, dynamic sitemap, JSON-LD (Organization + LodgingBusiness)
 - Mobile responsive across all pages
 - Map privacy (deterministic offset, non-interactive detail map)
 - Accessibility: focus-visible states, skip-to-content link, WCAG AA contrast compliance, aria-labels on gallery controls
 - Performance: responsive image sizes on all Image components, lazy loading defaults
+- Savings calculator (lib/savings.ts): compares OAH 2% fee vs Airbnb 14% guest fee
 
 ### Design system
 - Fonts: Instrument Serif (headings), DM Sans (body)
