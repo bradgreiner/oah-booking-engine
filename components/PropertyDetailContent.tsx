@@ -3,7 +3,10 @@ import PropertyDescription from "@/components/PropertyDescription";
 import PhotoGrid from "@/components/PhotoGrid";
 import PropertyMap from "@/components/PropertyMap";
 import ShareButton from "@/components/ShareButton";
+import ReviewsHeader from "@/components/ReviewsHeader";
+import ReviewsSection from "@/components/ReviewsSection";
 import type { UnifiedProperty } from "@/lib/property-adapter";
+import type { Review, ReviewSummary } from "@/lib/hostaway-reviews";
 
 interface NearbyPlaceData {
   emoji: string;
@@ -18,9 +21,11 @@ interface Props {
   initialCheckIn?: string;
   initialCheckOut?: string;
   nearbyPlaces?: NearbyPlaceData[];
+  reviewSummary?: ReviewSummary;
+  reviews?: Review[];
 }
 
-export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [] }: Props) {
+export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [], reviewSummary, reviews = [] }: Props) {
   const amenities: string[] = property.amenities
     ? JSON.parse(property.amenities)
     : [];
@@ -84,12 +89,16 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
 
             {/* Rating + host info */}
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
-              <div className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px] text-[#1a1a1a]">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <span className="text-base font-semibold text-[#1a1a1a]">4.89</span>
-              </div>
+              {reviewSummary && reviewSummary.totalReviews > 0 ? (
+                <ReviewsHeader averageRating={reviewSummary.averageRating} totalReviews={reviewSummary.totalReviews} />
+              ) : (
+                <div className="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px] text-[#4C6C4E]">
+                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-base font-semibold text-[#1a1a1a]">New</span>
+                </div>
+              )}
               <span className="text-gray-300">&middot;</span>
               <span className="text-sm text-gray-600">Superhost on Airbnb</span>
               <span className="text-gray-300">&middot;</span>
@@ -100,7 +109,7 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-3.5 w-3.5 text-[#4C6C4E]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
-              <span>Managed by OAH &middot; Licensed CA Brokerage DRE #02164159</span>
+              <span>Managed by OAH &middot; Licensed CA Brokerage DRE #02164159{reviewSummary && reviewSummary.totalReviews > 0 ? ` · ${reviewSummary.averageRating.toFixed(1)} stars on Airbnb` : ""}</span>
             </div>
 
             <hr className="my-8 border-gray-100" />
@@ -185,6 +194,11 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
                 </>
               )}
             </div>
+
+            {/* Reviews */}
+            {reviewSummary && reviewSummary.totalReviews > 0 && (
+              <ReviewsSection summary={reviewSummary} reviews={reviews} />
+            )}
 
             <hr className="my-8 border-gray-100" />
 

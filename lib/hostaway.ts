@@ -57,7 +57,7 @@ async function getAccessToken(): Promise<string> {
   return token;
 }
 
-async function hostawayFetch<T>(path: string, options?: RequestInit): Promise<T> {
+export async function hostawayFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 

@@ -7,6 +7,7 @@ import MobileBookingBar from "@/components/MobileBookingBar";
 import PropertyDetailContent from "@/components/PropertyDetailContent";
 import { getProperty } from "@/lib/property-adapter";
 import { prisma } from "@/lib/prisma";
+import { getListingReviews, getListingReviewSummary } from "@/lib/hostaway-reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -53,12 +54,19 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
   }
 
   let nearbyPlaces: { emoji: string; name: string; category: string; distance: string | null; note: string | null }[] = [];
+  let reviewSummary: Awaited<ReturnType<typeof getListingReviewSummary>> | undefined;
+  let reviews: Awaited<ReturnType<typeof getListingReviews>> = [];
+
   if (property.hostawayListingId) {
-    try {
-      nearbyPlaces = await prisma.nearbyPlace.findMany({
-        where: { listingId: property.hostawayListingId },
-      });
-    } catch { /* table may not exist yet in production */ }
+    const listingId = property.hostawayListingId;
+    const results = await Promise.allSettled([
+      prisma.nearbyPlace.findMany({ where: { listingId } }),
+      getListingReviewSummary(listingId),
+      getListingReviews(listingId),
+    ]);
+    if (results[0].status === "fulfilled") nearbyPlaces = results[0].value;
+    if (results[1].status === "fulfilled") reviewSummary = results[1].value;
+    if (results[2].status === "fulfilled") reviews = results[2].value;
   }
 
   const jsonLd = {
@@ -112,6 +120,8 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
           initialCheckIn={searchParams.checkIn}
           initialCheckOut={searchParams.checkOut}
           nearbyPlaces={nearbyPlaces}
+          reviewSummary={reviewSummary}
+          reviews={reviews}
         />
 
         {/* Full booking widget on mobile (hidden on desktop since it's in the sidebar) */}
