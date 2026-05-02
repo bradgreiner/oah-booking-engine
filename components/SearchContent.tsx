@@ -54,6 +54,15 @@ export default function SearchContent() {
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMap, setShowMap] = useState(true);
+
+  // Restore map preference from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("oah-show-map");
+      if (saved !== null) setShowMap(saved === "true");
+    } catch {}
+  }, []);
 
   const [checkIn, setCheckIn] = useState(searchParams.get("checkIn") || "");
   const [checkOut, setCheckOut] = useState(searchParams.get("checkOut") || "");
@@ -146,6 +155,13 @@ export default function SearchContent() {
   }, []);
 
   const hasMapToken = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  const mapAvailable = hasMapToken;
+
+  function toggleMap() {
+    const next = !showMap;
+    setShowMap(next);
+    try { sessionStorage.setItem("oah-show-map", String(next)); } catch {}
+  }
 
   // Client-side bedroom filter
   const filtered = bedrooms
@@ -195,7 +211,7 @@ export default function SearchContent() {
           ))}
         </div>
 
-        <div className="ml-auto shrink-0">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
@@ -205,6 +221,18 @@ export default function SearchContent() {
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+          {mapAvailable && (
+            <button
+              onClick={toggleMap}
+              className="hidden items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-400 lg:flex"
+              aria-label={showMap ? "Hide map" : "Show map"}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m0 0l3-3m-3 3l-3-3m9-1.5V15m0 0l3-3m-3 3l-3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+              </svg>
+              {showMap ? "Hide map" : "Show map"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -218,7 +246,7 @@ export default function SearchContent() {
         ) : filtered.length > 0 ? (
           <div className="flex gap-0">
             {/* Left: property grid */}
-            <div className={`min-w-0 flex-1 ${hasMapToken ? "pr-4" : ""}`}>
+            <div className={`min-w-0 flex-1 ${mapAvailable && showMap ? "pr-4" : ""}`}>
               <p className="mb-4 text-sm text-gray-500">
                 {filtered.length} {filtered.length === 1 ? "home" : "homes"}
                 {city ? ` in ${city}` : " across Los Angeles & Palm Springs"}
@@ -239,7 +267,9 @@ export default function SearchContent() {
                   </button>
                 </p>
               )}
-              <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
+              <div className={`grid gap-4 sm:grid-cols-2 md:gap-6 ${
+                !showMap || !mapAvailable ? "lg:grid-cols-3 xl:grid-cols-4" : ""
+              }`}>
                 {filtered.map((property) => (
                   <div
                     key={property.id}
@@ -273,7 +303,7 @@ export default function SearchContent() {
             </div>
 
             {/* Right: sticky map (desktop only) */}
-            {hasMapToken && (
+            {mapAvailable && showMap && (
               <div className="hidden w-[420px] shrink-0 lg:block">
                 <div className="sticky top-[80px] h-[calc(100vh-80px)] overflow-hidden rounded-xl">
                   <SearchMap properties={filtered} />

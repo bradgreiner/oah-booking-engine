@@ -298,7 +298,21 @@ export default function BookingWidget({
         </div>
       )}
 
-      {fees && !loading && (
+      {fees && !loading && (() => {
+        // Compute discount savings for display
+        let discountLabel = "";
+        let discountSavings = 0;
+        if (fees.numNights >= 30 && monthlyDiscount && monthlyDiscount > 0 && monthlyDiscount < 1) {
+          const undiscountedNightly = fees.nightlyRate / monthlyDiscount;
+          discountSavings = Math.round((undiscountedNightly - fees.nightlyRate) * fees.numNights);
+          discountLabel = `Monthly discount (${monthlyPct}% off)`;
+        } else if (fees.numNights >= 7 && weeklyDiscount && weeklyDiscount > 0 && weeklyDiscount < 1) {
+          const undiscountedNightly = fees.nightlyRate / weeklyDiscount;
+          discountSavings = Math.round((undiscountedNightly - fees.nightlyRate) * fees.numNights);
+          discountLabel = `Weekly discount (${weeklyPct}% off)`;
+        }
+
+        return (
         <div className="mb-4 space-y-2 border-t border-gray-100 pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">
@@ -307,6 +321,12 @@ export default function BookingWidget({
             </span>
             <span className="text-gray-800">${fees.nightlyTotal.toLocaleString()}</span>
           </div>
+          {discountSavings > 0 && (
+            <div className="flex justify-between">
+              <span className="font-medium text-[#4C6C4E]">{discountLabel}</span>
+              <span className="font-medium text-[#4C6C4E]">&minus;${discountSavings.toLocaleString()}</span>
+            </div>
+          )}
           {fees.cleaningFee > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">Cleaning fee</span>
@@ -371,7 +391,8 @@ export default function BookingWidget({
             </div>
           )}
         </div>
-      )}
+        );
+      })()}
 
       {fees && fees.numNights >= 30 && (
         <div className="mb-4 rounded-lg border border-[#4C6C4E]/10 bg-[#4C6C4E]/5 p-3">
