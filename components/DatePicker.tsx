@@ -166,17 +166,21 @@ export default function DatePicker({
             const isPast = dateStr < today;
             const isMinNightsBlocked = isMinNightsRestricted(dateStr);
 
-            let cls = "relative mx-auto flex h-8 w-8 items-center justify-center rounded-full text-xs transition-colors ";
+            let cls = "relative mx-auto flex h-8 w-8 items-center justify-center text-xs transition-colors ";
             if (isCheckIn || isCheckOut) {
-              cls += "bg-[#4C6C4E] font-semibold text-white ";
+              cls += "rounded-full bg-[#4C6C4E] font-semibold text-white ";
             } else if (inRange) {
-              cls += "bg-[#4C6C4E]/10 text-[#4C6C4E] ";
+              cls += "rounded-none bg-[#4C6C4E]/12 text-gray-800 ";
             } else if (isMinNightsBlocked) {
-              cls += "text-gray-200 line-through cursor-not-allowed pointer-events-none ";
-            } else if (disabled || isPast) {
-              cls += isBlocked ? "text-gray-300 line-through cursor-not-allowed " : "text-gray-300 cursor-not-allowed ";
+              cls += "rounded-full text-gray-300 cursor-not-allowed pointer-events-none ";
+            } else if (isPast || isBlocked) {
+              cls += isBlocked
+                ? "rounded-full text-gray-300 line-through cursor-not-allowed "
+                : "rounded-full text-gray-300 cursor-not-allowed ";
+            } else if (disabled) {
+              cls += "rounded-full text-gray-300 cursor-not-allowed ";
             } else {
-              cls += "text-gray-700 hover:bg-[#4C6C4E]/10 cursor-pointer ";
+              cls += "rounded-full text-gray-700 hover:bg-gray-100 cursor-pointer ";
             }
 
             return (
