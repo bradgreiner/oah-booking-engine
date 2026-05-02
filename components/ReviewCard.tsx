@@ -45,7 +45,7 @@ export default function ReviewCard({ review }: { review: Review }) {
     : text;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-5">
+    <div className="rounded-lg border border-gray-200 bg-white p-5 md:p-6">
       {/* Avatar + name + date */}
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F5F0E8] text-sm font-semibold text-[#4C6C4E]">
@@ -60,7 +60,7 @@ export default function ReviewCard({ review }: { review: Review }) {
       {/* Stars + channel */}
       <div className="mt-2.5 flex items-center gap-2">
         <StarRow rating={review.rating} />
-        <span className="text-[11px] text-gray-400">via {review.channel}</span>
+        <span className="text-[11px] text-gray-500">via {review.channel}</span>
       </div>
 
       {/* Review text */}
