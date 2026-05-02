@@ -1,4 +1,5 @@
 import { hostawayFetch } from "@/lib/hostaway";
+import { getAllReviewsGlobal, getListingReviews } from "@/lib/hostaway-reviews";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,51 +16,59 @@ export async function GET(
   const debug: Record<string, unknown> = { listingId, attempts: [] };
   const attempts = debug.attempts as Record<string, unknown>[];
 
-  // Attempt 1: filter by listingMapId (what our reviews code uses)
+  // Attempt 1: raw API call with listingMapId filter (known broken, kept for reference)
   try {
     const data = await hostawayFetch<unknown[]>(`/reviews?listingMapId=${listingId}&limit=200`);
     const arr = Array.isArray(data) ? data : [];
     attempts.push({
+      label: "Raw API with listingMapId filter (broken)",
       url: `/reviews?listingMapId=${listingId}&limit=200`,
       count: arr.length,
-      sample: arr[0] ?? null,
       types: [...new Set(arr.map((x: any) => x.type))],
       statuses: [...new Set(arr.map((x: any) => x.status))],
     });
   } catch (e: any) {
-    attempts.push({ url: `listingMapId=${listingId}`, error: e?.message ?? String(e) });
+    attempts.push({ label: "Raw API listingMapId", error: e?.message ?? String(e) });
   }
 
-  // Attempt 2: all reviews, no filter, to see what fields exist
+  // Attempt 2: raw API unfiltered first page
   try {
     const data = await hostawayFetch<unknown[]>(`/reviews?limit=200`);
     const arr = Array.isArray(data) ? data : [];
     attempts.push({
+      label: "Raw API unfiltered (first page)",
       url: `/reviews?limit=200`,
       total: arr.length,
-      sample_5: arr.slice(0, 5).map((x: any) => ({
-        id: x.id,
-        type: x.type,
-        status: x.status,
-        listingMapId: x.listingMapId,
-        listingId: x.listingId,
-        rating: x.rating,
-        totalRating: x.totalRating,
-        publicReview: x.publicReview ? x.publicReview.slice(0, 60) + "..." : null,
-        channelId: x.channelId,
-        channel: x.channel,
-        guestName: x.guestName,
-        reservationGuestName: x.reservationGuestName,
-        date: x.departureDate ?? x.date ?? x.insertedOn,
-      })),
-      allListingMapIds: [...new Set(arr.map((x: any) => x.listingMapId))].slice(0, 20),
-      allListingIds: [...new Set(arr.map((x: any) => x.listingId))].slice(0, 20),
+      allListingMapIds: [...new Set(arr.map((x: any) => x.listingMapId))].slice(0, 30),
       allTypes: [...new Set(arr.map((x: any) => x.type))],
       allStatuses: [...new Set(arr.map((x: any) => x.status))],
       allChannelIds: [...new Set(arr.map((x: any) => x.channelId))],
     });
   } catch (e: any) {
-    attempts.push({ url: "all reviews", error: e?.message ?? String(e) });
+    attempts.push({ label: "Raw API unfiltered", error: e?.message ?? String(e) });
+  }
+
+  // Attempt 3: global paginated cache + in-memory filter (production path)
+  try {
+    const all = await getAllReviewsGlobal();
+    const channelCounts: Record<number, number> = {};
+    for (const r of all as any[]) {
+      channelCounts[r.channelId] = (channelCounts[r.channelId] || 0) + 1;
+    }
+
+    const filtered = await getListingReviews(listingId);
+
+    attempts.push({
+      label: "Global cache + in-memory filter (production path)",
+      globalTotal: all.length,
+      allChannelIds: [...new Set((all as any[]).map((x) => x.channelId))],
+      channelCounts,
+      uniqueListingMapIds: new Set((all as any[]).map((x) => x.listingMapId)).size,
+      filteredForListing: filtered.length,
+      sampleFiltered: filtered[0] ?? null,
+    });
+  } catch (e: any) {
+    attempts.push({ label: "Global cache", error: e?.message ?? String(e) });
   }
 
   return new Response(JSON.stringify(debug, null, 2), {

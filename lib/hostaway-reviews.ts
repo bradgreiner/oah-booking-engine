@@ -26,6 +26,7 @@ export type ReviewSummary = {
 
 const CHANNEL_MAP: Record<number, Review["channel"]> = {
   2018: "Airbnb",
+  2000: "Airbnb",
   2002: "VRBO",
   2005: "Booking.com",
   2007: "Direct",
@@ -40,10 +41,12 @@ function firstName(name: string | null | undefined): string {
   return name.trim().split(/\s+/)[0];
 }
 
-interface HostawayReview {
+export interface RawReview {
   id: number;
   type: string;
+  status?: string;
   listingMapId: number;
+  listingId?: number;
   channelId: number;
   guestName?: string;
   reservationGuestName?: string;
@@ -51,8 +54,8 @@ interface HostawayReview {
   totalRating?: number;
   departureDate?: string;
   insertedOn?: string;
-  status?: string;
   isPublic?: number | boolean;
+  bookingEngineVisibility?: number;
   cleanlinessRating?: number;
   accuracyRating?: number;
   checkinRating?: number;
@@ -61,54 +64,70 @@ interface HostawayReview {
   valueRating?: number;
 }
 
-async function fetchReviewsRaw(listingId: number): Promise<Review[]> {
+async function fetchAllReviewsRaw(): Promise<RawReview[]> {
+  const all: RawReview[] = [];
+  let offset = 0;
+  const limit = 200;
   try {
-    const data = await hostawayFetch<HostawayReview[]>(
-      `/reviews?listingMapId=${listingId}&limit=200`
-    );
-    const reviews = Array.isArray(data) ? data : [];
-
-    return reviews
-      .filter((r) => {
-        if (r.type !== "guest-to-host") return false;
-        if (r.listingMapId !== listingId) return false;
-        if (!r.publicReview || r.publicReview.trim().length === 0) return false;
-        return true;
-      })
-      .map((r) => {
-        const rawRating = r.totalRating ?? 10;
-        const categoryRatings: Review["categoryRatings"] = {};
-        if (r.cleanlinessRating) categoryRatings.cleanliness = r.cleanlinessRating / 2;
-        if (r.accuracyRating) categoryRatings.accuracy = r.accuracyRating / 2;
-        if (r.checkinRating) categoryRatings.checkin = r.checkinRating / 2;
-        if (r.communicationRating) categoryRatings.communication = r.communicationRating / 2;
-        if (r.locationRating) categoryRatings.location = r.locationRating / 2;
-        if (r.valueRating) categoryRatings.value = r.valueRating / 2;
-
-        return {
-          id: r.id,
-          reviewerName: firstName(r.guestName || r.reservationGuestName),
-          channel: channelName(r.channelId),
-          rating: Math.round((rawRating / 2) * 10) / 10,
-          text: r.publicReview!.trim(),
-          date: r.departureDate || r.insertedOn || new Date().toISOString(),
-          ...(Object.keys(categoryRatings).length > 0 ? { categoryRatings } : {}),
-        };
-      })
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    for (let i = 0; i < 100; i++) {
+      const batch = await hostawayFetch<RawReview[]>(
+        `/reviews?limit=${limit}&offset=${offset}`
+      );
+      if (!Array.isArray(batch) || batch.length === 0) break;
+      all.push(...batch);
+      if (batch.length < limit) break;
+      offset += limit;
+    }
   } catch (err) {
-    console.error(`Error fetching reviews for listing ${listingId}:`, err);
-    return [];
+    console.error("Error fetching all reviews from Hostaway:", err);
   }
+  console.log(`[reviews] Fetched ${all.length} total reviews across ${Math.ceil(offset / limit) + 1} pages`);
+  return all;
 }
 
-export const getListingReviews = (listingId: number): Promise<Review[]> => {
-  return unstable_cache(
-    () => fetchReviewsRaw(listingId),
-    ["reviews", String(listingId)],
-    { revalidate: 86400, tags: ["reviews"] }
-  )();
-};
+export const getAllReviewsGlobal = unstable_cache(
+  fetchAllReviewsRaw,
+  ["all-reviews-global"],
+  { revalidate: 86400, tags: ["reviews"] }
+);
+
+function mapReview(r: RawReview): Review {
+  const rawRating = r.totalRating ?? 10;
+  const categoryRatings: Review["categoryRatings"] = {};
+  if (r.cleanlinessRating) categoryRatings.cleanliness = r.cleanlinessRating / 2;
+  if (r.accuracyRating) categoryRatings.accuracy = r.accuracyRating / 2;
+  if (r.checkinRating) categoryRatings.checkin = r.checkinRating / 2;
+  if (r.communicationRating) categoryRatings.communication = r.communicationRating / 2;
+  if (r.locationRating) categoryRatings.location = r.locationRating / 2;
+  if (r.valueRating) categoryRatings.value = r.valueRating / 2;
+
+  return {
+    id: r.id,
+    reviewerName: firstName(r.guestName || r.reservationGuestName),
+    channel: channelName(r.channelId),
+    rating: Math.round((rawRating / 2) * 10) / 10,
+    text: r.publicReview!.trim(),
+    date: r.departureDate || r.insertedOn || new Date().toISOString(),
+    ...(Object.keys(categoryRatings).length > 0 ? { categoryRatings } : {}),
+  };
+}
+
+function filterForListing(reviews: RawReview[], listingId: number): RawReview[] {
+  return reviews.filter((r) =>
+    r.listingMapId === listingId &&
+    r.type === "guest-to-host" &&
+    r.publicReview &&
+    r.publicReview.trim().length > 0 &&
+    r.bookingEngineVisibility !== 0
+  );
+}
+
+export async function getListingReviews(listingId: number): Promise<Review[]> {
+  const all = await getAllReviewsGlobal();
+  return filterForListing(all, listingId)
+    .map(mapReview)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
 
 function computeSummary(reviews: Review[]): ReviewSummary {
   if (reviews.length === 0) {
@@ -136,13 +155,7 @@ function computeSummary(reviews: Review[]): ReviewSummary {
   };
 }
 
-export const getListingReviewSummary = (listingId: number): Promise<ReviewSummary> => {
-  return unstable_cache(
-    async () => {
-      const reviews = await fetchReviewsRaw(listingId);
-      return computeSummary(reviews);
-    },
-    ["review-summary", String(listingId)],
-    { revalidate: 86400, tags: ["reviews"] }
-  )();
-};
+export async function getListingReviewSummary(listingId: number): Promise<ReviewSummary> {
+  const reviews = await getListingReviews(listingId);
+  return computeSummary(reviews);
+}
