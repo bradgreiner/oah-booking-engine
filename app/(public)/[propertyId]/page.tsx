@@ -8,6 +8,7 @@ import PropertyDetailContent from "@/components/PropertyDetailContent";
 import { getProperty } from "@/lib/property-adapter";
 import { prisma } from "@/lib/prisma";
 import { getListingReviews, getListingReviewSummary } from "@/lib/hostaway-reviews";
+import { getMinimumNightlyRate } from "@/lib/hostaway-calendar";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,7 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
   let nearbyPlaces: { emoji: string; name: string; category: string; distance: string | null; note: string | null }[] = [];
   let reviewSummary: Awaited<ReturnType<typeof getListingReviewSummary>> | undefined;
   let reviews: Awaited<ReturnType<typeof getListingReviews>> = [];
+  let fromNightlyRate: number | null = null;
 
   if (property.hostawayListingId) {
     const listingId = property.hostawayListingId;
@@ -63,10 +65,12 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
       prisma.nearbyPlace.findMany({ where: { listingId } }),
       getListingReviewSummary(listingId),
       getListingReviews(listingId),
+      getMinimumNightlyRate(listingId),
     ]);
     if (results[0].status === "fulfilled") nearbyPlaces = results[0].value;
     if (results[1].status === "fulfilled") reviewSummary = results[1].value;
     if (results[2].status === "fulfilled") reviews = results[2].value;
+    if (results[3].status === "fulfilled") fromNightlyRate = results[3].value;
   }
 
   const jsonLd = {
@@ -122,6 +126,7 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
           nearbyPlaces={nearbyPlaces}
           reviewSummary={reviewSummary}
           reviews={reviews}
+          fromNightlyRate={fromNightlyRate}
         />
 
         {/* Full booking widget on mobile (hidden on desktop since it's in the sidebar) */}
@@ -139,6 +144,7 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
             monthlyDiscount={property.monthlyDiscount}
             initialCheckIn={searchParams.checkIn}
             initialCheckOut={searchParams.checkOut}
+            fromNightlyRate={fromNightlyRate}
           />
         </div>
 
@@ -146,7 +152,7 @@ export default async function PropertyDetailPage({ params, searchParams }: Props
         <MobileBookingBar
           propertyId={property.id}
           propertyName={property.name}
-          baseRate={property.baseRate}
+          baseRate={fromNightlyRate ?? property.baseRate}
           minNights={property.minNights}
         />
       </main>

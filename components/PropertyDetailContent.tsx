@@ -23,9 +23,10 @@ interface Props {
   nearbyPlaces?: NearbyPlaceData[];
   reviewSummary?: ReviewSummary;
   reviews?: Review[];
+  fromNightlyRate?: number | null;
 }
 
-export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [], reviewSummary, reviews = [] }: Props) {
+export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [], reviewSummary, reviews = [], fromNightlyRate }: Props) {
   const amenities: string[] = property.amenities
     ? JSON.parse(property.amenities)
     : [];
@@ -250,6 +251,7 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
                 monthlyDiscount={property.monthlyDiscount}
                 initialCheckIn={initialCheckIn}
                 initialCheckOut={initialCheckOut}
+                fromNightlyRate={fromNightlyRate}
               />
             </div>
           </div>

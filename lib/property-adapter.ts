@@ -483,45 +483,84 @@ export async function getPropertyPricing(
   const numNights = getNightCount(checkIn, checkOut);
   if (numNights <= 0) return null;
 
-  // RULE: PriceLabs is the ONLY pricing source. No Hostaway discount multipliers.
-  // getProperty already overlays PriceLabs 30-day avg onto baseRate (or zeros it).
-  // For the exact check-in/checkout range, fetch date-specific PriceLabs rates.
   let nightlyRate = property.baseRate;
-  let rateSource = nightlyRate > 0 ? 'pricelabs' : 'none';
+  let nightlyTotal = nightlyRate * numNights;
+  let rateSource = nightlyRate > 0 ? "pricelabs" : "none";
+  let ratesVary = false;
+
+  // For Hostaway properties, use actual per-day calendar prices
   if (property.hostawayListingId) {
-    const hostawayId = parseInt(property.id.replace('hw_', ''), 10);
-    const { getAverageNightlyRate } = await import('./pricelabs');
-    const dynamicRate = await getAverageNightlyRate(hostawayId, checkIn, checkOut);
-    console.log('[pricing debug]', {
-      propertyId: property.id,
-      hostawayId,
-      numNights,
-      priceLabsRate: dynamicRate,
-      baseRate: property.baseRate,
-      source: dynamicRate && dynamicRate > 0 ? 'pricelabs' : 'none',
-    });
-    if (dynamicRate && dynamicRate > 0) {
-      nightlyRate = dynamicRate;
-      rateSource = 'pricelabs';
+    const { getStayPriceBreakdown } = await import("./hostaway-calendar");
+    const breakdown = await getStayPriceBreakdown(
+      property.hostawayListingId,
+      checkIn,
+      checkOut
+    );
+
+    if (breakdown.nights > 0 && breakdown.subtotal > 0) {
+      nightlyRate = breakdown.averageNightly;
+      nightlyTotal = breakdown.subtotal;
+      rateSource = "hostaway-calendar";
+
+      const prices = breakdown.nightlyPrices.map((p) => p.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      ratesVary = maxPrice > minPrice * 1.1;
+
+      console.log("[pricing calendar]", {
+        propertyId: property.id,
+        numNights: breakdown.nights,
+        avgNightly: breakdown.averageNightly,
+        subtotal: breakdown.subtotal,
+        minPrice,
+        maxPrice,
+        ratesVary,
+      });
+    } else {
+      // Calendar returned no data for this range, fall back to PriceLabs
+      const hostawayId = parseInt(property.id.replace("hw_", ""), 10);
+      const { getAverageNightlyRate } = await import("./pricelabs");
+      const dynamicRate = await getAverageNightlyRate(hostawayId, checkIn, checkOut);
+      if (dynamicRate && dynamicRate > 0) {
+        nightlyRate = dynamicRate;
+        nightlyTotal = dynamicRate * numNights;
+        rateSource = "pricelabs";
+      }
     }
   }
 
-  // PriceLabs provides the base nightly rate (same rate that goes to Airbnb/VRBO).
-  // Monthly and weekly discounts from Hostaway are REAL and must be applied.
-  // Airbnb applies these same discounts — if we don't, our portal is more expensive.
+  // Apply weekly/monthly discounts from Hostaway (these are real)
   let discountedRate = nightlyRate;
+  let discountedTotal = nightlyTotal;
   const md = property.monthlyDiscount;
   const wd = property.weeklyDiscount;
   if (numNights >= 30 && md && md > 0 && md < 1) {
     discountedRate = nightlyRate * md;
+    discountedTotal = nightlyTotal * md;
   } else if (numNights >= 7 && wd && wd > 0 && wd < 1) {
     discountedRate = nightlyRate * wd;
+    discountedTotal = nightlyTotal * wd;
   }
 
-  const { getTotRate } = await import('./constants');
+  const { getTotRate } = await import("./constants");
   const totRate = getTotRate(property.city, numNights);
-  const fees = calculateBookingFees({ baseRate: discountedRate, cleaningFee: property.cleaningFee, petFee: 0, totRate }, numNights, false);
-  return { ...fees, nightlyRate: Math.round(discountedRate), numNights, checkIn, checkOut, source: property.source, rateSource };
+  const fees = calculateBookingFees(
+    { baseRate: discountedRate, cleaningFee: property.cleaningFee, petFee: 0, totRate },
+    numNights,
+    false
+  );
+
+  return {
+    ...fees,
+    nightlyRate: Math.round(discountedRate),
+    nightlyTotal: Math.round(discountedTotal * 100) / 100,
+    numNights,
+    checkIn,
+    checkOut,
+    source: property.source,
+    rateSource,
+    ratesVary,
+  };
 }
 
 // Homepage featured: only local active + Hostaway merged

@@ -19,6 +19,7 @@ interface BookingWidgetProps {
   monthlyDiscount?: number;
   initialCheckIn?: string;
   initialCheckOut?: string;
+  fromNightlyRate?: number | null;
 }
 
 interface FeeBreakdown {
@@ -33,6 +34,7 @@ interface FeeBreakdown {
   grandTotal: number;
   numNights: number;
   securityDeposit?: number;
+  ratesVary?: boolean;
 }
 
 function discountPct(multiplier: number | undefined): number {
@@ -55,6 +57,7 @@ export default function BookingWidget({
   monthlyDiscount,
   initialCheckIn,
   initialCheckOut,
+  fromNightlyRate,
 }: BookingWidgetProps) {
   const router = useRouter();
   const [checkIn, setCheckIn] = useState(initialCheckIn || "");
@@ -82,17 +85,18 @@ export default function BookingWidget({
   }
   const [activeTab, setActiveTab] = useState<Tab>(getDefaultTab);
 
-  // Compute display rate: use API nightlyRate when fees loaded, otherwise prop-based estimate
   const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
   const weeklyMultiplier = weeklyDiscount != null && weeklyDiscount > 0 && weeklyDiscount < 1 ? weeklyDiscount : 1;
   const hasDates = !!(fees && !loading);
+
+  // Use the calendar-sourced minimum rate if available, fall back to baseRate
+  const effectiveBaseRate = fromNightlyRate != null && fromNightlyRate > 0 ? fromNightlyRate : baseRate;
 
   let displayRate: number | null;
   let displayUnit: string;
   let isEstimate = false;
 
   if (hasDates) {
-    // Dates selected — show exact rate from pricing API
     const apiRate = fees.nightlyRate;
     if (activeTab === "monthly" || activeTab === "quarterly") {
       displayRate = Math.round(apiRate * 30);
@@ -102,22 +106,20 @@ export default function BookingWidget({
       displayUnit = "/night";
     }
   } else {
-    // No dates — show prop-based estimate with "From" prefix.
-    // When baseRate is 0 (no PriceLabs data), show "Contact for pricing".
     isEstimate = true;
-    if (baseRate <= 0) {
+    if (effectiveBaseRate <= 0) {
       displayRate = null;
       displayUnit = "";
     } else if (activeTab === "monthly" || activeTab === "quarterly") {
       displayRate = hasValidMonthlyDiscount
-        ? Math.round(baseRate * 30 * monthlyDiscount!)
-        : Math.round(baseRate * 30);
+        ? Math.round(effectiveBaseRate * 30 * monthlyDiscount!)
+        : Math.round(effectiveBaseRate * 30);
       displayUnit = "/mo";
     } else if (activeTab === "weekly") {
-      displayRate = Math.round(baseRate * weeklyMultiplier);
+      displayRate = Math.round(effectiveBaseRate * weeklyMultiplier);
       displayUnit = "/night";
     } else {
-      displayRate = Math.round(baseRate);
+      displayRate = Math.round(effectiveBaseRate);
       displayUnit = "/night";
     }
   }
@@ -314,12 +316,17 @@ export default function BookingWidget({
 
         return (
         <div className="mb-4 space-y-2 border-t border-gray-100 pt-4 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-600">
-              ${Math.round(fees.nightlyRate)}/night &times; {fees.numNights}{" "}
-              {fees.numNights === 1 ? "night" : "nights"}
-            </span>
-            <span className="text-gray-800">${fees.nightlyTotal.toLocaleString()}</span>
+          <div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">
+                {fees.ratesVary ? "Avg " : ""}${Math.round(fees.nightlyRate)}/night &times; {fees.numNights}{" "}
+                {fees.numNights === 1 ? "night" : "nights"}
+              </span>
+              <span className="text-gray-800">${fees.nightlyTotal.toLocaleString()}</span>
+            </div>
+            {fees.ratesVary && (
+              <p className="mt-0.5 text-xs text-gray-400">Rates vary by date</p>
+            )}
           </div>
           {discountSavings > 0 && (
             <div className="flex justify-between">
