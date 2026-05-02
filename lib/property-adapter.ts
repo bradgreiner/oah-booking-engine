@@ -10,6 +10,7 @@ import { calculateBookingFees, getNightCount } from "./booking";
 import { fetchPriceLabsBatch } from "./pricelabs";
 import { getMarketCities } from "./constants";
 import { cleanDescription } from "./description-cleaner";
+import { unstable_cache } from "next/cache";
 
 // ---------- Unified property shape ----------
 
@@ -384,6 +385,30 @@ export async function getProperties(
   merged = await overlayPriceLabsRates(merged);
 
   return applySort(merged, filters.sort);
+}
+
+export async function getCachedProperties(
+  filters: PropertyFilters = {}
+): Promise<UnifiedProperty[]> {
+  const keyParts = [
+    filters.status || "",
+    filters.city || "",
+    filters.propertyType || "",
+    filters.isOlympic || "",
+    filters.search || "",
+    filters.sort || "",
+    filters.minPrice || "",
+    filters.maxPrice || "",
+    filters.amenity || "",
+  ];
+
+  const cached = unstable_cache(
+    async () => getProperties(filters),
+    ["properties", ...keyParts],
+    { revalidate: 300, tags: ["properties", "search-listings"] }
+  );
+
+  return cached();
 }
 
 export async function getProperty(id: string): Promise<UnifiedProperty | null> {

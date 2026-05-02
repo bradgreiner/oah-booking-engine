@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getProperties } from "@/lib/property-adapter";
+import { getCachedProperties } from "@/lib/property-adapter";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const properties = await getProperties({
+    const properties = await getCachedProperties({
       status: searchParams.get("status") || undefined,
       city: searchParams.get("city") || undefined,
       propertyType: searchParams.get("propertyType") || undefined,
