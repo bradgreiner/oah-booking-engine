@@ -1,3 +1,5 @@
+"use client";
+
 interface Props {
   averageRating: number;
   totalReviews: number;
