@@ -25,10 +25,11 @@ const CATEGORY_LABELS: Record<string, string> = {
 const INITIAL_COUNT = 6;
 
 function relevanceScore(review: Review): number {
-  const daysAgo = (Date.now() - new Date(review.date).getTime()) / (1000 * 60 * 60 * 24);
+  const dateMs = new Date(review.date).getTime();
+  const daysAgo = isNaN(dateMs) ? 999 : (Date.now() - dateMs) / (1000 * 60 * 60 * 24);
   const recency = daysAgo < 90 ? 3 : daysAgo < 365 ? 2 : 1;
-  const length = Math.min(review.text.length / 300, 1.0) * 0.5;
-  const ratingScore = (review.rating / 5) * 0.5;
+  const length = Math.min((review.text || "").length / 300, 1.0) * 0.5;
+  const ratingScore = ((review.rating || 0) / 5) * 0.5;
   return recency * 1.0 + length + ratingScore;
 }
 
@@ -36,8 +37,8 @@ function sortReviews(reviews: Review[], sortBy: SortOption): Review[] {
   const sorted = [...reviews];
   switch (sortBy) {
     case "relevant": {
-      const long = sorted.filter((r) => r.text.length >= 80);
-      const short = sorted.filter((r) => r.text.length < 80);
+      const long = sorted.filter((r) => (r.text || "").length >= 80);
+      const short = sorted.filter((r) => (r.text || "").length < 80);
       long.sort((a, b) => relevanceScore(b) - relevanceScore(a));
       short.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       return [...long, ...short];

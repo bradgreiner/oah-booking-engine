@@ -37,8 +37,18 @@ function channelName(channelId: number): Review["channel"] {
 }
 
 function firstName(name: string | null | undefined): string {
-  if (!name) return "Guest";
+  if (!name || name.trim().length === 0) return "Guest";
   return name.trim().split(/\s+/)[0];
+}
+
+function normalizeDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return new Date().toISOString();
+  // Hostaway returns SQL datetime "2026-04-17 11:00:00" which Safari can't parse.
+  // Normalize to ISO format.
+  const normalized = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T") + "Z";
+  const parsed = new Date(normalized);
+  if (isNaN(parsed.getTime())) return new Date().toISOString();
+  return parsed.toISOString();
 }
 
 export interface RawReview {
@@ -106,8 +116,8 @@ function mapReview(r: RawReview): Review {
     reviewerName: firstName(r.guestName || r.reservationGuestName),
     channel: channelName(r.channelId),
     rating: Math.round((rawRating / 2) * 10) / 10,
-    text: r.publicReview!.trim(),
-    date: r.departureDate || r.insertedOn || new Date().toISOString(),
+    text: (r.publicReview || "").trim(),
+    date: normalizeDate(r.departureDate || r.insertedOn),
     ...(Object.keys(categoryRatings).length > 0 ? { categoryRatings } : {}),
   };
 }

@@ -23,7 +23,9 @@ function StarRow({ rating }: { rating: number }) {
 
 function formatDate(dateStr: string): string {
   try {
-    return new Date(dateStr).toLocaleDateString("en-US", {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-US", {
       month: "long",
       year: "numeric",
     });
@@ -36,17 +38,18 @@ const TRUNCATE_LENGTH = 280;
 
 export default function ReviewCard({ review }: { review: Review }) {
   const [expanded, setExpanded] = useState(false);
-  const needsTruncation = review.text.length > TRUNCATE_LENGTH;
+  const text = review.text || "";
+  const needsTruncation = text.length > TRUNCATE_LENGTH;
   const displayText = needsTruncation && !expanded
-    ? review.text.slice(0, TRUNCATE_LENGTH) + "..."
-    : review.text;
+    ? text.slice(0, TRUNCATE_LENGTH) + "..."
+    : text;
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-5">
       {/* Avatar + name + date */}
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F5F0E8] text-sm font-semibold text-[#4C6C4E]">
-          {review.reviewerName.charAt(0).toUpperCase()}
+          {(review.reviewerName || "G").charAt(0).toUpperCase()}
         </div>
         <div>
           <p className="text-[15px] font-semibold text-gray-900">{review.reviewerName}</p>
