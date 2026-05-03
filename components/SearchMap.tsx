@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 
-// Deterministic privacy offset (~200-400m) based on property ID hash
 function deterministicOffset(id: string, coord: number): number {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -24,18 +23,22 @@ interface MapProperty {
 
 interface SearchMapProps {
   properties: MapProperty[];
+  activeListingId?: string | null;
+  onMarkerHover?: (id: string | null) => void;
 }
 
-export default function SearchMap({ properties }: SearchMapProps) {
+export default function SearchMap({ properties, activeListingId, onMarkerHover }: SearchMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
+  const markerElsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const mapboxRef = useRef<any>(null);
   const [ready, setReady] = useState(false);
 
   const clearMarkers = useCallback(() => {
     for (const m of markersRef.current) m.remove();
     markersRef.current = [];
+    markerElsRef.current.clear();
   }, []);
 
   useEffect(() => {
@@ -94,7 +97,6 @@ export default function SearchMap({ properties }: SearchMapProps) {
     for (const p of properties) {
       if (p.latitude == null || p.longitude == null) continue;
 
-      // Privacy: use deterministic offset so markers show neighborhood, not exact address
       const privLat = deterministicOffset(p.id, p.latitude);
       const privLng = deterministicOffset(p.id + "_lng", p.longitude);
 
@@ -117,6 +119,7 @@ export default function SearchMap({ properties }: SearchMapProps) {
 
       const el = document.createElement("div");
       el.textContent = displayPrice;
+      el.dataset.listingId = p.id;
       el.style.background = "white";
       el.style.border = "1.5px solid #e5e7eb";
       el.style.borderRadius = "20px";
@@ -126,11 +129,22 @@ export default function SearchMap({ properties }: SearchMapProps) {
       el.style.cursor = "pointer";
       el.style.boxShadow = "0 1px 4px rgba(0,0,0,0.15)";
       el.style.whiteSpace = "nowrap";
+      el.style.transition = "all 150ms ease";
+
       el.addEventListener("click", () => {
         window.dispatchEvent(
           new CustomEvent("propertyHighlight", { detail: { id: p.id } })
         );
       });
+
+      el.addEventListener("mouseenter", () => {
+        onMarkerHover?.(p.id);
+      });
+      el.addEventListener("mouseleave", () => {
+        onMarkerHover?.(null);
+      });
+
+      markerElsRef.current.set(p.id, el);
 
       const marker = new mapboxgl.Marker({ element: el, anchor: "center" })
         .setLngLat([privLng, privLat])
@@ -142,7 +156,26 @@ export default function SearchMap({ properties }: SearchMapProps) {
     if (hasCoords && properties.length > 0) {
       map.fitBounds(bounds, { padding: 60, maxZoom: 13, duration: 500 });
     }
-  }, [properties, ready, clearMarkers]);
+  }, [properties, ready, clearMarkers, onMarkerHover]);
+
+  // Toggle active class on marker when hoveredId changes (no marker recreation)
+  useEffect(() => {
+    for (const [id, el] of markerElsRef.current) {
+      if (id === activeListingId) {
+        el.style.background = "#4C6C4E";
+        el.style.color = "white";
+        el.style.borderColor = "white";
+        el.style.transform = "scale(1.1)";
+        el.style.zIndex = "10";
+      } else {
+        el.style.background = "white";
+        el.style.color = "";
+        el.style.borderColor = "#e5e7eb";
+        el.style.transform = "scale(1)";
+        el.style.zIndex = "";
+      }
+    }
+  }, [activeListingId]);
 
   if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) return null;
 

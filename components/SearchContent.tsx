@@ -55,6 +55,7 @@ export default function SearchContent() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMap, setShowMap] = useState(true);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Restore map preference from sessionStorage on mount
   useEffect(() => {
@@ -274,7 +275,11 @@ export default function SearchContent() {
                   <div
                     key={property.id}
                     id={`card-${property.id}`}
-                    className="rounded-2xl transition-all duration-300"
+                    className={`rounded-2xl transition-all duration-150 ${
+                      hoveredId === property.id ? "ring-2 ring-[#4C6C4E] ring-offset-2" : ""
+                    }`}
+                    onMouseEnter={() => setHoveredId(property.id)}
+                    onMouseLeave={() => setHoveredId(null)}
                   >
                     <PropertyCard
                       id={property.id}
@@ -306,7 +311,11 @@ export default function SearchContent() {
             {mapAvailable && showMap && (
               <div className="hidden w-[420px] shrink-0 lg:block">
                 <div className="sticky top-[80px] h-[calc(100vh-80px)] overflow-hidden rounded-xl">
-                  <SearchMap properties={filtered} />
+                  <SearchMap
+                    properties={filtered}
+                    activeListingId={hoveredId}
+                    onMarkerHover={setHoveredId}
+                  />
                 </div>
               </div>
             )}

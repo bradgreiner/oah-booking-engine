@@ -17,16 +17,16 @@ export default function Footer({ showBadges = true }: FooterProps) {
     <footer className="border-t border-gray-200 bg-gray-50">
       {/* Trust badges row */}
       {showBadges && (
-        <div className="flex flex-wrap items-center justify-center gap-8 border-b border-gray-100 px-4 py-8 mb-8">
+        <div className="grid grid-cols-2 items-center justify-items-center gap-8 border-b border-gray-100 px-4 py-12 mb-8 md:flex md:flex-wrap md:justify-center md:gap-12 md:py-16">
           {TRUST_BADGES.map((badge) => (
             <div key={badge.alt} className="flex items-center justify-center">
               <Image
                 src={badge.src}
                 alt={badge.alt}
-                width={120}
-                height={36}
+                width={240}
+                height={72}
                 unoptimized
-                className="h-8 w-auto object-contain grayscale opacity-80 transition-opacity hover:opacity-100 hover:grayscale-0"
+                className="h-14 w-auto object-contain grayscale opacity-80 transition-opacity hover:opacity-100 hover:grayscale-0 md:h-20"
               />
             </div>
           ))}
