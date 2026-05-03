@@ -83,6 +83,50 @@ export default function RootLayout({
           />
         </noscript>
 
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "RealEstateAgent",
+              name: "Open Air Homes",
+              alternateName: "OAH",
+              url: "https://oah-booking-engine.vercel.app",
+              description: "Licensed California brokerage managing furnished monthly rentals and short-term rentals across Los Angeles and Palm Springs since 2012.",
+              address: [
+                {
+                  "@type": "PostalAddress",
+                  streetAddress: "402 Brooks Ave",
+                  addressLocality: "Venice",
+                  addressRegion: "CA",
+                  postalCode: "90291",
+                  addressCountry: "US",
+                },
+                {
+                  "@type": "PostalAddress",
+                  streetAddress: "182 E. Andreas Rd",
+                  addressLocality: "Palm Springs",
+                  addressRegion: "CA",
+                  postalCode: "92262",
+                  addressCountry: "US",
+                },
+              ],
+              telephone: "+1-323-375-3664",
+              email: "reservations@openairhomes.com",
+              identifier: {
+                "@type": "PropertyValue",
+                propertyID: "DRE License",
+                value: "02164159",
+              },
+              areaServed: [
+                { "@type": "City", name: "Los Angeles" },
+                { "@type": "City", name: "Palm Springs" },
+              ],
+              sameAs: ["https://openairhomes.com"],
+            }),
+          }}
+        />
+
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

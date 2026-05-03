@@ -5,6 +5,8 @@ import PropertyMap from "@/components/PropertyMap";
 import ShareButton from "@/components/ShareButton";
 import ReviewsHeader from "@/components/ReviewsHeader";
 import ReviewsSection from "@/components/ReviewsSection";
+import ListingBio from "@/components/ListingBio";
+import ListingFAQ from "@/components/ListingFAQ";
 import type { UnifiedProperty } from "@/lib/property-adapter";
 import type { Review, ReviewSummary } from "@/lib/hostaway-reviews";
 
@@ -24,9 +26,10 @@ interface Props {
   reviewSummary?: ReviewSummary;
   reviews?: Review[];
   fromNightlyRate?: number | null;
+  stayType?: "monthly" | "str";
 }
 
-export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [], reviewSummary, reviews = [], fromNightlyRate }: Props) {
+export default function PropertyDetailContent({ property, initialCheckIn, initialCheckOut, nearbyPlaces = [], reviewSummary, reviews = [], fromNightlyRate, stayType }: Props) {
   const amenities: string[] = property.amenities
     ? JSON.parse(property.amenities)
     : [];
@@ -233,6 +236,16 @@ export default function PropertyDetailContent({ property, initialCheckIn, initia
                 ))}
               </div>
             </div>
+
+            {/* Bio + FAQ */}
+            {stayType && (
+              <>
+                <hr className="my-8 border-gray-100" />
+                <ListingBio stayType={stayType} />
+                <hr className="my-8 border-gray-100" />
+                <ListingFAQ stayType={stayType} />
+              </>
+            )}
           </div>
 
           {/* Right: booking widget (desktop) */}

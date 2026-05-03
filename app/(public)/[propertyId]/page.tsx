@@ -1,5 +1,5 @@
 import { permanentRedirect, notFound } from "next/navigation";
-import { getSlugForId } from "@/lib/property-adapter";
+import { getProperties } from "@/lib/property-adapter";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +10,9 @@ interface Props {
 export default async function LegacyPropertyPage({ params }: Props) {
   if (!params.propertyId.startsWith("hw_")) notFound();
 
-  const slug = await getSlugForId(params.propertyId);
-  if (!slug) notFound();
+  const all = await getProperties();
+  const property = all.find((p) => p.id === params.propertyId);
+  if (!property) notFound();
 
-  permanentRedirect(`/homes/${slug}`);
+  permanentRedirect(`/homes/${property.stayTypePath}/${property.slug}`);
 }

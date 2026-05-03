@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,43 +9,67 @@ import { getPropertyBySlug } from "@/lib/property-adapter";
 import { prisma } from "@/lib/prisma";
 import { getListingReviews, getListingReviewSummary } from "@/lib/hostaway-reviews";
 import { getMinimumNightlyRate } from "@/lib/hostaway-calendar";
+import { FAQ_CONTENT } from "@/lib/listing-content";
+import { slugify } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
 
+const VALID_STAY_TYPES = ["monthly-rental", "short-term-rental"] as const;
+const BASE = "https://oah-booking-engine.vercel.app";
+
+const LA_NEIGHBORHOODS = [
+  "Manhattan Beach", "Santa Monica", "Venice", "Topanga", "Malibu",
+  "West Hollywood", "Marina del Rey", "Mar Vista", "Studio City",
+  "Hermosa Beach", "Redondo Beach", "Beverly Hills", "Culver City",
+  "Pacific Palisades", "Brentwood", "Sherman Oaks", "Hollywood Hills",
+  "Hollywood", "Silver Lake", "Echo Park",
+];
+
 interface Props {
-  params: { slug: string };
+  params: { stayType: string; slug: string };
   searchParams: { checkIn?: string; checkOut?: string };
 }
 
+function resolveMarket(city: string | null): string | null {
+  if (!city) return null;
+  if (LA_NEIGHBORHOODS.some((n) => n.toLowerCase() === city.toLowerCase())) return "Los Angeles";
+  return null;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  if (!VALID_STAY_TYPES.includes(params.stayType as typeof VALID_STAY_TYPES[number])) {
+    return { title: "Not found" };
+  }
+
   const property = await getPropertyBySlug(params.slug);
   if (!property) return { title: "Home not found" };
 
   const city = property.city || "Southern California";
   const bedroomLabel = property.bedrooms === 1 ? "1 bedroom" : `${property.bedrooms} bedroom`;
+  const isMonthly = property.stayType === "monthly";
 
-  const title = `${property.name} | ${city} Furnished Rental | Open Air Homes`;
+  const title = isMonthly
+    ? `${property.name} | ${city} Monthly Furnished Rental | Open Air Homes`
+    : `${property.name} | ${city} Vacation Rental | Open Air Homes`;
 
   const cleanDesc = (property.description || "")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-  const description = cleanDesc
+  const description = cleanDesc && cleanDesc.length > 40
     ? cleanDesc.slice(0, 155) + (cleanDesc.length > 155 ? "..." : "")
-    : `Book ${property.name} in ${city}. ${bedroomLabel}, ${property.bathrooms} bath furnished rental for monthly and short-term stays. Professionally managed by Open Air Homes.`;
+    : isMonthly
+      ? `Book ${property.name} direct, a ${bedroomLabel} furnished monthly rental in ${city}. 30+ night stays, no STR permit required, CAR-compliant lease. Managed by Open Air Homes.`
+      : `Book ${property.name} direct, a ${bedroomLabel} vacation rental in ${city}. Permitted, professionally managed, Superhost on Airbnb for 14+ years. Open Air Homes.`;
 
-  const keywords = [
-    `${city} monthly rental`,
-    `${city} furnished rental`,
-    `${city} vacation rental`,
-    `${bedroomLabel} ${city}`,
-    `${city} short term rental`,
-    property.name,
-  ];
+  const market = resolveMarket(city);
+  const keywords = isMonthly
+    ? [`${city} monthly rental`, `${city} furnished rental`, `${city} 30 day rental`, `${city} extended stay`, ...(market ? [`monthly rental ${market}`] : []), property.name]
+    : [`${city} vacation rental`, `${city} short term rental`, `${city} Airbnb alternative`, ...(market ? [`vacation rental ${market}`] : []), property.name];
 
   const image = property.images[0]?.url;
-  const url = `https://oah-booking-engine.vercel.app/homes/${params.slug}`;
+  const url = `${BASE}/homes/${params.stayType}/${params.slug}`;
 
   return {
     title,
@@ -70,11 +94,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PropertyPage({ params, searchParams }: Props) {
-  const property = await getPropertyBySlug(params.slug);
-
-  if (!property || property.status === "removed") {
+  if (!VALID_STAY_TYPES.includes(params.stayType as typeof VALID_STAY_TYPES[number])) {
     notFound();
   }
+
+  const property = await getPropertyBySlug(params.slug);
+  if (!property || property.status === "removed") notFound();
+
+  if (property.stayTypePath !== params.stayType) {
+    permanentRedirect(`/homes/${property.stayTypePath}/${property.slug}`);
+  }
+
+  const stayType = property.stayType;
 
   let nearbyPlaces: { emoji: string; name: string; category: string; distance: string | null; note: string | null }[] = [];
   let reviewSummary: Awaited<ReturnType<typeof getListingReviewSummary>> | undefined;
@@ -105,7 +136,15 @@ export default async function PropertyPage({ params, searchParams }: Props) {
     .trim()
     .slice(0, 200);
 
-  const jsonLd = {
+  const city = property.city || "Southern California";
+  const citySlug = slugify(city);
+  const pageUrl = `${BASE}/homes/${params.stayType}/${params.slug}`;
+
+  const avgRating = reviewSummary && reviewSummary.totalReviews > 0
+    ? reviewSummary.averageRating
+    : null;
+
+  const lodgingJsonLd = {
     "@context": "https://schema.org",
     "@type": "LodgingBusiness",
     name: property.name,
@@ -122,7 +161,53 @@ export default async function PropertyPage({ params, searchParams }: Props) {
       "@type": "LocationFeatureSpecification",
       name: a,
     })),
-    url: `https://oah-booking-engine.vercel.app/homes/${params.slug}`,
+    url: pageUrl,
+    ...(avgRating ? {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating.toFixed(2),
+        reviewCount: reviewSummary!.totalReviews,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    } : {}),
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_CONTENT[stayType].map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: a,
+      },
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Homes",
+        item: `${BASE}/search`,
+      },
+      ...(property.city ? [{
+        "@type": "ListItem",
+        position: 2,
+        name: city,
+        item: `${BASE}/cities/${citySlug}`,
+      }] : []),
+      {
+        "@type": "ListItem",
+        position: property.city ? 3 : 2,
+        name: property.name,
+      },
+    ],
   };
 
   return (
@@ -131,7 +216,15 @@ export default async function PropertyPage({ params, searchParams }: Props) {
       <main id="main-content" className="min-h-screen bg-white pb-20 lg:pb-0">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(lodgingJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
         <PropertyDetailContent
           property={property}
@@ -141,6 +234,7 @@ export default async function PropertyPage({ params, searchParams }: Props) {
           reviewSummary={reviewSummary}
           reviews={reviews}
           fromNightlyRate={fromNightlyRate}
+          stayType={stayType}
         />
 
         <div className="mx-auto max-w-7xl px-4 pb-8 lg:hidden">

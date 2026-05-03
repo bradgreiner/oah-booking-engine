@@ -306,6 +306,7 @@ export default async function CityPage({ params }: { params: { city: string } })
               monthlyDiscount={p.monthlyDiscount}
               minNights={p.minNights}
               propertyType={p.propertyType}
+              stayTypePath={p.stayTypePath}
               isOlympic={p.isOlympic}
               imageUrl={p.images[0]?.url}
               createdAt={p.createdAt}

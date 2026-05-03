@@ -29,6 +29,8 @@ export interface UnifiedProperty {
   maxGuests: number;
   sqft: number | null;
   propertyType: string;
+  stayType: "monthly" | "str";
+  stayTypePath: "monthly-rental" | "short-term-rental";
   baseRate: number;
   weeklyDiscount: number;
   monthlyDiscount: number;
@@ -169,6 +171,8 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
     maxGuests: listing.personCapacity ?? 1,
     sqft,
     propertyType: derivePropertyType(listing),
+    stayType: (listing.minNights ?? 1) >= 30 ? "monthly" : "str",
+    stayTypePath: (listing.minNights ?? 1) >= 30 ? "monthly-rental" : "short-term-rental",
     baseRate,
     weeklyDiscount: listing.weeklyDiscount ?? 0,
     monthlyDiscount: listing.monthlyDiscount ?? 0,
@@ -209,6 +213,8 @@ function mapLocalToUnified(
     maxGuests: property.maxGuests,
     sqft: property.sqft,
     propertyType: property.propertyType,
+    stayType: property.minNights >= 30 ? "monthly" : "str",
+    stayTypePath: property.minNights >= 30 ? "monthly-rental" : "short-term-rental",
     baseRate: property.baseRate,
     weeklyDiscount: property.weeklyDiscount,
     monthlyDiscount: property.monthlyDiscount,

@@ -20,6 +20,7 @@ interface PropertyCardProps {
   monthlyDiscount?: number;
   minNights?: number;
   propertyType: string;
+  stayTypePath?: string;
   isOlympic?: boolean;
   imageUrl?: string;
   createdAt?: string;
@@ -42,6 +43,7 @@ export default function PropertyCard({
   monthlyDiscount,
   minNights,
   propertyType,
+  stayTypePath,
   imageUrl,
   createdAt,
   linkPrefix = "",
@@ -65,7 +67,7 @@ export default function PropertyCard({
   const dateParams = checkIn ? `?checkIn=${checkIn}${checkOut ? `&checkOut=${checkOut}` : ""}` : "";
 
   return (
-    <Link href={linkPrefix ? `${linkPrefix}/${id}${dateParams}` : `/homes/${slug}${dateParams}`} className="group block">
+    <Link href={linkPrefix ? `${linkPrefix}/${id}${dateParams}` : `/homes/${stayTypePath || "short-term-rental"}/${slug}${dateParams}`} className="group block">
       <div
         onClickCapture={() => trackEvent("listing_view", { propertyId: id, propertyName: name, city })}
         className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"

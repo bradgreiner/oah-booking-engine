@@ -145,6 +145,7 @@ export default async function HomePage() {
                   monthlyDiscount={property.monthlyDiscount}
                   minNights={property.minNights}
                   propertyType={property.propertyType}
+                  stayTypePath={property.stayTypePath}
                   isOlympic={property.isOlympic}
                   imageUrl={property.images[0]?.url}
                   createdAt={property.createdAt}

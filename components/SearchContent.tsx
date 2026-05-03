@@ -22,6 +22,7 @@ interface Property {
   monthlyDiscount: number;
   minNights: number;
   propertyType: string;
+  stayTypePath?: string;
   isOlympic: boolean;
   createdAt: string;
   images: { url: string }[];
@@ -297,6 +298,7 @@ export default function SearchContent() {
                       monthlyDiscount={property.monthlyDiscount}
                       minNights={property.minNights}
                       propertyType={property.propertyType}
+                      stayTypePath={property.stayTypePath}
                       isOlympic={property.isOlympic}
                       imageUrl={property.images[0]?.url}
                       createdAt={property.createdAt}
