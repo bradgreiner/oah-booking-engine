@@ -8,6 +8,7 @@ import NeighborhoodGrid from "@/components/NeighborhoodGrid";
 import Testimonials from "@/components/Testimonials";
 import PropertyCard from "@/components/PropertyCard";
 import { getFeaturedProperties, getCityCounts } from "@/lib/property-adapter";
+import { getMinimumNightlyRate } from "@/lib/hostaway-calendar";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,16 @@ export default async function HomePage() {
     getFeaturedProperties(6),
     getCityCounts(),
   ]);
+
+  // Fetch minimum nightly rates for all featured properties in parallel
+  const minRateResults = await Promise.allSettled(
+    properties.map((p) =>
+      p.hostawayListingId ? getMinimumNightlyRate(p.hostawayListingId) : Promise.resolve(null)
+    )
+  );
+  const minRates = minRateResults.map((r) =>
+    r.status === "fulfilled" ? r.value : null
+  );
 
   const homeJsonLd = {
     "@context": "https://schema.org",
@@ -117,7 +128,7 @@ export default async function HomePage() {
 
           {properties.length > 0 ? (
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
-              {properties.map((property) => (
+              {properties.map((property, idx) => (
                 <PropertyCard
                   key={property.id}
                   id={property.id}
@@ -137,6 +148,7 @@ export default async function HomePage() {
                   isOlympic={property.isOlympic}
                   imageUrl={property.images[0]?.url}
                   createdAt={property.createdAt}
+                  fromNightlyRate={minRates[idx]}
                 />
               ))}
             </div>

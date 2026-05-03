@@ -35,6 +35,7 @@ interface FeeBreakdown {
   numNights: number;
   securityDeposit?: number;
   ratesVary?: boolean;
+  nightlyPrices?: { date: string; price: number }[];
 }
 
 function discountPct(multiplier: number | undefined): number {
@@ -65,6 +66,7 @@ export default function BookingWidget({
   const [guests, setGuests] = useState(1);
   const [fees, setFees] = useState<FeeBreakdown | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showNightlyBreakdown, setShowNightlyBreakdown] = useState(false);
 
   const weeklyPct = discountPct(weeklyDiscount);
   const monthlyPct = discountPct(monthlyDiscount);
@@ -324,8 +326,35 @@ export default function BookingWidget({
               </span>
               <span className="text-gray-800">${fees.nightlyTotal.toLocaleString()}</span>
             </div>
-            {fees.ratesVary && (
-              <p className="mt-0.5 text-xs text-gray-400">Rates vary by date</p>
+            {fees.nightlyPrices && fees.nightlyPrices.length > 1 && (
+              <button
+                onClick={() => setShowNightlyBreakdown(!showNightlyBreakdown)}
+                className="mt-1 flex items-center gap-1 text-xs font-medium text-[#4C6C4E] hover:underline"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className={`h-3 w-3 transition-transform ${showNightlyBreakdown ? "rotate-90" : ""}`}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+                {showNightlyBreakdown ? "Hide nightly rates" : "View nightly rates"}
+              </button>
+            )}
+            {showNightlyBreakdown && fees.nightlyPrices && (
+              <div className="mt-2 space-y-1 rounded-lg bg-gray-50 px-3 py-2">
+                {fees.nightlyPrices.map((np) => (
+                  <div key={np.date} className="flex justify-between text-xs">
+                    <span className="text-gray-500">
+                      {new Date(np.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
+                    <span className="text-gray-700">${np.price.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
           {discountSavings > 0 && (

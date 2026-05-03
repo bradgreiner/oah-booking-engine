@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import FaqAccordion from "@/components/FaqAccordion";
 import { getProperties } from "@/lib/property-adapter";
+import { getMinimumNightlyRate } from "@/lib/hostaway-calendar";
 
 export const dynamic = "force-dynamic";
 
@@ -226,17 +227,39 @@ export default async function CityPage({ params }: { params: { city: string } })
 
   const allProperties = await getProperties({ city: cityData.market });
 
+  // Fetch minimum nightly rates in parallel
+  const minRateResults = await Promise.allSettled(
+    allProperties.map((p) =>
+      p.hostawayListingId ? getMinimumNightlyRate(p.hostawayListingId) : Promise.resolve(null)
+    )
+  );
+  const allMinRates = minRateResults.map((r) =>
+    r.status === "fulfilled" ? r.value : null
+  );
+
   let properties = allProperties;
+  let minRates = allMinRates;
   if (cityData.filterByName) {
-    properties = allProperties.filter(
-      (p) =>
+    const filtered: { prop: typeof allProperties[0]; rate: number | null }[] = [];
+    allProperties.forEach((p, i) => {
+      if (
         p.name.toLowerCase().includes(cityData.filterByName!) ||
         (p.city || "").toLowerCase() === (cityData.filterCity || "").toLowerCase()
-    );
+      ) {
+        filtered.push({ prop: p, rate: allMinRates[i] });
+      }
+    });
+    properties = filtered.map((f) => f.prop);
+    minRates = filtered.map((f) => f.rate);
   } else if (cityData.filterCity) {
-    properties = allProperties.filter(
-      (p) => (p.city || "").toLowerCase() === cityData.filterCity!.toLowerCase()
-    );
+    const filtered: { prop: typeof allProperties[0]; rate: number | null }[] = [];
+    allProperties.forEach((p, i) => {
+      if ((p.city || "").toLowerCase() === cityData.filterCity!.toLowerCase()) {
+        filtered.push({ prop: p, rate: allMinRates[i] });
+      }
+    });
+    properties = filtered.map((f) => f.prop);
+    minRates = filtered.map((f) => f.rate);
   }
 
   return (
@@ -266,7 +289,7 @@ export default async function CityPage({ params }: { params: { city: string } })
           {properties.length} {properties.length === 1 ? "home" : "homes"} in {cityData.name}
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((p) => (
+          {properties.map((p, idx) => (
             <PropertyCard
               key={p.id}
               id={p.id}
@@ -286,6 +309,7 @@ export default async function CityPage({ params }: { params: { city: string } })
               isOlympic={p.isOlympic}
               imageUrl={p.images[0]?.url}
               createdAt={p.createdAt}
+              fromNightlyRate={minRates[idx]}
             />
           ))}
         </div>

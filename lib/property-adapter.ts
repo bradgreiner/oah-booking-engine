@@ -487,6 +487,7 @@ export async function getPropertyPricing(
   let nightlyTotal = nightlyRate * numNights;
   let rateSource = nightlyRate > 0 ? "pricelabs" : "none";
   let ratesVary = false;
+  let nightlyPrices: { date: string; price: number }[] = [];
 
   // For Hostaway properties, use actual per-day calendar prices
   if (property.hostawayListingId) {
@@ -501,6 +502,7 @@ export async function getPropertyPricing(
       nightlyRate = breakdown.averageNightly;
       nightlyTotal = breakdown.subtotal;
       rateSource = "hostaway-calendar";
+      nightlyPrices = breakdown.nightlyPrices;
 
       const prices = breakdown.nightlyPrices.map((p) => p.price);
       const minPrice = Math.min(...prices);
@@ -560,6 +562,7 @@ export async function getPropertyPricing(
     source: property.source,
     rateSource,
     ratesVary,
+    nightlyPrices,
   };
 }
 

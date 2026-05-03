@@ -26,6 +26,7 @@ interface PropertyCardProps {
   linkPrefix?: string;
   checkIn?: string;
   checkOut?: string;
+  fromNightlyRate?: number | null;
 }
 
 export default function PropertyCard({
@@ -45,6 +46,7 @@ export default function PropertyCard({
   linkPrefix = "",
   checkIn,
   checkOut,
+  fromNightlyRate,
 }: PropertyCardProps) {
   const isNew =
     createdAt &&
@@ -53,9 +55,10 @@ export default function PropertyCard({
   const isMonthly = propertyType === "monthly" || (minNights ?? 0) >= 30;
   const hasValidMonthlyDiscount = monthlyDiscount != null && monthlyDiscount > 0 && monthlyDiscount < 1;
 
-  // Monthly card: baseRate * 30. When baseRate is 0 (no PriceLabs data), show "Contact for pricing".
-  const monthlyPrice = isMonthly && baseRate > 0
-    ? Math.round(baseRate * 30 * (hasValidMonthlyDiscount ? monthlyDiscount! : 1))
+  const effectiveRate = fromNightlyRate != null && fromNightlyRate > 0 ? fromNightlyRate : baseRate;
+
+  const monthlyPrice = isMonthly && effectiveRate > 0
+    ? Math.round(effectiveRate * 30 * (hasValidMonthlyDiscount ? monthlyDiscount! : 1))
     : null;
 
   const dateParams = checkIn ? `?checkIn=${checkIn}${checkOut ? `&checkOut=${checkOut}` : ""}` : "";
@@ -133,9 +136,10 @@ export default function PropertyCard({
               ) : (
                 <p className="text-sm italic text-gray-500">Contact for pricing</p>
               )
-            ) : baseRate > 0 ? (
+            ) : effectiveRate > 0 ? (
               <p className="text-lg font-bold text-gray-900">
-                ${Math.round(baseRate).toLocaleString()}
+                <span className="text-sm font-normal text-gray-500">From </span>
+                ${Math.round(effectiveRate).toLocaleString()}
                 <span className="text-sm font-normal text-gray-500">/night</span>
               </p>
             ) : (

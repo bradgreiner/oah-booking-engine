@@ -37,6 +37,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // TODO: re-check Hostaway calendar availability for every night in the
+    // requested range before charging. Return 409 if any night is blocked.
+    // Currently the date picker prevents selecting blocked dates client-side,
+    // but there's no server-side guard against race conditions.
+    // See: lib/hostaway-calendar.ts getListingCalendar()
+
     const booking = await submitBookingRequest({
       propertyId: body.propertyId,
       checkIn: body.checkIn,
