@@ -45,9 +45,13 @@ export default function ListingFAQ({ stayType }: Props) {
               </svg>
             </button>
             {openItems.has(i) && (
-              <p className="pb-4 text-sm leading-relaxed text-gray-700">
-                {faq.a}
-              </p>
+              <div className="pb-5">
+                {faq.a.split("\n\n").map((para, j) => (
+                  <p key={j} className={`text-sm leading-relaxed text-gray-700 ${j > 0 ? "mt-3" : ""}`}>
+                    {para}
+                  </p>
+                ))}
+              </div>
             )}
           </div>
         ))}

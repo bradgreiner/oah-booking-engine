@@ -326,7 +326,7 @@ export default function RequestFormContent() {
 
               {numNights >= 30 && numNights < 90 && (
                 <div className="mt-6 rounded-xl border border-[#4C6C4E]/20 bg-[#4C6C4E]/5 p-4">
-                  <p className="text-sm font-medium text-[#4C6C4E]">Monthly Rental — 30+ nights</p>
+                  <p className="text-sm font-medium text-[#4C6C4E]">Monthly Rental: 30+ nights</p>
                   <p className="mt-1 text-xs text-gray-600">
                     After approval, our Broker of Record will send a California standard rental agreement (CAR form) for your electronic signature. Your check-in instructions will be sent once the agreement is signed.
                   </p>

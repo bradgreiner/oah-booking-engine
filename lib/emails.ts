@@ -79,7 +79,7 @@ export async function sendGuestConfirmation(data: BookingEmailData) {
         </p>
         ${data.numNights >= 30 ? `
         <p style="color: #4C6C4E; font-size: 14px; font-weight: 500; margin-top: 16px;">
-          Monthly Stay — Rental Agreement Required
+          Monthly Stay: Rental Agreement Required
         </p>
         <p style="color: #666; font-size: 14px;">
           Stays of 30+ nights require a CAR rental agreement per California law. Our Broker of Record at OpenAiRE Brokerage (DRE #02164159) will send this for your electronic signature after your booking is approved.

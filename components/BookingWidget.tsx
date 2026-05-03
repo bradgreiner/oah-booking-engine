@@ -432,7 +432,7 @@ export default function BookingWidget({
 
       {fees && fees.numNights >= 30 && (
         <div className="mb-4 rounded-lg border border-[#4C6C4E]/10 bg-[#4C6C4E]/5 p-3">
-          <p className="text-xs font-medium text-[#4C6C4E]">Monthly stay — Rental agreement required</p>
+          <p className="text-xs font-medium text-[#4C6C4E]">Monthly stay: Rental agreement required</p>
           <p className="mt-0.5 text-xs text-gray-500">
             Stays of 30+ nights require a CAR rental agreement. Our Broker of Record will send this for signature after your booking is approved.
           </p>

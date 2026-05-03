@@ -4,7 +4,7 @@ import Script from "next/script";
 
 export const metadata = {
   title: {
-    default: "Open Air Homes — Furnished Rentals in Southern California",
+    default: "Open Air Homes | Furnished Rentals in Southern California",
     template: "%s | Open Air Homes",
   },
   description: "Book furnished homes for short stays and monthly rentals across Los Angeles and Palm Springs. Save 10-15% vs Airbnb. Professionally managed by Open Air Homes.",
@@ -12,14 +12,14 @@ export const metadata = {
   openGraph: {
     type: "website",
     siteName: "Open Air Homes",
-    title: "Open Air Homes — Furnished Rentals in Southern California",
+    title: "Open Air Homes | Furnished Rentals in Southern California",
     description: "Book furnished homes for short stays and monthly rentals. Save 10-15% vs Airbnb.",
     url: "https://oah-booking-engine.vercel.app",
     images: [{ url: "/images/homes/Washington_38.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Air Homes — Furnished Rentals",
+    title: "Open Air Homes | Furnished Rentals",
     description: "Furnished homes across Southern California. Save 10-15% vs Airbnb.",
   },
   robots: {

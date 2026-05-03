@@ -21,7 +21,7 @@ export async function POST(req: Request) {
         from: "reservations@openairhomes.com",
         to: "brad@openairhomes.com",
         replyTo: email,
-        subject: `Contact Form: ${subject} — ${name}`,
+        subject: `Contact Form: ${subject} - ${name}`,
         html: `
           <h2>New Contact Form Submission</h2>
           <p><strong>Name:</strong> ${name}</p>
