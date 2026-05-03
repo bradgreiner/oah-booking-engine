@@ -276,8 +276,8 @@ export default function SearchContent() {
                   <div
                     key={property.id}
                     id={`card-${property.id}`}
-                    className={`rounded-2xl transition-all duration-150 ${
-                      hoveredId === property.id ? "ring-2 ring-[#4C6C4E] ring-offset-2" : ""
+                    className={`block w-full rounded-2xl transition-shadow duration-150 ${
+                      hoveredId === property.id ? "ring-2 ring-[#4C6C4E]" : ""
                     }`}
                     onMouseEnter={() => setHoveredId(property.id)}
                     onMouseLeave={() => setHoveredId(null)}
