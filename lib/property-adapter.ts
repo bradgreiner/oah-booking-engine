@@ -11,7 +11,7 @@ import { fetchPriceLabsBatch } from "./pricelabs";
 import { getMarketCities } from "./constants";
 import { cleanDescription } from "./description-cleaner";
 import { unstable_cache } from "next/cache";
-import { buildPropertySlug } from "./slug";
+import { buildPropertySlug, resolveDisplayCity } from "./slug";
 
 // ---------- Unified property shape ----------
 
@@ -361,18 +361,33 @@ async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<Uni
 
 // ---------- Slug assignment ----------
 
-function assignSeoSlugs(properties: UnifiedProperty[]): UnifiedProperty[] {
+function assignSeoSlugs(
+  properties: UnifiedProperty[],
+  rawHostawayListings: HostawayListing[]
+): UnifiedProperty[] {
+  const hwMap = new Map<number, HostawayListing>();
+  for (const l of rawHostawayListings) hwMap.set(l.id, l);
+
   const sorted = [...properties].sort((a, b) => a.id.localeCompare(b.id));
   const taken = new Set<string>();
 
   const slugMap = new Map<string, string>();
+  const displayCityMap = new Map<string, string>();
+
   for (const p of sorted) {
     if (p.hostawayListingId) {
-      const seoSlug = buildPropertySlug(
-        { name: p.name, city: p.city, id: p.hostawayListingId },
-        taken
-      );
+      const raw = hwMap.get(p.hostawayListingId);
+      const listing = {
+        name: p.name,
+        externalListingName: (raw as Record<string, unknown>)?.externalListingName as string | undefined,
+        city: p.city,
+        address: raw?.address || null,
+        publicAddress: (raw as Record<string, unknown>)?.publicAddress as string | null,
+        id: p.hostawayListingId,
+      };
+      const seoSlug = buildPropertySlug(listing, taken);
       slugMap.set(p.id, seoSlug);
+      displayCityMap.set(p.id, resolveDisplayCity(listing));
     } else {
       taken.add(p.slug);
       slugMap.set(p.id, p.slug);
@@ -382,6 +397,7 @@ function assignSeoSlugs(properties: UnifiedProperty[]): UnifiedProperty[] {
   return properties.map((p) => ({
     ...p,
     slug: slugMap.get(p.id) || p.slug,
+    city: displayCityMap.get(p.id) || p.city,
   }));
 }
 
@@ -411,8 +427,8 @@ export async function getProperties(
   // Overlay PriceLabs dynamic rates (replaces Hostaway baseRate with PriceLabs avg)
   merged = await overlayPriceLabsRates(merged);
 
-  // Assign SEO-friendly slugs
-  merged = assignSeoSlugs(merged);
+  // Assign SEO-friendly slugs (needs raw Hostaway data for name/address fields)
+  merged = assignSeoSlugs(merged, hostawayListings);
 
   return applySort(merged, filters.sort);
 }
