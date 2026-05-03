@@ -31,6 +31,7 @@ interface PropertyCardProps {
 
 export default function PropertyCard({
   id,
+  slug,
   name,
   city,
   bedrooms,
@@ -64,7 +65,7 @@ export default function PropertyCard({
   const dateParams = checkIn ? `?checkIn=${checkIn}${checkOut ? `&checkOut=${checkOut}` : ""}` : "";
 
   return (
-    <Link href={`${linkPrefix}/${id}${dateParams}`} className="group block">
+    <Link href={linkPrefix ? `${linkPrefix}/${id}${dateParams}` : `/homes/${slug}${dateParams}`} className="group block">
       <div
         onClickCapture={() => trackEvent("listing_view", { propertyId: id, propertyName: name, city })}
         className="cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"

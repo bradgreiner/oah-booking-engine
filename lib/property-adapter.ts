@@ -11,6 +11,7 @@ import { fetchPriceLabsBatch } from "./pricelabs";
 import { getMarketCities } from "./constants";
 import { cleanDescription } from "./description-cleaner";
 import { unstable_cache } from "next/cache";
+import { buildPropertySlug } from "./slug";
 
 // ---------- Unified property shape ----------
 
@@ -358,6 +359,32 @@ async function overlayPriceLabsRates(properties: UnifiedProperty[]): Promise<Uni
   });
 }
 
+// ---------- Slug assignment ----------
+
+function assignSeoSlugs(properties: UnifiedProperty[]): UnifiedProperty[] {
+  const sorted = [...properties].sort((a, b) => a.id.localeCompare(b.id));
+  const taken = new Set<string>();
+
+  const slugMap = new Map<string, string>();
+  for (const p of sorted) {
+    if (p.hostawayListingId) {
+      const seoSlug = buildPropertySlug(
+        { name: p.name, city: p.city, id: p.hostawayListingId },
+        taken
+      );
+      slugMap.set(p.id, seoSlug);
+    } else {
+      taken.add(p.slug);
+      slugMap.set(p.id, p.slug);
+    }
+  }
+
+  return properties.map((p) => ({
+    ...p,
+    slug: slugMap.get(p.id) || p.slug,
+  }));
+}
+
 // ---------- Public API ----------
 
 export async function getProperties(
@@ -384,6 +411,9 @@ export async function getProperties(
   // Overlay PriceLabs dynamic rates (replaces Hostaway baseRate with PriceLabs avg)
   merged = await overlayPriceLabsRates(merged);
 
+  // Assign SEO-friendly slugs
+  merged = assignSeoSlugs(merged);
+
   return applySort(merged, filters.sort);
 }
 
@@ -409,6 +439,22 @@ export async function getCachedProperties(
   );
 
   return cached();
+}
+
+export async function getPropertyBySlug(slug: string): Promise<UnifiedProperty | null> {
+  // Handle legacy hw_ IDs by redirecting through getProperty
+  if (slug.startsWith("hw_")) {
+    return getProperty(slug);
+  }
+
+  const all = await getProperties();
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
+export async function getSlugForId(id: string): Promise<string | null> {
+  const all = await getProperties();
+  const match = all.find((p) => p.id === id);
+  return match?.slug ?? null;
 }
 
 export async function getProperty(id: string): Promise<UnifiedProperty | null> {

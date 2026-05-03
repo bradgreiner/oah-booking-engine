@@ -248,7 +248,7 @@ export default function RequestFormContent() {
       <main className="min-h-screen bg-gray-50 py-8">
         <div className="mx-auto max-w-5xl px-4">
           {/* Back link */}
-          <Link href={`/${propertyId}`} className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+          <Link href={`/${propertyId}`} prefetch={false} className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
             Back to listing
           </Link>
