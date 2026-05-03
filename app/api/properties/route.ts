@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCachedProperties } from "@/lib/property-adapter";
+import { getMinimumNightlyRate } from "@/lib/hostaway-calendar";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,19 @@ export async function GET(request: NextRequest) {
       amenity: searchParams.get("amenity") || undefined,
     });
 
-    return NextResponse.json(properties);
+    const minRates = await Promise.allSettled(
+      properties.map((p) => {
+        if (!p.hostawayListingId) return Promise.resolve(null);
+        return getMinimumNightlyRate(p.hostawayListingId);
+      })
+    );
+
+    const propertiesWithMinRates = properties.map((p, i) => ({
+      ...p,
+      minNightlyRate: minRates[i].status === "fulfilled" ? minRates[i].value : null,
+    }));
+
+    return NextResponse.json(propertiesWithMinRates);
   } catch (error) {
     console.error("Error fetching properties:", error);
     return NextResponse.json(

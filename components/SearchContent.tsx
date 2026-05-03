@@ -27,6 +27,7 @@ interface Property {
   images: { url: string }[];
   latitude: number | null;
   longitude: number | null;
+  minNightlyRate?: number | null;
 }
 
 const MARKET_OPTIONS = [
@@ -301,6 +302,7 @@ export default function SearchContent() {
                       createdAt={property.createdAt}
                       checkIn={checkIn}
                       checkOut={checkOut}
+                      fromNightlyRate={property.minNightlyRate ?? null}
                     />
                   </div>
                 ))}
