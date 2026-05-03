@@ -11,7 +11,7 @@ import { fetchPriceLabsBatch } from "./pricelabs";
 import { getMarketCities } from "./constants";
 import { cleanDescription } from "./description-cleaner";
 import { unstable_cache } from "next/cache";
-import { buildPropertySlug, resolveDisplayCity } from "./slug";
+import { buildPropertySlug, resolveDisplayCity, cleanListingName } from "./slug";
 
 // ---------- Unified property shape ----------
 
@@ -151,11 +151,15 @@ function mapHostawayToUnified(listing: HostawayListing): UnifiedProperty {
   const cleanedDesc = cleanDescription(listing.description);
   const summary = (listing as any).airbnbSummary;
 
+  const displayName = cleanListingName(
+    (listing as Record<string, unknown>).externalListingName as string || listing.name || ""
+  ) || listing.name;
+
   return {
     id: `hw_${listing.id}`,
     slug: `hw-${listing.id}`,
-    name: listing.name,
-    headline: listing.name,
+    name: displayName,
+    headline: displayName,
     description: cleanedDesc || (typeof summary === "string" && summary.length > 50 ? summary : null),
     neighborhood: null,
     city: listing.city || null,

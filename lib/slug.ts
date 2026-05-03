@@ -13,8 +13,16 @@ const LA_NEIGHBORHOODS = [
   "West Hollywood", "Marina del Rey", "Mar Vista", "Studio City",
   "Hermosa Beach", "Redondo Beach", "Beverly Hills", "Culver City",
   "Pacific Palisades", "Brentwood", "Playa del Rey", "El Segundo",
-  "Sherman Oaks",
+  "Silver Lake", "Leimert Park", "Laurel Canyon", "Hollywood Hills",
+  "Highland Park", "Echo Park", "Los Feliz", "Eagle Rock",
+  "Sherman Oaks", "Encino", "Inglewood", "Hollywood",
+  "Downtown Los Angeles",
 ];
+
+const NEIGHBORHOOD_ALIASES: Record<string, string> = {
+  "weho": "West Hollywood",
+  "dtla": "Downtown Los Angeles",
+};
 
 const DESERT_CITIES = [
   "Palm Springs", "Palm Desert", "La Quinta", "Rancho Mirage",
@@ -56,6 +64,9 @@ export function cleanListingName(rawName: string): string {
   const dashIdx = name.search(/\s[-—]\s/);
   if (dashIdx > 3) name = name.slice(0, dashIdx).trim();
 
+  const colonIdx = name.indexOf(":");
+  if (colonIdx > 3) name = name.slice(0, colonIdx).trim();
+
   return name;
 }
 
@@ -82,6 +93,13 @@ export function resolveDisplayCity(listing: {
       .join(" ")
       .toLowerCase();
 
+    // Check aliases first (whole-word match)
+    for (const [alias, neighborhood] of Object.entries(NEIGHBORHOOD_ALIASES)) {
+      const re = new RegExp(`\\b${alias}\\b`, "i");
+      if (re.test(haystack)) return neighborhood;
+    }
+
+    // Match neighborhoods, longest first
     const sorted = [...LA_NEIGHBORHOODS].sort((a, b) => b.length - a.length);
     for (const n of sorted) {
       if (haystack.includes(n.toLowerCase())) return n;
@@ -111,7 +129,15 @@ export function buildPropertySlug(
   const city = resolveDisplayCity(listing);
   const citySlug = slugify(city);
 
-  let slug = citySlug ? `${nameSlug}-${citySlug}` : nameSlug;
+  // Skip city suffix if all city tokens already appear in the name slug
+  const cityTokens = citySlug.split("-").filter(Boolean);
+  const nameTokens = nameSlug.split("-").filter(Boolean);
+  const cityAlreadyInName = cityTokens.length > 0 &&
+    cityTokens.every((t) => nameTokens.includes(t));
+
+  let slug = (citySlug && !cityAlreadyInName)
+    ? `${nameSlug}-${citySlug}`
+    : nameSlug;
 
   if (!takenSlugs.has(slug)) {
     takenSlugs.add(slug);
